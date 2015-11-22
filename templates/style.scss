@@ -1,8 +1,17 @@
 .method {
 
-    .title.active {
-        border: 1px solid #e6e6e6;
-        border-width: 1px 1px 0px 1px;
+
+    .title{
+        border: 1px solid #FFF;
+        padding-left: 8px !important;
+
+        &.active {
+            border: 1px solid #e6e6e6;
+            border-width: 1px 1px 0px 1px;
+
+            -webkit-transition-duration: 0.3s; /* Safari */
+            transition-duration: 0.3s;
+        }
     }
     .content {
         border: 1px solid #e6e6e6;
@@ -20,9 +29,13 @@
         font-family: 'Inconsolata', monospace;
         color:#428bca;
     }
+    .kind {
+        font-family: 'Inconsolata', monospace;
+        color:#CCC;
+    }
 
     .content {
-        margin-bottom: 30px;
+        margin-bottom: 10px;
 
         .memberVariant {
             font-family: 'Inconsolata', monospace;
