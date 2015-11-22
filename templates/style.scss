@@ -1,0 +1,43 @@
+.method {
+
+    .title.active {
+        border: 1px solid #e6e6e6;
+        border-width: 1px 1px 0px 1px;
+    }
+    .content {
+        border: 1px solid #e6e6e6;
+        border-width: 0px 1px 1px 1px;
+
+        .container{
+            padding:0px 8px 8px 8px;
+        }
+        background: #f8f8f8;
+
+
+    }
+
+    .group-name {
+        font-family: 'Inconsolata', monospace;
+        color:#428bca;
+    }
+
+    .content {
+        margin-bottom: 30px;
+
+        .memberVariant {
+            font-family: 'Inconsolata', monospace;
+            .type {
+
+            }
+            .name {
+                font-weight:bold;
+            }
+            .args {
+            }
+        }
+
+        .description {
+            padding-top: 10px;
+        }
+    }
+}

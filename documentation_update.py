@@ -234,7 +234,7 @@ def serialize_functionsfile(cursor,filename,is_addon=False):
     for function in thisfile_missing_functions:
         functionsfile.function_list.remove(function)
                 
-    functionsfile.function_list.sort(key=lambda function: function.name)
+    #functionsfile.function_list.sort(key=lambda function: function.name)
     if len(functionsfile.function_list)>0:
         markdown_file.setfunctionsfile(functionsfile,is_addon)
     
@@ -308,8 +308,8 @@ def serialize_class(cursor,is_addon=False, parent=None):
             missing_vars.append(var)
     documentation_class.var_list = current_variables_list
         
-    documentation_class.function_list.sort(key=lambda function: function.name)
-    documentation_class.var_list.sort(key=lambda variable: variable.name)
+    #documentation_class.function_list.sort(key=lambda function: function.name)
+    #documentation_class.var_list.sort(key=lambda variable: variable.name)
     
     if documentation_class.new:
         new_classes.append(documentation_class)

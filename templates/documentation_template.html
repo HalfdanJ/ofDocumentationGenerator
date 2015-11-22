@@ -1,0 +1,56 @@
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <!-- Standard Meta -->
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+        <!-- Site Properities -->
+        <title>ofDoc -  {{ pageTitle }}</title>
+        <link rel="stylesheet" type="text/css" class="ui" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.css">
+        <link rel="stylesheet" type="text/css" href="style.css">
+
+        <!-- font -->
+        <link href="http://fonts.googleapis.com/css?family=Inconsolata:400,700" rel="stylesheet" type="text/css">
+
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.js"></script>
+        <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+    </head>
+    <body>
+
+    <div class="ui  container" style="margin-top:50px">
+        <h1 class="ui dividing header">{{pageTitle}}</h1>
+
+        {{ inline_description }}
+
+        {% for method in methods %}
+        <div class="ui accordion method">
+          <div class="title">
+            <!--<i class="dropdown icon"></i>-->
+            <span class="group-name">{{ method.name }}</span> <span class="kind">()</span>
+          </div>
+          <div class="content">
+              <div class="container">
+                <div class="memberVariant">
+                    <span class="type">{{method.returns}} </span>
+                    <span class="name">{{method.name}}</span>
+                    <span class="args">({{method.parameters}})</span>
+                </div>
+                <div class="description">
+                    {{method.inlined_description}}
+                </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+    <script>
+        $('.ui.accordion')
+            .accordion()
+    </script>
+    </body>
