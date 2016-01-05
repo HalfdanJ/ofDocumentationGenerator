@@ -395,11 +395,6 @@ def setclass(clazz,is_addon=False):
     except:
         pass
 
-
-
-    with open(os.path.join(path,clazz.name)+".json", 'w') as outfile:
-        json.dump(clazz.serialize(), outfile, indent=4,)
-        
     f = open(os.path.join(path,clazz.name)+".markdown",'w')
     f.write('#class ' + clazz.name + '\n\n\n')
     f.write("<!--\n");

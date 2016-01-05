@@ -51,6 +51,30 @@
 
         .description {
             padding-top: 10px;
+            padding-left: 25px;
         }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #e2e2e2;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+
     }
+
+
+}
+
+.section-header {
+font-weight: 200;
+}
+
+.codehilite {
+    padding-left: 20px;
+}
+
+pre.prettyprint, code.prettyprint {
+    font-family: 'Inconsolata', monospace;
 }

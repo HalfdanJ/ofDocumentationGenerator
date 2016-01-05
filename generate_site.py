@@ -1,15 +1,40 @@
+import os
+
 import markdown as markdown
 from scss import parser
 from jinja2 import Environment, FileSystemLoader
 import json
+
+outdir = '_site/'
 
 def ParseMarkdown(mk):
     ret = markdown.markdown( mk, extensions=[ 'codehilite', 'fenced_code'])
     ret = ret.replace("<code", "<code class='prettyprint'")
     return ret
 
-def RenderFile(clazz):
-    print clazz
+def renderToc(toc):
+    template_dir = 'templates'
+    loader = FileSystemLoader(template_dir)
+    env = Environment(loader=loader)
+
+    template = env.get_template('toc_template.html')
+
+    methods = []
+
+
+    output = template.render({
+        "folders": toc.keys(),
+        "content":toc
+    }).encode('utf8')
+
+
+    # to save the results
+    with open(outdir+"index.html", "wb") as fh:
+        fh.write(output)
+
+
+def renderFile(clazz):
+    #print clazz
     template_dir = 'templates'
     loader = FileSystemLoader(template_dir)
     env = Environment(loader=loader)
@@ -19,13 +44,25 @@ def RenderFile(clazz):
     methods = []
 
     for method in clazz["methods"]:
-        methods.append({
-            "name": method["name"],
-            "returns": method["returns"],
-            "parameters": method["parameters"],
+        try:
+            m = {
+                    "returns": method["returns"],
+                    "parameters": method["parameters"],
+                    "inlined_description": ParseMarkdown(method["inlined_description"])
+                }
 
-            "inlined_description": ParseMarkdown(method["inlined_description"])
-        })
+            if len(methods) == 0 or methods[-1]['name'] != method['name']:
+                methods.append({
+                    "name": method["name"],
+                    "section": method["section"],
+                    "variants": [m]
+                })
+            else:
+                methods[-1]['variants'].append(m)
+
+        except:
+            pass
+
 
     output = template.render({
         "pageTitle": clazz["className"],
@@ -37,17 +74,38 @@ def RenderFile(clazz):
 
 
     # to save the results
-    with open("_site/"+clazz["className"]+".html", "wb") as fh:
+    with open(outdir+clazz["className"]+".html", "wb") as fh:
         fh.write(output)
 
 
-def CompileScss():
-    with open("_site/style.css", "w") as output:
+toc = {}
+def updateToc(clazz):
+    if clazz['path'] not in toc:
+        toc[clazz['path']] = []
+
+    toc[clazz['path']].append(clazz['className'])
+
+
+def compileScss():
+    with open(outdir+"style.css", "w") as output:
         output.write(parser.load('templates/style.scss'))
 
-with open('_documentation/ofCamera.json') as data_file:
-    data = json.load(data_file)
-    RenderFile(data)
+
+''' RUN '''
+
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
 
 
-CompileScss()
+for root, dirs, files in os.walk("_json_documentation"):
+    for name in files:
+        with open(os.path.join('_json_documentation',name)) as data_file:
+            data = json.load(data_file)
+            renderFile(data)
+            updateToc(data)
+            print name
+
+
+
+renderToc(toc)
+compileScss()

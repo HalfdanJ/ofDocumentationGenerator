@@ -51,6 +51,9 @@ def builtin_flags_gcc():
                 if "(framework directory)" not in line:
                     includes += " -I"+line.strip()
 
+def srcrangestr(x):
+    return '%s:%d:%d - %s:%d:%d' % (x.start.file, x.start.line, x.start.column, x.end.file, x.end.line, x.end.column)
+
 gcc_includes = builtin_flags_gcc()
 print gcc_includes
 def get_tu_from_file(filepath, of_root):
@@ -68,7 +71,13 @@ def get_tu_from_file(filepath, of_root):
             .format(OF_ROOT=of_root).split(" ")
     index = Index.create()
     tu = index.parse(filepath, args=args,
-            options=TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD)
+            options=TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD )
+
+    """  for x in tu.cursor.get_tokens():
+        print x.kind
+        print "  " + srcrangestr(x.extent)
+        print "  '" + str(x.spelling) + "'"
+    """
     return tu
     
 def get_cursor(source, spelling):

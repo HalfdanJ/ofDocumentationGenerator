@@ -24,6 +24,7 @@ class DocsMethod():
         self.clazz = ""
         self.linenum = 0
         self.file = ""
+        self.section = ""
 
     def serialize(self):
         #return self.__dict__
@@ -42,7 +43,8 @@ class DocsMethod():
                       "static",
                       "advanced",
                       "linenum",
-                      "file"
+                      "file",
+                      "section"
                       ]
         return {key:value for (key,value) in self.__dict__.iteritems() if key in attributes}
 
@@ -67,6 +69,7 @@ class DocsVar:
         self.clazz = ""
         self.linenum = 0
         self.file = ""
+        self.section = ""
         
     def get_inlined_docs_similarity(self):
         return Levenshtein.ratio(self.inlined_description, self.description)

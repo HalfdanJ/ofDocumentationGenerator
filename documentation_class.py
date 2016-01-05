@@ -26,6 +26,7 @@ class DocsClass:
         self.detailed_inline_description = ""
         self.istemplated = False
         self.extends = []
+        self.path = ""
         
 
     def functions(self):
@@ -44,7 +45,8 @@ class DocsClass:
             "extends":  ", ".join(self.extends),
             "inline_description": self.detailed_inline_description.decode('utf-8').encode('utf-8').strip('\n'),
             "description": self.reference.encode('utf-8') ,
-            "methods": methods
+            "path" : self.path,
+            "methods": methods,
         }
 
          

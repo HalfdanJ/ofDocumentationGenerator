@@ -4,15 +4,15 @@ import re
 import HTMLParser
 import sys
 
+import json_file
 import markdown_file
 from documentation_members import DocsVar
 import clang_utils
-from clang.cindex import CursorKind
+from clang.cindex import CursorKind, TokenKind
 
 of_root = sys.argv[1]
 of_source = os.path.join(of_root, "libs/openFrameworks")
-print
-print "OIASJDOIAJSDOIJ" + of_root
+
 of_addons = os.path.join(of_root, "addons")
 official_addons = [
                     "ofxAccelerometer",
@@ -44,9 +44,24 @@ def substitutetype(ty):
     ty = ty.replace("std::", "")
     ty = re.sub(r"(.*)<(.*)>","\\1< \\2 >",ty)
     return ty
-    
+
+def parse_sections(element):
+    """ looks for \section element in documentation block  """
+    doc = str("" if element.raw_comment is None else element.raw_comment)
+    doc = doc.strip()
+    for line in iter(doc.splitlines()):
+        line = line.strip()
+        section_index = line.lower().find("\\section");
+        if(section_index != -1):
+            section_name = line[(section_index+len("\\section")):].strip()
+            return section_name
+
+    return None
+
+
 def parse_docs(element):
     """ parse an inlined documentation block """
+
     doc = str("" if element.raw_comment is None else element.raw_comment)
     doc = doc.strip()
     if doc.find("< ") == 0:
@@ -70,17 +85,26 @@ def parse_docs(element):
         line = line.replace("/// ","")
         line = line.replace("///","")
         line = re.sub(r"\\class (.*)","",line)
+
+        if(line.lower().find("\\section") != -1):
+            continue
+
         docs += line + "\n"
+
     try:
         docs = HTMLParser.HTMLParser().unescape(docs)
     except:
         pass
-    docs += "\n"
+    docs = docs.strip()
     return docs
     
 def is_class(member):
+#    print member.kind
+ #   if member.kind == CursorKind.MACRO_INSTANTIATION:
+  #      print member
+
     return member.kind == CursorKind.CLASS_DECL or member.kind == CursorKind.CLASS_TEMPLATE or member.kind == CursorKind.STRUCT_DECL
-    
+
 def is_variable(member):
     return member.kind == CursorKind.VAR_DECL or member.kind == CursorKind.FIELD_DECL
     
@@ -89,6 +113,7 @@ def is_method(member):
     
 def is_function(member):
     return (member.kind == CursorKind.FUNCTION_DECL or member.kind == CursorKind.FUNCTION_TEMPLATE) and not is_class(member.semantic_parent)
+
 
 def parse_variable(documentation_class, clazz, member):
     var = documentation_class.var_by_name(member.displayname)
@@ -171,7 +196,9 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
         method.version_started = currentversion
 
     method.inlined_description = parse_docs(member)
-    
+
+    if(parse_sections(member)):
+        method.section = parse_sections(member)
     if method.new:
         if clazz is None:
             new_functions.append(method)
@@ -239,14 +266,19 @@ def serialize_functionsfile(cursor,filename,is_addon=False):
         markdown_file.setfunctionsfile(functionsfile,is_addon)
     
 def serialize_class(cursor,is_addon=False, parent=None):
+
     clazz = cursor
     classname = (parent + "::" if parent is not None else "") + clazz.spelling
+    print "Serialize class "+classname
+
     documentation_class = markdown_file.getclass(classname)
-        
+
+    documentation_class.path = os.path.dirname(clazz.location.file.name).replace(os.path.join(of_root,"libs/openFrameworks/"),"")
+
     current_variables_list = []
     current_methods_list = []
     methods_for_fuzzy_search = []
-        
+
     documentation_class.extends = []
     
     for child in clazz.get_children():
@@ -284,6 +316,7 @@ def serialize_class(cursor,is_addon=False, parent=None):
         elif is_variable(member):
             var = parse_variable(documentation_class, clazz, member)
             current_variables_list.append(var)
+
             #f.write( str(member.type.text) + " " + str(member.name.text) + "\n" )
         elif is_method(member):
             method = parse_function(documentation_class, clazz, member, current_methods_list)
@@ -315,9 +348,12 @@ def serialize_class(cursor,is_addon=False, parent=None):
         new_classes.append(documentation_class)
     markdown_file.setclass(documentation_class,is_addon)
 
+    json_file.save_class(documentation_class,is_addon)
+
 def parse_folder(root, files, is_addon=False):
     file_count=0
-    for name in files:       
+    for name in files:
+
         file_count+=1
         filename = os.path.join(root, name)
         if name.find('of')==0 and os.path.splitext(name)[1]=='.h':
@@ -353,10 +389,11 @@ new_functions = []
 new_vars = []
 new_methods = []
 
-for root, dirs, files in os.walk(of_source):
-    dir_count+=1
-    file_count += parse_folder(root, files, False)
-    
+#for root, dirs, files in os.walk(of_source):
+#    dir_count+=1
+#    print root, files
+#    file_count += parse_folder(root, files, False)
+parse_folder("/Users/jonas/Development/openframeworks/openframeworks/libs/openFrameworks/math/", ["ofVec3f.h"], False)
 
 """
 for addon in official_addons:
