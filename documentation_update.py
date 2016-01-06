@@ -88,6 +88,8 @@ def parse_docs(element):
 
         if(line.lower().find("\\section") != -1):
             continue
+        if(line.lower().find("\\cond") != -1):
+            continue
 
         docs += line + "\n"
 
@@ -137,7 +139,10 @@ def parse_variable(documentation_class, clazz, member):
     
     
 def parse_function(documentation_class, clazz, member, already_found, fuzzy=False):
+    """ Parse a clang function and return a DocsFunction """
     params = ""
+
+    # Parse the arguments into a stirng
     for arg in member.get_children():
         if arg.kind.is_attribute():
             # TODO: we suppose only attributes are the deprecated ones 
@@ -170,13 +175,17 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
             elif part.kind == CursorKind.DECL_REF_EXPR:    
                 params += "=" + part.spelling
 
+    # Method name
     methodname = member.spelling
     methodname = re.sub("<.*>","",methodname)
+
+    # Returns
     if member.kind == CursorKind.CONSTRUCTOR or member.kind == CursorKind.DESTRUCTOR or (not clazz is None and methodname == clazz.spelling):
         returns = ""
     else:
         returns = substitutetype(member.result_type.spelling)
         returns = ("" if returns is None else returns)
+
     method = documentation_class.function_by_signature(methodname, returns, params, alternatives, already_found, fuzzy)
     
     if method is None:
@@ -188,8 +197,9 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
         method.access = member.access_specifier.name.lower()
     else:
         method.functionsfile = documentation_class.name
+
     method.returns = returns
-    #method.description = method.description.replace("~~~~{.brush: cpp}","~~~~{.cpp}").replace('</pre>',"~~~~")
+
     method.description = method.description.replace('<p>','').replace('</p>','').replace('<code>','').replace('</code>','').replace('<pre>','')
     
     if method.new:
@@ -197,8 +207,10 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
 
     method.inlined_description = parse_docs(member)
 
-    if(parse_sections(member)):
+    # Section
+    if parse_sections(member):
         method.section = parse_sections(member)
+
     if method.new:
         if clazz is None:
             new_functions.append(method)

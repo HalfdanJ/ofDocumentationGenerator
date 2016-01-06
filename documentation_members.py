@@ -74,3 +74,21 @@ class DocsVar:
     def get_inlined_docs_similarity(self):
         return Levenshtein.ratio(self.inlined_description, self.description)
 
+    def serialize(self):
+        #return self.__dict__
+        attributes = ["name",
+                      "description",
+                      "inlined_description",
+                      "access",
+                      "summary",
+                      "version_started",
+                      "version_deprecated",
+                      "constant",
+                      "static",
+                      "advanced",
+                      "linenum",
+                      "file",
+                      "section",
+                      "type"
+                      ]
+        return {key:value for (key,value) in self.__dict__.iteritems() if key in attributes}

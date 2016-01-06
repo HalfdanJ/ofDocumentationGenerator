@@ -78,3 +78,75 @@ font-weight: 200;
 pre.prettyprint, code.prettyprint {
     font-family: 'Inconsolata', monospace;
 }
+
+.maincontainer {
+    margin-right: auto;
+    margin-left: auto;
+        width: 1170px;
+    }
+
+#content {
+ margin-left: 387px !important;
+     width: 734px;
+ }
+
+.navigator {
+    border-bottom: 0;
+    bottom: 0;
+    overflow: auto;
+    position: fixed;
+    top: 90px;
+    width: 230px;
+
+    #nav-parts {
+        color: gray;
+        font-weight: 100;
+        line-height: 140%;
+        list-style-type: none;
+        margin: 0;
+        padding-left: 0px;
+
+        li.group {
+            font-family: Helvetica;
+            font-size: 1.5em;
+            line-height: 150%;
+            list-style-type: none;
+            margin: 0;
+            padding: 10px 30px 10px 0px;
+            cursor: pointer;
+            color: #333;
+            overflow: hidden;
+
+            ul {
+                padding:0;
+                span {
+                    line-height: 40px;
+                    font-size: 17px;
+                }
+                li.chapter {
+                    display: block;
+                    line-height: 13px;
+                    margin: 9px 0px;
+                    padding-left: 10px;
+
+
+                    a {
+                        font-size: 12px;
+                        color: gray;
+                        transition: color 0.2s ease, padding 0.2s ease;
+                        padding-left: 0px;
+
+
+                    }
+
+                     &.selected {
+                        a{
+                            color: #ee3987;
+                            padding-left: 5px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+ }

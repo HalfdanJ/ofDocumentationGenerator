@@ -17,46 +17,171 @@
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.js"></script>
         <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+        <script src="script.js"></script>
 
     </head>
     <body>
 
-    <div class="ui  container" style="margin-top:50px">
+
+
+
+    <div class="ui maincontainer" style="margin-top:50px;">
+        <nav class="navigator" role="navigation">
+            <ul id="nav-parts">
+              <li class="group selected">
+                Topics
+                <ul id="topics">
+                    <span class="class">ofVec2f</span>
+                    {% for section in sections %}
+                    <li class="chapter">
+                        <a href="#{{ section.anchor }}">{{ section.title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li></ul>
+          </nav>
+
+        <div id="content">
         <h1 class="ui dividing header">{{pageTitle}}</h1>
 
         {{ inline_description }}
 
         {% for method in methods %}
             {% if method.section and (loop.first or  methods[loop.index-2].section != method.section) %}
-            <h3 class="ui hedaer section-header">{{ method.section }}</h3>
+            <h3 class="ui hedaer section-header" id="{{method.section_anchor}}">{{ method.section }}</h3>
             {% endif %}
-        <div class="ui accordion method">
-          <div class="title">
-            <span class="group-name">{{ method.name }}</span> <span class="kind">()</span>
-          </div>
-          <div class="content">
-            {% for variant in method.variants %}
-              {% if not loop.first %} <hr> {% endif %}
-              <div class="container">
-                <div class="memberVariant">
-                    <span class="type">{{variant.returns}} </span>
-                    <span class="name">{{method.name}}</span>
-                    <span class="args">({{variant.parameters}})</span>
-                </div>
-                <div class="description">
-                    {{variant.inlined_description}}
-                </div>
+            <div class="ui accordion method">
+              <div class="title">
+                <span class="group-name">{{ method.name }}</span> <span class="kind">()</span>
               </div>
-            {% endfor %}
-          </div>
+              <div class="content">
+                {% for variant in method.variants %}
+                  {% if not loop.first %} <hr> {% endif %}
+                  <div class="container">
+                    <div class="memberVariant">
+                        <span class="type">{{variant.returns}} </span>
+                        <span class="name">{{method.name}}</span>
+                        <span class="args">({{variant.parameters}})</span>
+                    </div>
+                    <div class="description">
+                        {{variant.inlined_description}}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
 
-        </div>
+            </div>
         {% endfor %}
+
+
+        {% for variable in member_variables %}
+            {% if variable.section and (loop.first or variable[loop.index-2].section != variable.section) %}
+            <h3 class="ui hedaer section-header">{{ variable.section }}</h3>
+            {% endif %}
+
+            {% if not variable.section and loop.first %}
+            <h3 class="ui hedaer section-header">Attributes</h3>
+            {% endif %}
+            <div class="ui accordion method">
+              <div class="title">
+                <span class="group-name">{{ variable.name }}</span> <span class="kind">variable</span>
+              </div>
+              <div class="content">
+                {% for variant in variable.variants %}
+                  {% if not loop.first %} <hr> {% endif %}
+                  <div class="container">
+                    <div class="memberVariant">
+                        <span class="type">{{variable.type}} </span>
+                        <span class="name">{{variable.name}}</span>
+                    </div>
+                    <div class="description">
+                        {{variant.inlined_description}}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+
+            </div>
+        {% endfor %}
+        </div>
+
+
     </div>
+<!--
+    <div id="toc">
+<div class="ui vertical inverted sticky menu sticky following top" style="left: 0px; width: 250px !important; height: 1813px !important; margin-top: 0px; ">
 
 
-    <script>
-        $('.ui.accordion')
-            .accordion()
-    </script>
-    </body>
+<div class="item">
+  <a class="ui logo icon image" href="/">
+    <img src="/images/logo.png">
+  </a>
+  <a href="/"><b>UI Docs</b></a>
+</div>
+<a class="item" href="/introduction/getting-started.html">
+  <b>Getting Started</b>
+</a>
+<a class="item" href="/introduction/new.html">
+  <b>New in 2.1</b>
+</a>
+<div class="item">
+  <div class="header">Introduction</div>
+  <div class="menu">
+
+      <a class="item" href="/introduction/integrations.html">
+        Integrations
+      </a>
+
+      <a class="item" href="/introduction/build-tools.html">
+        Build Tools
+      </a>
+
+      <a class="item" href="/introduction/advanced-usage.html">
+        Recipes
+      </a>
+
+      <a class="item" href="/introduction/glossary.html">
+        Glossary
+      </a>
+
+  </div>
+</div>
+<div class="item">
+  <div class="header">Usage</div>
+  <div class="menu">
+
+      <a class="item" href="/usage/theming.html">
+        Theming
+      </a>
+
+      <a class="item" href="/usage/layout.html">
+        Layouts
+      </a>
+
+  </div>
+</div>
+<div class="item">
+  <div class=" header">Globals</div>
+  <div class="menu">
+
+      <a class="item" href="/globals/reset.html">
+        Reset
+
+      </a>
+
+      <a class="item" href="/globals/site.html">
+        Site
+
+      </a>
+
+  </div>
+</div>
+
+
+</div>
+</div>
+-->
+<script>
+
+</script>
+</body>
