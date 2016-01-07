@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # import documentation_functions
+import json
 import sys
 from documentation_members import DocsMethod, DocsVar
 # sys.path.append( "/var/www/test_new_documentation/" )
@@ -47,7 +48,7 @@ class DocsClass:
             "visible": self.visible,
             "advanced": self.advanced,
             "isTemplated": self.istemplated,
-            "extends": ", ".join(self.extends),
+            "extends": self.extends,
             "inline_description": self.detailed_inline_description.decode('utf-8').encode('utf-8').strip('\n'),
             "description": self.reference.encode('utf-8'),
             "path": self.path,

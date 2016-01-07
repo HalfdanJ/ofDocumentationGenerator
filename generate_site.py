@@ -2,16 +2,20 @@ import os
 
 import markdown as markdown
 import shutil
+
+import re
 from scss import parser
 from jinja2 import Environment, FileSystemLoader
 import json
 
 outdir = '_site/'
 
+
 def ParseMarkdown(mk):
-    ret = markdown.markdown( mk, extensions=[ 'codehilite', 'fenced_code'])
+    ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
     ret = ret.replace("<code", "<code class='prettyprint'")
     return ret
+
 
 def renderToc(toc):
     template_dir = 'templates'
@@ -20,24 +24,91 @@ def renderToc(toc):
 
     template = env.get_template('toc_template.html')
 
-    methods = []
-
-
     output = template.render({
         "folders": toc.keys(),
-        "content":toc
+        "content": toc
     }).encode('utf8')
 
-
     # to save the results
-    with open(outdir+"index.html", "wb") as fh:
+    with open(outdir + "index.html", "wb") as fh:
         fh.write(output)
 
+
 def sectionAnchor(section):
-    return  ''.join(x for x in section.title() if not x.isspace())
+    """
+    :param section: section object
+    :return: CamelCase version of the section name
+    """
+    return ''.join(x for x in section.title() if not x.isspace())
+
+
+def parseMethods(methods, sections, clazz):
+    for method in clazz["methods"]:
+        if method['access'] != 'public':
+            continue
+        if method['name'].startswith('~'):
+            continue
+
+        try:
+            # Set section name if its not set already on the first element
+            if len(method["section"]) == 0 and len(methods) == 0:
+                method["section"] = 'Functions'
+
+            if len(method["section"]) > 0 and (len(sections) == 0 or sections[-1] != method["section"]):
+                sections.append({
+                    "title": method["section"],
+                    "anchor": sectionAnchor(method["section"])
+                })
+
+            m = {
+                "returns": method["returns"],
+                "parameters": method["parameters"],
+                "inlined_description": ParseMarkdown(method["inlined_description"])
+            }
+
+            # Check if method is already added
+            found = False
+            for mm in methods:
+                if mm['name'] == method["name"]:
+
+                    variant_found = False
+                    for v in mm['variants']:
+                        print v['parameters']
+                        if v['parameters'] == m['parameters']:
+                            variant_found = True
+                            # If the current added variant doesnt have a description, then take the description from
+                            # the inherited member
+                            if len(v['inlined_description']) == 0:
+                                v['inlined_description'] = m['inlined_description']
+
+                    if not variant_found:
+                        mm['variants'].append(m)
+
+                    found = True
+                    break
+
+            if not found:
+                methods.append({
+                    "name": method["name"],
+                    "section": method["section"],
+                    "section_anchor": sectionAnchor(method["section"]),
+                    "variants": [m]
+                })
+
+        except:
+            pass
+
+    for otherClassName in clazz['extends']:
+        if len(otherClassName.strip()) > 0:
+            filename = otherClassName.strip()
+            filename = re.search("^([^<]*)", filename, re.I).group(0)
+
+            data = loadDataForClass(filename + ".json")
+            if data is not None:
+                parseMethods(methods, sections, data)
+
 
 def renderFile(clazz):
-    #print clazz
     template_dir = 'templates'
     loader = FileSystemLoader(template_dir)
     env = Environment(loader=loader)
@@ -46,61 +117,36 @@ def renderFile(clazz):
 
     sections = []
     methods = []
-    for method in clazz["methods"]:
-        try:
-            if method["section"] is not None and ( len(sections) == 0 or sections[-1] != method["section"]):
-                sections.append({
-                    "title": method["section"],
-                    "anchor": sectionAnchor(method["section"])
-                })
 
-            m = {
-                    "returns": method["returns"],
-                    "parameters": method["parameters"],
-                    "inlined_description": ParseMarkdown(method["inlined_description"])
-                }
-
-            if len(methods) == 0 or methods[-1]['name'] != method['name']:
-                methods.append({
-                    "name": method["name"],
-                    "section": method["section"],
-                    "section_anchor": sectionAnchor(method["section"]),
-                    "variants": [m]
-                })
-            else:
-                methods[-1]['variants'].append(m)
-
-        except:
-            pass
+    parseMethods(methods, sections, clazz)
 
     member_variables = []
     for variable in clazz["member_variables"]:
+        if variable['access'] != 'public':
+            continue
+
         try:
-            if variable["section"] is not None and ( len(sections) == 0 or sections[-1] != variable["section"]):
+            # Set section name if its not set already on the first element
+            if len(variable["section"]) == 0 and len(member_variables) == 0:
+                variable["section"] = 'Attributes'
+
+            if len(variable["section"]) > 0 and (len(sections) == 0 or sections[-1] != variable["section"]):
                 sections.append({
                     "title": variable["section"],
                     "anchor": sectionAnchor(variable["section"])
                 })
 
-            m = {
-                    "inlined_description": ParseMarkdown(variable["inlined_description"])
-                }
-
-            if len(member_variables) == 0 or member_variables[-1]['name'] != variable['name']:
-                member_variables.append({
-                    "type" : variable['type'],
-                    "name": variable["name"],
-                    "section": variable["section"],
-                    "section_anchor": sectionAnchor(variable["section"]),
-                    "variants": [m]
-                })
-            else:
-                member_variables[-1]['variants'].append(m)
+            member_variables.append({
+                "type": variable['type'],
+                "name": variable["name"],
+                "section": variable["section"],
+                "section_anchor": sectionAnchor(variable["section"]),
+                "inlined_description": ParseMarkdown(variable["inlined_description"])
+            })
 
         except:
             pass
 
-    print member_variables
     output = template.render({
         "pageTitle": clazz["className"],
         "inline_description": ParseMarkdown(clazz["inline_description"]),
@@ -108,16 +154,28 @@ def renderFile(clazz):
 
         "methods": methods,
         "member_variables": member_variables,
-        "sections": sections
+        "sections": sections,
+        "extends": clazz['extends']
     }).encode('utf8')
 
-    print sections
     # to save the results
-    with open(outdir+clazz["className"]+".html", "wb") as fh:
+    with open(outdir + clazz["className"] + ".html", "wb") as fh:
         fh.write(output)
 
 
+def loadDataForClass(className):
+    path = os.path.join('_json_documentation', className)
+
+    if os.path.exists(path):
+        with open(path) as data_file:
+            return json.load(data_file)
+    else:
+        return None
+
+
 toc = {}
+
+
 def updateToc(clazz):
     if clazz['path'] not in toc:
         toc[clazz['path']] = []
@@ -126,7 +184,7 @@ def updateToc(clazz):
 
 
 def compileScss():
-    with open(outdir+"style.css", "w") as output:
+    with open(outdir + "style.css", "w") as output:
         output.write(parser.load('templates/style.scss'))
 
 
@@ -135,16 +193,12 @@ def compileScss():
 if not os.path.exists(outdir):
     os.makedirs(outdir)
 
-
 for root, dirs, files in os.walk("_json_documentation"):
     for name in files:
-        with open(os.path.join('_json_documentation',name)) as data_file:
-            data = json.load(data_file)
-            renderFile(data)
-            updateToc(data)
-            print name
-
-
+        data = loadDataForClass(name)
+        renderFile(data)
+        updateToc(data)
+        print name
 
 renderToc(toc)
 compileScss()

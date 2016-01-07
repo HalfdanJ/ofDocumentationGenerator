@@ -31,18 +31,41 @@
               <li class="group selected">
                 Topics
                 <ul id="topics">
-                    <span class="class">ofVec2f</span>
+                    <span class="class">{{ pageTitle }}</span>
                     {% for section in sections %}
                     <li class="chapter">
                         <a href="#{{ section.anchor }}">{{ section.title }}</a>
                     </li>
                     {% endfor %}
+<!--
+                    {% if extends %}
+
+                    <span class="class">Extends</span>
+                    {% for extend in extends %}
+                    <li class="chapter">
+                        <a href="{{extend}}.html">{{ extend }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% endif %}
+-->
                 </ul>
             </li></ul>
           </nav>
 
         <div id="content">
         <h1 class="ui dividing header">{{pageTitle}}</h1>
+
+        {% if extends %}
+        <div class="subheader">Inherits from:
+            {% for extend in extends %}
+                <a href="{{extend}}.html">{{ extend }}</a>
+                {% if not loop.last %}
+                ,&nbsp;
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
 
         {{ inline_description }}
 
@@ -79,26 +102,21 @@
             <h3 class="ui hedaer section-header">{{ variable.section }}</h3>
             {% endif %}
 
-            {% if not variable.section and loop.first %}
-            <h3 class="ui hedaer section-header">Attributes</h3>
-            {% endif %}
             <div class="ui accordion method">
               <div class="title">
                 <span class="group-name">{{ variable.name }}</span> <span class="kind">variable</span>
               </div>
               <div class="content">
-                {% for variant in variable.variants %}
-                  {% if not loop.first %} <hr> {% endif %}
                   <div class="container">
                     <div class="memberVariant">
                         <span class="type">{{variable.type}} </span>
                         <span class="name">{{variable.name}}</span>
                     </div>
                     <div class="description">
-                        {{variant.inlined_description}}
+                        {{variable.inlined_description}}
                     </div>
                   </div>
-                {% endfor %}
+
               </div>
 
             </div>

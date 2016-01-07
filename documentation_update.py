@@ -7,6 +7,7 @@ import sys
 import json_file
 import markdown_file
 from documentation_members import DocsVar
+import documentation_parser
 import clang_utils
 from clang.cindex import CursorKind, TokenKind
 
@@ -45,60 +46,6 @@ def substitutetype(ty):
     ty = re.sub(r"(.*)<(.*)>","\\1< \\2 >",ty)
     return ty
 
-def parse_sections(element):
-    """ looks for \section element in documentation block  """
-    doc = str("" if element.raw_comment is None else element.raw_comment)
-    doc = doc.strip()
-    for line in iter(doc.splitlines()):
-        line = line.strip()
-        section_index = line.lower().find("\\section");
-        if(section_index != -1):
-            section_name = line[(section_index+len("\\section")):].strip()
-            return section_name
-
-    return None
-
-
-def parse_docs(element):
-    """ parse an inlined documentation block """
-
-    doc = str("" if element.raw_comment is None else element.raw_comment)
-    doc = doc.strip()
-    if doc.find("< ") == 0:
-        doc = doc[2:]
-    if doc.find("\\todo") == 0:
-        doc = ""
-    if doc.find("\\tparam") == 0:
-        doc = re.sub(r"\\tparam.*","",doc)
-    if doc.find("TODO:") == 0:
-        doc = ""
-    doc = doc.replace("\\warning ","\nWarning: ")
-    doc = doc.replace("\\author ","\nBy: ")
-    doc = doc.replace("\\param ","\nParameters:\n",1)
-    doc = doc.replace("\\param ","")
-    doc = doc.replace("\\brief ","")
-    doc = doc.replace("\\returns ","\nReturns: ")
-    doc = doc.replace("\\sa ","\nSee also: ")
-    docs = ""
-    for line in iter(doc.splitlines()):
-        line = line.strip()
-        line = line.replace("/// ","")
-        line = line.replace("///","")
-        line = re.sub(r"\\class (.*)","",line)
-
-        if(line.lower().find("\\section") != -1):
-            continue
-        if(line.lower().find("\\cond") != -1):
-            continue
-
-        docs += line + "\n"
-
-    try:
-        docs = HTMLParser.HTMLParser().unescape(docs)
-    except:
-        pass
-    docs = docs.strip()
-    return docs
     
 def is_class(member):
 #    print member.kind
@@ -132,7 +79,7 @@ def parse_variable(documentation_class, clazz, member):
         var.type = substitutetype(member.type.spelling)
         new_vars.append(var)
     try:
-        var.inlined_description = parse_docs(member)
+        var.inlined_description = documentation_parser.parse_docs(member)
     except:
         pass
     return var
@@ -205,11 +152,11 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
     if method.new:
         method.version_started = currentversion
 
-    method.inlined_description = parse_docs(member)
+    method.inlined_description = documentation_parser.parse_docs(member)
 
     # Section
-    if parse_sections(member):
-        method.section = parse_sections(member)
+    if documentation_parser.parse_sections(member):
+        method.section = documentation_parser.parse_sections(member)
 
     if method.new:
         if clazz is None:
@@ -301,7 +248,7 @@ def serialize_class(cursor,is_addon=False, parent=None):
             else:
                 documentation_class.extends.append(child.spelling)
 
-    documentation_class.detailed_inline_description = parse_docs(clazz)
+    documentation_class.detailed_inline_description = documentation_parser.parse_docs(clazz)
     
     for member in clazz.get_children():
         if member.kind == CursorKind.CLASS_DECL or member.kind == CursorKind.CLASS_TEMPLATE or member.kind == CursorKind.STRUCT_DECL:
@@ -405,7 +352,7 @@ new_methods = []
 #    dir_count+=1
 #    print root, files
 #    file_count += parse_folder(root, files, False)
-parse_folder("/Users/jonas/Development/openframeworks/openframeworks/libs/openFrameworks/math/", ["ofVec3f.h"], False)
+parse_folder("/Users/jonas/Development/openframeworks/openframeworks/libs/openFrameworks/video/", ["ofVideoGrabber.h"], False)
 
 """
 for addon in official_addons:

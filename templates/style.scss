@@ -1,5 +1,22 @@
-.method {
 
+.maincontainer {
+    margin-right: auto;
+    margin-left: auto;
+    width: 1170px;
+}
+
+.subheader {
+    color: #aaa;
+    margin-bottom: 13px;
+    margin-top: -8px;
+
+    a {
+        color: #aaa;
+        text-decoration:underline;
+    }
+}
+
+.method {
 
     .title{
         border: 1px solid #FFF;
@@ -8,8 +25,6 @@
         &.active {
             border: 1px solid #e6e6e6;
             border-width: 1px 1px 0px 1px;
-
-            -webkit-transition-duration: 0.3s; /* Safari */
             transition-duration: 0.3s;
         }
     }
@@ -68,7 +83,7 @@
 }
 
 .section-header {
-font-weight: 200;
+    font-weight: 200;
 }
 
 .codehilite {
@@ -79,11 +94,6 @@ pre.prettyprint, code.prettyprint {
     font-family: 'Inconsolata', monospace;
 }
 
-.maincontainer {
-    margin-right: auto;
-    margin-left: auto;
-        width: 1170px;
-    }
 
 #content {
  margin-left: 387px !important;
@@ -119,9 +129,11 @@ pre.prettyprint, code.prettyprint {
 
             ul {
                 padding:0;
+
                 span {
                     line-height: 40px;
                     font-size: 17px;
+                    display:block;
                 }
                 li.chapter {
                     display: block;
