@@ -48,10 +48,6 @@ def substitutetype(ty):
 
     
 def is_class(member):
-#    print member.kind
- #   if member.kind == CursorKind.MACRO_INSTANTIATION:
-  #      print member
-
     return member.kind == CursorKind.CLASS_DECL or member.kind == CursorKind.CLASS_TEMPLATE or member.kind == CursorKind.STRUCT_DECL
 
 def is_variable(member):
@@ -94,7 +90,7 @@ def parse_variable(documentation_class, clazz, member):
     
     
 def parse_function(documentation_class, clazz, member, already_found, fuzzy=False):
-    """ Parse a clang function and return a DocsFunction """
+    """ Parse a clang function and return a DocsMethod"""
     params = ""
 
     # Parse the arguments into a stirng
@@ -163,9 +159,10 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
     doc = documentation_parser.parse_docs(member)
     method.inlined_description = doc['text']
     method.section = doc['section']
-    method.parameters_description = doc['parameters']
     method.sa = doc['sa']
+    method.warning = doc['warning']
     method.returns_description = doc['returns']
+    method.parameters_description = doc['parameters']
 
     if doc['internal']:
         method.visible = False
@@ -233,8 +230,8 @@ def serialize_functionsfile(cursor,filename,is_addon=False):
         functionsfile.function_list.remove(function)
                 
     #functionsfile.function_list.sort(key=lambda function: function.name)
-    if len(functionsfile.function_list)>0:
-        markdown_file.setfunctionsfile(functionsfile,is_addon)
+    #if len(functionsfile.function_list)>0:
+    #    markdown_file.setfunctionsfile(functionsfile,is_addon)
     
 def serialize_class(cursor,is_addon=False, parent=None):
 
@@ -367,7 +364,7 @@ new_methods = []
 #    dir_count+=1
 #    print root, files
 #    file_count += parse_folder(root, files, False)
-parse_folder("/Users/jonas/Development/openframeworks/openframeworks/libs/openFrameworks/video/", ["ofVideoGrabber.h"], False)
+parse_folder("/Users/jonas/Development/openframeworks/openframeworks/libs/openFrameworks/gl/", ["ofTexture.h"], False)
 
 """
 for addon in official_addons:

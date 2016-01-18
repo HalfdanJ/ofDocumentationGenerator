@@ -10,8 +10,11 @@ class DocsMethod():
         self.description = ""
         self.returns = ""
         self.returns_description = ""
-        self.inlined_description = ""
         self.parameters = ""
+        self.parameters_description = {}
+        self.inlined_description = ""
+        self.warning = ""
+        self.sa = []
         self.syntax = ""
         self.access = ""
         self.summary = ""
@@ -32,8 +35,10 @@ class DocsMethod():
                       "description",
                       "returns",
                       "returns_description",
+                      "parameters_description",
                       "inlined_description",
                       "parameters",
+                      "sa",
                       "syntax",
                       "access",
                       "summary",
@@ -44,7 +49,8 @@ class DocsMethod():
                       "advanced",
                       "linenum",
                       "file",
-                      "section"
+                      "section",
+                      "warning"
                       ]
         return {key:value for (key,value) in self.__dict__.iteritems() if key in attributes}
 

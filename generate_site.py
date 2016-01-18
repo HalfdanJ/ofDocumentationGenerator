@@ -12,8 +12,10 @@ outdir = '_site/'
 
 
 def ParseMarkdown(mk):
+    if mk is None:
+        return ""
     ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
-    ret = ret.replace("<code", "<code class='prettyprint'")
+    ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
     return ret
 
 
@@ -44,14 +46,13 @@ def sectionAnchor(section):
     return ''.join(x for x in section.title() if not x.isspace())
 
 
-def parseMethods(methods, sections, clazz):
+def parseMethods(methods, sections, clazz, inherited):
     for method in clazz["methods"]:
         if method['access'] != 'public':
             continue
         if method['name'].startswith('~'):
             continue
 
-        print method
 
         #try:
             # Set section name if its not set already on the first element
@@ -64,13 +65,24 @@ def parseMethods(methods, sections, clazz):
                 "anchor": sectionAnchor(method["section"])
             })
 
+        for key in method["parameters_description"].iterkeys():
+            method["parameters_description"][key] = ParseMarkdown(method["parameters_description"][key])
+
+        for i in range(0,len(method["sa"])):
+            method["sa"][i] = ParseMarkdown(method["sa"][i])
+
         m = {
             "returns": method["returns"],
-            "returns_description": method["returns_description"],
-            "returns_description": method["returns_description"],
+            "returns_description": ParseMarkdown(method["returns_description"]),
             "parameters": method["parameters"],
-            "inlined_description": ParseMarkdown(method["inlined_description"])
+            "parameters_description": method["parameters_description"],
+            "inlined_description": ParseMarkdown(method["inlined_description"]),
+            "warning": ParseMarkdown(method["warning"]),
+            "sa": method["sa"]
         }
+
+        if inherited:
+            m['inherited'] = clazz["className"]
 
         # Check if method is already added
         found = False
@@ -79,7 +91,6 @@ def parseMethods(methods, sections, clazz):
 
                 variant_found = False
                 for v in mm['variants']:
-                    print v['parameters']
                     if v['parameters'] == m['parameters']:
                         variant_found = True
                         # If the current added variant doesnt have a description, then take the description from
@@ -111,7 +122,7 @@ def parseMethods(methods, sections, clazz):
 
             data = loadDataForClass(filename + ".json")
             if data is not None:
-                parseMethods(methods, sections, data)
+                parseMethods(methods, sections, data, True)
 
 
 def renderFile(clazz):
@@ -124,7 +135,7 @@ def renderFile(clazz):
     sections = []
     methods = []
 
-    parseMethods(methods, sections, clazz)
+    parseMethods(methods, sections, clazz, False)
 
     member_variables = []
     for variable in clazz["member_variables"]:
@@ -201,7 +212,7 @@ if not os.path.exists(outdir):
 
 for root, dirs, files in os.walk("_json_documentation"):
     for name in files:
-        if name == 'ofVec2f.json':
+        if name[0] != '.':
             data = loadDataForClass(name)
             renderFile(data)
             updateToc(data)
@@ -209,4 +220,4 @@ for root, dirs, files in os.walk("_json_documentation"):
 
 renderToc(toc)
 compileScss()
-shutil.copyfile('templates/script.js', '_site/script.js');
+shutil.copyfile('templates/script.js', '_site/script.js')
