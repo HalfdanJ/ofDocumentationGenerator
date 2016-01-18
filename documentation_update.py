@@ -71,18 +71,13 @@ def parse_variable(documentation_class, clazz, member):
         var.constant = member.result_type.is_volatile_qualified()
         var.static = member.kind == CursorKind.VAR_DECL
         var.clazz = documentation_class.name
-        #member.type.ref.text if hasattr(member.type,'ref') else member.type.text
         var.type = substitutetype(member.type.spelling)
         new_vars.append(var)
     try:
-        doc = documentation_parser.parse_docs(member)
-        var.inlined_description = doc['text']
-        var.section = doc['section']
-        var.sa = doc['sa']
+        var.documentation = documentation_parser.parse_docs(member)
 
-        if doc['internal']:
+        if var.documentation['internal']:
             var.visible = False
-
 
     except:
         pass
@@ -156,15 +151,8 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
     if method.new:
         method.version_started = currentversion
 
-    doc = documentation_parser.parse_docs(member)
-    method.inlined_description = doc['text']
-    method.section = doc['section']
-    method.sa = doc['sa']
-    method.warning = doc['warning']
-    method.returns_description = doc['returns']
-    method.parameters_description = doc['parameters']
-
-    if doc['internal']:
+    method.documentation = documentation_parser.parse_docs(member)
+    if method.documentation['internal']:
         method.visible = False
 
     if method.new:

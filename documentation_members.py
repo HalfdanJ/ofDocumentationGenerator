@@ -29,16 +29,13 @@ class DocsMethod():
         self.file = ""
         self.section = ""
 
+        self.documentation = None
+
     def serialize(self):
         #return self.__dict__
         attributes = ["name",
-                      "description",
                       "returns",
-                      "returns_description",
-                      "parameters_description",
-                      "inlined_description",
                       "parameters",
-                      "sa",
                       "syntax",
                       "access",
                       "summary",
@@ -49,8 +46,7 @@ class DocsMethod():
                       "advanced",
                       "linenum",
                       "file",
-                      "section",
-                      "warning"
+                      "documentation"
                       ]
         return {key:value for (key,value) in self.__dict__.iteritems() if key in attributes}
 
@@ -76,6 +72,8 @@ class DocsVar:
         self.linenum = 0
         self.file = ""
         self.section = ""
+
+        self.documentation = None
         
     def get_inlined_docs_similarity(self):
         return Levenshtein.ratio(self.inlined_description, self.description)
@@ -83,10 +81,7 @@ class DocsVar:
     def serialize(self):
         #return self.__dict__
         attributes = ["name",
-                      "description",
-                      "inlined_description",
                       "access",
-                      "summary",
                       "version_started",
                       "version_deprecated",
                       "constant",
@@ -95,6 +90,7 @@ class DocsVar:
                       "linenum",
                       "file",
                       "section",
-                      "type"
+                      "type",
+                      "documentation"
                       ]
         return {key:value for (key,value) in self.__dict__.iteritems() if key in attributes}

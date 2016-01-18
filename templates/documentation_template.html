@@ -90,16 +90,16 @@
                         {% endif %}
                     </div>
                     <div class="description">
-                        {{variant.inlined_description}}
+                        {{variant.documentation.text}}
 
-                        {% if variant.parameters_description %}
+                        {% if variant.documentation.parameters %}
 
                         <div class="parameters">
                             <div class="ui tiny header">Parameters</div>
 
                             <table class="ui very basic collapsing celled table">
                                   <tbody>
-                                    {% for key,val in variant.parameters_description.iteritems() %}
+                                    {% for key,val in variant.documentation.parameters .iteritems() %}
                                     <tr>
                                       <td>
                                           {{ key }}
@@ -114,29 +114,28 @@
                         </div>
                         {% endif %}
 
-                        {% if variant.returns_description %}
+                        {% if variant.documentation.returns %}
                         <div class="returns">
                             <div class="ui tiny header">Returns</div>
-                            {{ variant.returns_description }}
+                            {{ variant.documentation.returns }}
                         </div>
                         {% endif %}
 
-                        {% if variant.warning %}
+                        {% if variant.documentation.warning %}
                         <div class="warning">
                             <div class="ui tiny header">Warning</div>
-                            {{ variant.warning }}
+                            {{ variant.documentation.warning }}
                         </div>
                         {% endif %}
 
-                        {% if variant.sa %}
+                        {% if variant.documentation.sa %}
                         <div class="sa">
                             <div class="ui tiny header">See also</div>
                             <ul>
-                                {% for sa in variant.sa %}
+                                {% for sa in variant.documentation.sa %}
                                 <li>{{sa}}</li>
                                 {% endfor %}
                             </ul>
-                            {{ variant.warning }}
                         </div>
                         {% endif %}
                     </div>

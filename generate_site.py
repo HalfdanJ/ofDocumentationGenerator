@@ -11,12 +11,26 @@ import json
 outdir = '_site/'
 
 
-def ParseMarkdown(mk):
+def parseMarkdown(mk):
     if mk is None:
         return ""
     ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
     ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
     return ret
+
+
+def parseDocumentation(doc):
+    doc["returns"] = parseMarkdown(doc["returns"])
+    doc["warning"] = parseMarkdown(doc["warning"])
+    doc["text"] = parseMarkdown(doc["text"])
+
+    for key in doc["parameters"].iterkeys():
+        doc["parameters"][key] = parseMarkdown(doc["parameters"][key])
+
+    for i in range(0,len(doc["sa"])):
+        doc["sa"][i] = parseMarkdown(doc["sa"][i])
+
+    return doc
 
 
 def renderToc(toc):
@@ -56,29 +70,20 @@ def parseMethods(methods, sections, clazz, inherited):
 
         #try:
             # Set section name if its not set already on the first element
-        if method["section"] and len(method["section"]) == 0 and len(methods) == 0:
-            method["section"] = 'Functions'
+        section = method["documentation"]["section"]
+        if section and len(section) == 0 and len(methods) == 0:
+            section = method["documentation"]["section"] = 'Functions'
 
-        if method["section"] and len(method["section"]) > 0 and (len(sections) == 0 or sections[-1] != method["section"]):
+        if section and len(section) > 0 and (len(sections) == 0 or sections[-1] != section):
             sections.append({
-                "title": method["section"],
-                "anchor": sectionAnchor(method["section"])
+                "title": section,
+                "anchor": sectionAnchor(section)
             })
-
-        for key in method["parameters_description"].iterkeys():
-            method["parameters_description"][key] = ParseMarkdown(method["parameters_description"][key])
-
-        for i in range(0,len(method["sa"])):
-            method["sa"][i] = ParseMarkdown(method["sa"][i])
 
         m = {
             "returns": method["returns"],
-            "returns_description": ParseMarkdown(method["returns_description"]),
             "parameters": method["parameters"],
-            "parameters_description": method["parameters_description"],
-            "inlined_description": ParseMarkdown(method["inlined_description"]),
-            "warning": ParseMarkdown(method["warning"]),
-            "sa": method["sa"]
+            "documentation": parseDocumentation(method["documentation"])
         }
 
         if inherited:
@@ -95,8 +100,8 @@ def parseMethods(methods, sections, clazz, inherited):
                         variant_found = True
                         # If the current added variant doesnt have a description, then take the description from
                         # the inherited member
-                        if len(v['inlined_description']) == 0:
-                            v['inlined_description'] = m['inlined_description']
+                        if len(v["documentation"]['text']) == 0:
+                            v["documentation"]['text'] = m["documentation"]['text']
 
                 if not variant_found:
                     mm['variants'].append(m)
@@ -107,8 +112,8 @@ def parseMethods(methods, sections, clazz, inherited):
         if not found:
             methods.append({
                 "name": method["name"],
-                "section": method["section"],
-                "section_anchor": sectionAnchor(method["section"]),
+                "section": section,
+                "section_anchor": sectionAnchor(section),
                 "variants": [m]
             })
 
@@ -143,22 +148,23 @@ def renderFile(clazz):
             continue
 
         try:
+            section = variable["documentation"]["section"]
             # Set section name if its not set already on the first element
-            if len(variable["section"]) == 0 and len(member_variables) == 0:
-                variable["section"] = 'Attributes'
+            if len(section) == 0 and len(member_variables) == 0:
+                section = variable["documentation"]["section"] = 'Attributes'
 
-            if len(variable["section"]) > 0 and (len(sections) == 0 or sections[-1] != variable["section"]):
+            if len(section) > 0 and (len(sections) == 0 or sections[-1] != section):
                 sections.append({
-                    "title": variable["section"],
-                    "anchor": sectionAnchor(variable["section"])
+                    "title": section,
+                    "anchor": sectionAnchor(section)
                 })
 
             member_variables.append({
                 "type": variable['type'],
                 "name": variable["name"],
-                "section": variable["section"],
-                "section_anchor": sectionAnchor(variable["section"]),
-                "inlined_description": ParseMarkdown(variable["inlined_description"])
+                "section": section,
+                "section_anchor": sectionAnchor(section),
+                "documentation": parseDocumentation(variable["documentation"])
             })
 
         except:
@@ -166,8 +172,8 @@ def renderFile(clazz):
 
     output = template.render({
         "pageTitle": clazz["className"],
-        "inline_description": ParseMarkdown(clazz["inline_description"]),
-        "description": ParseMarkdown(clazz["description"]),
+        "inline_description": parseMarkdown(clazz["inline_description"]),
+        "description": parseMarkdown(clazz["description"]),
 
         "methods": methods,
         "member_variables": member_variables,
