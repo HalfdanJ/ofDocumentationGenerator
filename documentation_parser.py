@@ -21,11 +21,57 @@ def parse_docs(element):
     ret = {
         "text": "",
         "section": None,
-
+        "parameters": {},
+        "returns": None,
+        "sa": [],
+        "internal": False,
+        "warning": None,
+        "deprecated": None
     }
 
     doc = str("" if element.raw_comment is None else element.raw_comment).strip()
 
+    mode = 'brief'
+    for line in iter(doc.splitlines()):
+        line = line.strip()
+        linematch = re.search("///\s*(\\\\(\w+)\s)?(.*)$", line, re.I | re.S)
+        if linematch:
+            param = linematch.group(2)
+            text = linematch.group(3)
+            if param is not None:
+                param = param.lower()
+                if param == 'brief':
+                    ret['text'] += text+"\n"
+                elif param == 'returns':
+                    ret['returns'] = text
+                elif param == 'param' or param == 'tparam':
+                    paramSearch = re.search("(\\w+)\\s(.*)", text, re.I | re.S)
+                    if paramSearch:
+                        ret['parameters'][paramSearch.group(1)] = paramSearch.group(2)
+                elif param == 'sa' or param == 'see':
+                    ret['sa'].append(text)
+                elif param == 'warning':
+                    ret['warning'] = text
+                elif param == 'note':
+                    ret['text'] += "Note: "+text+"\n"
+                elif param == 'deprecated':
+                    ret['deprecated'] = text
+                elif param == 'internal':
+                    ret['internal'] = True
+                elif param == 'section':
+                    ret['section'] = text
+
+                else:
+                    print "MISSINGPARAM"
+                    print param + " | "+ text
+            else:
+                ret['text'] += text+"\n"
+
+
+        else:
+            print "NO MATCH "+line
+
+    return ret
     #for line in iter(doc.splitlines()):
     #    ret.text
 

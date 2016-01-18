@@ -12,6 +12,8 @@ class DocsFunction(JSONEncoder):
         self.returns_description = ""
         self.inlined_description = ""
         self.parameters = ""
+        self.parameters_description = ""
+        self.sa = []
         self.syntax = ""
         self.summary = ""
         self.version_started = ""

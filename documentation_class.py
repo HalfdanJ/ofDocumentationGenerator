@@ -29,6 +29,7 @@ class DocsClass:
         self.istemplated = False
         self.extends = []
         self.path = ""
+        self.sa = []
 
     def functions(self):
         return self.function_list

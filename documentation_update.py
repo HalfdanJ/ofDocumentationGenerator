@@ -79,7 +79,15 @@ def parse_variable(documentation_class, clazz, member):
         var.type = substitutetype(member.type.spelling)
         new_vars.append(var)
     try:
-        var.inlined_description = documentation_parser.parse_docs(member)
+        doc = documentation_parser.parse_docs(member)
+        var.inlined_description = doc['text']
+        var.section = doc['section']
+        var.sa = doc['sa']
+
+        if doc['internal']:
+            var.visible = False
+
+
     except:
         pass
     return var
@@ -152,11 +160,15 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
     if method.new:
         method.version_started = currentversion
 
-    method.inlined_description = documentation_parser.parse_docs(member)
+    doc = documentation_parser.parse_docs(member)
+    method.inlined_description = doc['text']
+    method.section = doc['section']
+    method.parameters_description = doc['parameters']
+    method.sa = doc['sa']
+    method.returns_description = doc['returns']
 
-    # Section
-    if documentation_parser.parse_sections(member):
-        method.section = documentation_parser.parse_sections(member)
+    if doc['internal']:
+        method.visible = False
 
     if method.new:
         if clazz is None:
@@ -248,8 +260,11 @@ def serialize_class(cursor,is_addon=False, parent=None):
             else:
                 documentation_class.extends.append(child.spelling)
 
-    documentation_class.detailed_inline_description = documentation_parser.parse_docs(clazz)
-    
+    doc = documentation_parser.parse_docs(clazz)
+    documentation_class.detailed_inline_description = doc['text']
+    documentation_class.sa = doc['sa']
+
+
     for member in clazz.get_children():
         if member.kind == CursorKind.CLASS_DECL or member.kind == CursorKind.CLASS_TEMPLATE or member.kind == CursorKind.STRUCT_DECL:
             if member.access_specifier.name.lower() == 'public' and clazz.spelling + "::" + member.spelling not in visited_classes:
@@ -305,7 +320,7 @@ def serialize_class(cursor,is_addon=False, parent=None):
     
     if documentation_class.new:
         new_classes.append(documentation_class)
-    markdown_file.setclass(documentation_class,is_addon)
+    #markdown_file.setclass(documentation_class,is_addon)
 
     json_file.save_class(documentation_class,is_addon)
 
