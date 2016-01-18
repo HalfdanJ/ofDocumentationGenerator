@@ -58,7 +58,8 @@ def is_method(member):
     
 def is_function(member):
     return (member.kind == CursorKind.FUNCTION_DECL or member.kind == CursorKind.FUNCTION_TEMPLATE) and not is_class(member.semantic_parent)
-
+def filenameFromClangChild(child):
+    return os.path.basename(child.location.file.name).split('.')[0]
 
 def parse_variable(documentation_class, clazz, member):
     var = documentation_class.var_by_name(member.displayname)
@@ -81,6 +82,14 @@ def parse_variable(documentation_class, clazz, member):
 
     except:
         pass
+
+    json_ref_data.append({
+        "file": filenameFromClangChild(member),
+        "type": "variable",
+        "name": var.name,
+        "class": documentation_class.name
+    })
+
     return var
     
     
@@ -160,7 +169,13 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
             new_functions.append(method)
         else:
             new_methods.append(method)
-        
+
+    json_ref_data.append({
+        "file": filenameFromClangChild(member),
+        "type": "function",
+        "name": methodname,
+        "class": documentation_class.name
+    })
     return method
 
 """def update_moved_functions(filename,is_addon=False):
@@ -330,7 +345,7 @@ def parse_folder(root, files, is_addon=False):
             num_functions = 0
             for child in tu.cursor.get_children():
                 if is_class(child) and child.spelling.find('of')==0:
-                    offilename = os.path.basename(child.location.file.name).split('.')[0]
+                    offilename = filenameFromClangChild(child)
 
                     i=0
                     for c in child.get_children():
@@ -347,6 +362,11 @@ def parse_folder(root, files, is_addon=False):
                                     "content": []
                                 }
                             json_data[offilename]['content'].append(data)
+                            json_ref_data.append({
+                                "file": offilename,
+                                "type": "class",
+                                "name": data['className']
+                            })
 
                         visited_classes.append(child.spelling)
                 if is_function(child) and child.spelling.find('of')==0:
@@ -374,6 +394,7 @@ new_vars = []
 new_methods = []
 
 json_data = {}
+json_ref_data = []
 #for root, dirs, files in os.walk(of_source):
 #    dir_count+=1
 #    print root, files
@@ -388,6 +409,8 @@ for addon in official_addons:
 """
 for key in json_data:
     json_file.save(key,json_data[key])
+
+json_file.save('reference',json_ref_data)
 
 if len(new_functions)>0:
     print "added " + str(len(new_functions)) + " new functions:"
