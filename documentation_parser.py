@@ -30,14 +30,18 @@ def parse_docs(element):
     }
 
     doc = str("" if element.raw_comment is None else element.raw_comment).strip()
-
     mode = 'brief'
     for line in iter(doc.splitlines()):
         line = line.strip()
+        parammatch = re.search("///\s*(\\\\(\w+))", line, re.I | re.S)
         linematch = re.search("///\s*(\\\\(\w+)\s)?(.*)$", line, re.I | re.S)
+
         if linematch:
-            param = linematch.group(2)
             text = linematch.group(3)
+            param = None
+            if parammatch:
+                param = parammatch.group(2)
+
             if param is not None:
                 param = param.lower()
                 if param == 'brief':

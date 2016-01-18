@@ -245,10 +245,10 @@ def serialize_class(cursor,is_addon=False, parent=None):
             else:
                 documentation_class.extends.append(child.spelling)
 
-    doc = documentation_parser.parse_docs(clazz)
-    documentation_class.detailed_inline_description = doc['text']
-    documentation_class.sa = doc['sa']
+    documentation_class.documentation = documentation_parser.parse_docs(clazz)
 
+    if documentation_class.documentation['internal']:
+        documentation_class.visible = False
 
     for member in clazz.get_children():
         if member.kind == CursorKind.CLASS_DECL or member.kind == CursorKind.CLASS_TEMPLATE or member.kind == CursorKind.STRUCT_DECL:
@@ -307,32 +307,57 @@ def serialize_class(cursor,is_addon=False, parent=None):
         new_classes.append(documentation_class)
     #markdown_file.setclass(documentation_class,is_addon)
 
-    json_file.save_class(documentation_class,is_addon)
+    return documentation_class.serialize()
+
 
 def parse_folder(root, files, is_addon=False):
     file_count=0
-    for name in files:
 
+
+    for name in files:
         file_count+=1
         filename = os.path.join(root, name)
+
         if name.find('of')==0 and os.path.splitext(name)[1]=='.h':
+            #print name
+            #data = {
+            #    "name": name,
+            #    "functions" : [],
+            #    "classes" : []
+            #}
+
             tu = clang_utils.get_tu_from_file(filename, of_root)
             num_functions = 0
             for child in tu.cursor.get_children():
                 if is_class(child) and child.spelling.find('of')==0:
+                    offilename = os.path.basename(child.location.file.name).split('.')[0]
+
                     i=0
                     for c in child.get_children():
                         if is_variable(c) or is_method(c) or c.kind == CursorKind.CXX_BASE_SPECIFIER:
                             i+=1
                     if i>0 and child.spelling not in visited_classes:
-                        serialize_class(child, is_addon)
+                        #data['classes'].append( serialize_class(child, is_addon))
+                        data = serialize_class(child, is_addon)
+                        if data is not None:
+                            if offilename not in json_data:
+                                json_data[offilename] = {
+                                    "name":offilename,
+                                    "path":name,
+                                    "content": []
+                                }
+                            json_data[offilename]['content'].append(data)
+
                         visited_classes.append(child.spelling)
                 if is_function(child) and child.spelling.find('of')==0:
                     num_functions+=1
             functions_name = os.path.splitext(name)[0]
             if num_functions>0 and functions_name not in visited_function_files and functions_name != "ofMain":
-                serialize_functionsfile(tu.cursor, functions_name, is_addon)
+                #data['functions'].append(serialize_functionsfile(tu.cursor, functions_name, is_addon))
                 visited_function_files.append(functions_name)
+
+            #json_file.save_class(data,is_addon)
+
     return file_count
     
 """ main """
@@ -348,6 +373,7 @@ new_functions = []
 new_vars = []
 new_methods = []
 
+json_data = {}
 #for root, dirs, files in os.walk(of_source):
 #    dir_count+=1
 #    print root, files
@@ -360,7 +386,8 @@ for addon in official_addons:
         dir_count += 1
         file_count += parse_folder(root, files, True)
 """
-
+for key in json_data:
+    json_file.save(key,json_data[key])
 
 if len(new_functions)>0:
     print "added " + str(len(new_functions)) + " new functions:"

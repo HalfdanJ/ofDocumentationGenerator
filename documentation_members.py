@@ -32,7 +32,6 @@ class DocsMethod():
         self.documentation = None
 
     def serialize(self):
-        #return self.__dict__
         attributes = ["name",
                       "returns",
                       "parameters",
@@ -52,6 +51,7 @@ class DocsMethod():
 
     def get_inlined_docs_similarity(self):
         return Levenshtein.ratio(self.inlined_description, self.description)
+
 
 class DocsVar:
     def __init__(self,functionid):
@@ -79,7 +79,6 @@ class DocsVar:
         return Levenshtein.ratio(self.inlined_description, self.description)
 
     def serialize(self):
-        #return self.__dict__
         attributes = ["name",
                       "access",
                       "version_started",

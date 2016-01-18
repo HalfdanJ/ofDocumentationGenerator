@@ -8,12 +8,12 @@ import json
 documentation_root = '_json_documentation/'
 
 
-def save_class(clazz,is_addon=False):
+def save(name, data, is_addon=False):
     path = ""
     if is_addon:
-        path = os.path.join(documentation_root,"addons",clazz.module)
+        path = os.path.join(documentation_root,"addons")
     else:
-        path = os.path.join(documentation_root,clazz.module)
+        path = os.path.join(documentation_root)
 
     try:
         os.mkdir(path)
@@ -22,5 +22,5 @@ def save_class(clazz,is_addon=False):
 
 
 
-    with open(os.path.join(path,clazz.name)+".json", 'w') as outfile:
-        json.dump(clazz.serialize(), outfile, indent=4,)
+    with open(os.path.join(path,name)+".json", 'w') as outfile:
+        json.dump(data, outfile, indent=4,)

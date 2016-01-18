@@ -1,13 +1,7 @@
 #!/usr/bin/python
 # import documentation_functions
-import json
-import sys
 from documentation_members import DocsMethod, DocsVar
-# sys.path.append( "/var/www/test_new_documentation/" )
 
-import os
-import fileinput
-import traceback
 import re
 import Levenshtein
 
@@ -25,11 +19,11 @@ class DocsClass:
         self.addons = False
         self.function_list = []
         self.var_list = []
-        self.detailed_inline_description = ""
         self.istemplated = False
         self.extends = []
         self.path = ""
-        self.sa = []
+
+        self.documentation = None
 
     def functions(self):
         return self.function_list
@@ -43,17 +37,17 @@ class DocsClass:
         for var in self.var_list:
             member_variables.append(var.serialize())
 
-
         return {
+            "type": "class",
             "className": self.name,
             "visible": self.visible,
             "advanced": self.advanced,
             "isTemplated": self.istemplated,
             "extends": self.extends,
-            "inline_description": self.detailed_inline_description.decode('utf-8').encode('utf-8').strip('\n'),
             "description": self.reference.encode('utf-8'),
             "path": self.path,
             "methods": methods,
+            "documentation": self.documentation,
             "member_variables": member_variables
         }
 

@@ -31,150 +31,141 @@
               <li class="group selected">
                 Topics
                 <ul id="topics">
-                    <span class="class">{{ pageTitle }}</span>
-                    {% for section in sections %}
-                    <li class="chapter">
-                        <a href="#{{ section.anchor }}">{{ section.title }}</a>
-                    </li>
+                    {% for item in content %}
+                        <span class="class">{{ item.name }}</span>
+                        {% for section in item.sections %}
+                        <li class="chapter">
+                            <a href="#{{ section.anchor }}">{{ section.title }}</a>
+                        </li>
+                        {% endfor %}
                     {% endfor %}
-<!--
-                    {% if extends %}
-
-                    <span class="class">Extends</span>
-                    {% for extend in extends %}
-                    <li class="chapter">
-                        <a href="{{extend}}.html">{{ extend }}</a>
-                    </li>
-                    {% endfor %}
-
-                    {% endif %}
--->
                 </ul>
             </li></ul>
           </nav>
 
         <div id="content">
         <h1 class="ui dividing header">{{pageTitle}}</h1>
-
-        {% if extends %}
-        <div class="subheader">Inherits from:
-            {% for extend in extends %}
-                <a href="{{extend}}.html">{{ extend }}</a>
-                {% if not loop.last %}
-                ,&nbsp;
-                {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        {{ inline_description }}
-
-        {% for method in methods %}
-            {% if method.section and (loop.first or  methods[loop.index-2].section != method.section) %}
-            <h3 class="ui hedaer section-header" id="{{method.section_anchor}}">{{ method.section }}</h3>
-            {% endif %}
-            <div class="ui accordion method">
-              <div class="title">
-                <span class="group-name">{{ method.name }}</span> <span class="kind">()</span>
-              </div>
-              <div class="content">
-                {% for variant in method.variants %}
-                  {% if not loop.first %} <hr> {% endif %}
-                  <div class="container">
-                    <div class="memberVariant">
-                        <span class="type">{{variant.returns}} </span>
-                        <span class="name">{{method.name}}</span>
-                        <span class="args">({{variant.parameters}})</span>
-                        {% if variant.inherited %}
-                        <span class="inherited">Inherited from <a href="{{ variant.inherited }}.html">{{ variant.inherited }}</a></span>
-                        {% endif %}
-                    </div>
-                    <div class="description">
-                        {{variant.documentation.text}}
-
-                        {% if variant.documentation.parameters %}
-
-                        <div class="parameters">
-                            <div class="ui tiny header">Parameters</div>
-
-                            <table class="ui very basic collapsing celled table">
-                                  <tbody>
-                                    {% for key,val in variant.documentation.parameters .iteritems() %}
-                                    <tr>
-                                      <td>
-                                          {{ key }}
-                                      </td>
-                                        <td>
-                                          {{ val }}
-                                      </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        {% endif %}
-
-                        {% if variant.documentation.returns %}
-                        <div class="returns">
-                            <div class="ui tiny header">Returns</div>
-                            {{ variant.documentation.returns }}
-                        </div>
-                        {% endif %}
-
-                        {% if variant.documentation.warning %}
-                        <div class="warning">
-                            <div class="ui tiny header">Warning</div>
-                            {{ variant.documentation.warning }}
-                        </div>
-                        {% endif %}
-
-                        {% if variant.documentation.sa %}
-                        <div class="sa">
-                            <div class="ui tiny header">See also</div>
-                            <ul>
-                                {% for sa in variant.documentation.sa %}
-                                <li>{{sa}}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        {% endif %}
-                    </div>
-
-
-                  </div>
+        {% for item in content %}
+            <h1 class="ui dividing header">{{item.name}}</h1>
+            {% if item.extends %}
+            <div class="subheader">Inherits from:
+                {% for extend in item.extends %}
+                    <a href="{{extend}}.html">{{ extend }}</a>
+                    {% if not loop.last %}
+                    ,&nbsp;
+                    {% endif %}
                 {% endfor %}
-              </div>
-
             </div>
-        {% endfor %}
-
-
-        {% for variable in member_variables %}
-            {% if variable.section and (loop.first or variable[loop.index-2].section != variable.section) %}
-            <h3 class="ui hedaer section-header">{{ variable.section }}</h3>
             {% endif %}
 
-            <div class="ui accordion method">
-              <div class="title">
-                <span class="group-name">{{ variable.name }}</span> <span class="kind">variable</span>
-              </div>
-              <div class="content">
-                  <div class="container">
-                    <div class="memberVariant">
-                        <span class="type">{{variable.type}} </span>
-                        <span class="name">{{variable.name}}</span>
-                    </div>
-                    <div class="description">
-                        {{variable.inlined_description}}
-                    </div>
+            {{ item.documentation.text}}
+
+            {% for method in item.methods %}
+                {% if method.section and (loop.first or  item.methods[loop.index-2].section != method.section) %}
+                <h3 class="ui hedaer section-header" id="{{method.section_anchor}}">{{ method.section }}</h3>
+                {% endif %}
+                <div class="ui accordion method">
+                  <div class="title">
+                    <span class="group-name">{{ method.name }}</span> <span class="kind">()</span>
+                  </div>
+                  <div class="content">
+                    {% for variant in method.variants %}
+                      {% if not loop.first %} <hr> {% endif %}
+                      <div class="container">
+                        <div class="memberVariant">
+                            <span class="type">{{variant.returns}} </span>
+                            <span class="name">{{method.name}}</span>
+                            <span class="args">({{variant.parameters}})</span>
+                            {% if variant.inherited %}
+                            <span class="inherited">Inherited from <a href="{{ variant.inherited }}.html">{{ variant.inherited }}</a></span>
+                            {% endif %}
+                        </div>
+                        <div class="description">
+                            {{variant.documentation.text}}
+
+                            {% if variant.documentation.parameters %}
+
+                            <div class="parameters">
+                                <div class="ui tiny header">Parameters</div>
+
+                                <table class="ui very basic collapsing celled table">
+                                      <tbody>
+                                        {% for key,val in variant.documentation.parameters .iteritems() %}
+                                        <tr>
+                                          <td>
+                                              {{ key }}
+                                          </td>
+                                            <td>
+                                              {{ val }}
+                                          </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% endif %}
+
+                            {% if variant.documentation.returns %}
+                            <div class="returns">
+                                <div class="ui tiny header">Returns</div>
+                                {{ variant.documentation.returns }}
+                            </div>
+                            {% endif %}
+
+                            {% if variant.documentation.warning %}
+                            <div class="warning">
+                                <div class="ui tiny header">Warning</div>
+                                {{ variant.documentation.warning }}
+                            </div>
+                            {% endif %}
+
+                            {% if variant.documentation.sa %}
+                            <div class="sa">
+                                <div class="ui tiny header">See also</div>
+                                <ul>
+                                    {% for sa in variant.documentation.sa %}
+                                    <li>{{sa}}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
+
+
+                      </div>
+                    {% endfor %}
                   </div>
 
-              </div>
+                </div>
+            {% endfor %}
 
+
+            {% for variable in item.member_variables %}
+                {% if variable.section and (loop.first or variable[loop.index-2].section != variable.section) %}
+                <h3 class="ui hedaer section-header">{{ variable.section }}</h3>
+                {% endif %}
+
+                <div class="ui accordion method">
+                  <div class="title">
+                    <span class="group-name">{{ variable.name }}</span> <span class="kind">variable</span>
+                  </div>
+                  <div class="content">
+                      <div class="container">
+                        <div class="memberVariant">
+                            <span class="type">{{variable.type}} </span>
+                            <span class="name">{{variable.name}}</span>
+                        </div>
+                        <div class="description">
+                            {{variable.inlined_description}}
+                        </div>
+                      </div>
+
+                  </div>
+
+                </div>
+            {% endfor %}
             </div>
         {% endfor %}
-        </div>
-
 
     </div>
 <!--

@@ -27,7 +27,7 @@ def parseDocumentation(doc):
     for key in doc["parameters"].iterkeys():
         doc["parameters"][key] = parseMarkdown(doc["parameters"][key])
 
-    for i in range(0,len(doc["sa"])):
+    for i in range(0, len(doc["sa"])):
         doc["sa"][i] = parseMarkdown(doc["sa"][i])
 
     return doc
@@ -60,7 +60,7 @@ def sectionAnchor(section):
     return ''.join(x for x in section.title() if not x.isspace())
 
 
-def parseMethods(methods, sections, clazz, inherited):
+def parseItemMethods(methods, sections, clazz, inherited):
     for method in clazz["methods"]:
         if method['access'] != 'public':
             continue
@@ -68,7 +68,7 @@ def parseMethods(methods, sections, clazz, inherited):
             continue
 
 
-        #try:
+            # try:
             # Set section name if its not set already on the first element
         section = method["documentation"]["section"]
         if section and len(section) == 0 and len(methods) == 0:
@@ -117,8 +117,8 @@ def parseMethods(methods, sections, clazz, inherited):
                 "variants": [m]
             })
 
-        #except:
-        #    pass
+            # except:
+            #    pass
 
     for otherClassName in clazz['extends']:
         if len(otherClassName.strip()) > 0:
@@ -126,63 +126,69 @@ def parseMethods(methods, sections, clazz, inherited):
             filename = re.search("^([^<]*)", filename, re.I).group(0)
 
             data = loadDataForClass(filename + ".json")
-            if data is not None:
-                parseMethods(methods, sections, data, True)
+            # if data is not None:
+            #    parseMethods(methods, sections, data, True)
 
 
-def renderFile(clazz):
+def renderFile(filedata):
     template_dir = 'templates'
     loader = FileSystemLoader(template_dir)
     env = Environment(loader=loader)
 
     template = env.get_template('documentation_template.html')
 
-    sections = []
-    methods = []
+    render_data = {
+        "pageTitle": filedata["name"],
+        "content": []
+    }
 
-    parseMethods(methods, sections, clazz, False)
-
-    member_variables = []
-    for variable in clazz["member_variables"]:
-        if variable['access'] != 'public':
+    for subitem in filedata['content']:
+        if not subitem['visible']:
             continue
+        sections = []
+        methods = []
 
-        try:
-            section = variable["documentation"]["section"]
-            # Set section name if its not set already on the first element
-            if len(section) == 0 and len(member_variables) == 0:
-                section = variable["documentation"]["section"] = 'Attributes'
+        parseItemMethods(methods, sections, subitem, False)
 
-            if len(section) > 0 and (len(sections) == 0 or sections[-1] != section):
-                sections.append({
-                    "title": section,
-                    "anchor": sectionAnchor(section)
+        member_variables = []
+        for variable in subitem["member_variables"]:
+            if variable['access'] != 'public':
+                continue
+
+            try:
+                section = variable["documentation"]["section"]
+                # Set section name if its not set already on the first element
+                if len(section) == 0 and len(member_variables) == 0:
+                    section = variable["documentation"]["section"] = 'Attributes'
+
+                if len(section) > 0 and (len(sections) == 0 or sections[-1] != section):
+                    sections.append({
+                        "title": section,
+                        "anchor": sectionAnchor(section)
+                    })
+
+                member_variables.append({
+                    "type": variable['type'],
+                    "name": variable["name"],
+                    "section": section,
+                    "section_anchor": sectionAnchor(section),
+                    "documentation": parseDocumentation(variable["documentation"])
                 })
 
-            member_variables.append({
-                "type": variable['type'],
-                "name": variable["name"],
-                "section": section,
-                "section_anchor": sectionAnchor(section),
-                "documentation": parseDocumentation(variable["documentation"])
-            })
+            except:
+                pass
+        render_data['content'].append({
+            "documentation": parseDocumentation(subitem["documentation"]),
+            "name": subitem['className'],
+            "methods": methods,
+            "member_variables": member_variables,
+            "sections": sections,
+            "extends": subitem['extends']
+        })
 
-        except:
-            pass
-
-    output = template.render({
-        "pageTitle": clazz["className"],
-        "inline_description": parseMarkdown(clazz["inline_description"]),
-        "description": parseMarkdown(clazz["description"]),
-
-        "methods": methods,
-        "member_variables": member_variables,
-        "sections": sections,
-        "extends": clazz['extends']
-    }).encode('utf8')
-
+    output = template.render(render_data).encode('utf8')
     # to save the results
-    with open(outdir + clazz["className"] + ".html", "wb") as fh:
+    with open(outdir + filedata['name'] + ".html", "wb") as fh:
         fh.write(output)
 
 
@@ -199,11 +205,11 @@ def loadDataForClass(className):
 toc = {}
 
 
-def updateToc(clazz):
-    if clazz['path'] not in toc:
-        toc[clazz['path']] = []
+def updateToc(filedata):
+    if filedata['path'] not in toc:
+        toc[filedata['path']] = []
 
-    toc[clazz['path']].append(clazz['className'])
+    toc[filedata['path']].append(filedata['name'])
 
 
 def compileScss():
