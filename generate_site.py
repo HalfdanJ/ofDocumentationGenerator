@@ -50,26 +50,39 @@ def renderToc(toc):
         fh.write(output)
 
 
-def sectionAnchor(section):
+def sectionAnchor(section, item):
     """
     :param section: section object
     :return: CamelCase version of the section name
     """
+    if 'methods' in item:
+        prefix = item['name']
+    else:
+        prefix = 'global'
+
     if section is None:
         return ""
-    return ''.join(x for x in section.title() if not x.isspace())
+    return prefix+'_'+''.join(x for x in section.title() if not x.isspace())
 
 
-def parseItemMethods(methods, sections, clazz, inherited):
-    for method in clazz["methods"]:
-        if method['access'] != 'public':
+def parseItemFunctions(methods, sections, item, inherited):
+
+    if 'methods' in item:
+        functions = item['methods']
+    else:
+        functions = item['functions']
+
+    for method in functions:
+        if method['access'] != 'public' and method['access'] != 'invalid':
             continue
         if method['name'].startswith('~'):
             continue
+        if method['deprecated'] is True:
+            continue
 
 
-            # try:
-            # Set section name if its not set already on the first element
+        # try:
+        # Set section name if its not set already on the first element
         section = method["documentation"]["section"]
         if section and len(section) == 0 and len(methods) == 0:
             section = method["documentation"]["section"] = 'Functions'
@@ -77,7 +90,7 @@ def parseItemMethods(methods, sections, clazz, inherited):
         if section and len(section) > 0 and (len(sections) == 0 or sections[-1] != section):
             sections.append({
                 "title": section,
-                "anchor": sectionAnchor(section)
+                "anchor": sectionAnchor(section,item)
             })
 
         m = {
@@ -86,8 +99,8 @@ def parseItemMethods(methods, sections, clazz, inherited):
             "documentation": parseDocumentation(method["documentation"])
         }
 
-        if inherited:
-            m['inherited'] = clazz["name"]
+        if inherited is not False:
+            m['inherited'] = inherited
 
         # Check if method is already added
         found = False
@@ -113,21 +126,27 @@ def parseItemMethods(methods, sections, clazz, inherited):
             methods.append({
                 "name": method["name"],
                 "section": section,
-                "section_anchor": sectionAnchor(section),
+                "section_anchor": sectionAnchor(section,item),
                 "variants": [m]
             })
 
             # except:
             #    pass
+    if 'extends' in item:
+        for otherClassName in item['extends']:
+            if len(otherClassName.strip()) > 0:
+                filename = otherClassName.strip()
+                filename = re.search("^([^<]*)", filename, re.I).group(0)
 
-    for otherClassName in clazz['extends']:
-        if len(otherClassName.strip()) > 0:
-            filename = otherClassName.strip()
-            filename = re.search("^([^<]*)", filename, re.I).group(0)
+                file = fileForClass(filename)
+                if file is not None:
+                    data = loadData(file + ".json")
+                    if data is not None:
+                        for otherClass in data['classes']:
+                            if otherClass['name'] == filename:
+                                parseItemFunctions(methods, sections, otherClass, filename)
 
-            data = loadDataForClass(filename + ".json")
-            # if data is not None:
-            #    parseMethods(methods, sections, data, True)
+
 
 
 def renderFile(filedata):
@@ -141,13 +160,26 @@ def renderFile(filedata):
         "content": []
     }
 
+    sections = []
+    methods = []
+
+    parseItemFunctions(methods, sections, filedata, False)
+    render_data['content'].append({
+        "documentation": None,
+        "name": "Functions",
+        "methods": methods,
+        "member_variables": [],
+        "sections": sections,
+        "extends": None
+    })
+
     for subitem in filedata['classes']:
         if not subitem['visible']:
             continue
         sections = []
         methods = []
 
-        parseItemMethods(methods, sections, subitem, False)
+        parseItemFunctions(methods, sections, subitem, False)
 
         member_variables = []
         for variable in subitem["member_variables"]:
@@ -162,14 +194,14 @@ def renderFile(filedata):
             if section is not None and (len(sections) == 0 or sections[-1] != section):
                 sections.append({
                     "title": section,
-                    "anchor": sectionAnchor(section)
+                    "anchor": sectionAnchor(section, subitem)
                 })
 
             member_variables.append({
                 "type": variable['type'],
                 "name": variable["name"],
                 "section": section,
-                "section_anchor": sectionAnchor(section),
+                "section_anchor": sectionAnchor(section, subitem),
                 "documentation": parseDocumentation(variable["documentation"])
             })
 
@@ -183,14 +215,20 @@ def renderFile(filedata):
             "extends": subitem['extends']
         })
 
+    # save the results
     output = template.render(render_data).encode('utf8')
-    # to save the results
     with open(outdir + filedata['name'] + ".html", "wb") as fh:
         fh.write(output)
 
+def fileForClass(name):
+    for r in reference:
+        if r['type'] == 'class' and r['name'] == name:
+            return r['file']
 
-def loadDataForClass(className):
-    path = os.path.join('_json_documentation', className)
+    print name +" NOT FOUND"
+
+def loadData(name):
+    path = os.path.join('_json_documentation', name)
 
     if os.path.exists(path):
         with open(path) as data_file:
@@ -221,13 +259,16 @@ def compileScss():
 if not os.path.exists(outdir):
     os.makedirs(outdir)
 
+reference = loadData('reference.json')
+
 for root, dirs, files in os.walk("_json_documentation"):
     for name in files:
         if name[0] != '.' and name != 'reference.json':
-            data = loadDataForClass(name)
+            print name
+            data = loadData(name)
             renderFile(data)
             updateToc(data)
-            print name
+
 
 renderToc(toc)
 compileScss()
