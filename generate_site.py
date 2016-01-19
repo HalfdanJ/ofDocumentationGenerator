@@ -82,12 +82,12 @@ def parseItemMethods(methods, sections, clazz, inherited):
 
         m = {
             "returns": method["returns"],
-            "parameters": method["parameters"],
+            "parameters": ', '.join(method["parameters"]),
             "documentation": parseDocumentation(method["documentation"])
         }
 
         if inherited:
-            m['inherited'] = clazz["className"]
+            m['inherited'] = clazz["name"]
 
         # Check if method is already added
         found = False
@@ -136,13 +136,12 @@ def renderFile(filedata):
     env = Environment(loader=loader)
 
     template = env.get_template('documentation_template.html')
-
     render_data = {
         "pageTitle": filedata["name"],
         "content": []
     }
 
-    for subitem in filedata['content']:
+    for subitem in filedata['classes']:
         if not subitem['visible']:
             continue
         sections = []
@@ -179,7 +178,7 @@ def renderFile(filedata):
                 pass
         render_data['content'].append({
             "documentation": parseDocumentation(subitem["documentation"]),
-            "name": subitem['className'],
+            "name": subitem['name'],
             "methods": methods,
             "member_variables": member_variables,
             "sections": sections,
@@ -206,10 +205,12 @@ toc = {}
 
 
 def updateToc(filedata):
+    """
     if filedata['path'] not in toc:
         toc[filedata['path']] = []
 
     toc[filedata['path']].append(filedata['name'])
+    """
 
 
 def compileScss():
@@ -224,7 +225,7 @@ if not os.path.exists(outdir):
 
 for root, dirs, files in os.walk("_json_documentation"):
     for name in files:
-        if name[0] != '.':
+        if name[0] != '.' and name != 'reference.json':
             data = loadDataForClass(name)
             renderFile(data)
             updateToc(data)

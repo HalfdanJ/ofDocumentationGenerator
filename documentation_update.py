@@ -5,10 +5,11 @@ import HTMLParser
 import sys
 
 import json_file
-import markdown_file
 from documentation_members import DocsVar
+from documentation_class import DocClass
 import documentation_parser
 import clang_utils
+import utils
 from clang.cindex import CursorKind, TokenKind
 
 of_root = sys.argv[1]
@@ -46,20 +47,6 @@ def substitutetype(ty):
     ty = re.sub(r"(.*)<(.*)>","\\1< \\2 >",ty)
     return ty
 
-    
-def is_class(member):
-    return member.kind == CursorKind.CLASS_DECL or member.kind == CursorKind.CLASS_TEMPLATE or member.kind == CursorKind.STRUCT_DECL
-
-def is_variable(member):
-    return member.kind == CursorKind.VAR_DECL or member.kind == CursorKind.FIELD_DECL
-    
-def is_method(member):
-    return member.kind == CursorKind.CXX_METHOD or member.kind == CursorKind.CONSTRUCTOR or member.kind == CursorKind.DESTRUCTOR or member.kind == CursorKind.FUNCTION_TEMPLATE
-    
-def is_function(member):
-    return (member.kind == CursorKind.FUNCTION_DECL or member.kind == CursorKind.FUNCTION_TEMPLATE) and not is_class(member.semantic_parent)
-def filenameFromClangChild(child):
-    return os.path.basename(child.location.file.name).split('.')[0]
 
 def parse_variable(documentation_class, clazz, member):
     var = documentation_class.var_by_name(member.displayname)
@@ -84,7 +71,7 @@ def parse_variable(documentation_class, clazz, member):
         pass
 
     json_ref_data.append({
-        "file": filenameFromClangChild(member),
+        "file": utils.filenameFromClangChild(member),
         "type": "variable",
         "name": var.name,
         "class": documentation_class.name
@@ -155,7 +142,7 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
 
     method.returns = returns
 
-    method.description = method.description.replace('<p>','').replace('</p>','').replace('<code>','').replace('</code>','').replace('<pre>','')
+    #method.description = method.description.replace('<p>','').replace('</p>','').replace('<code>','').replace('</code>','').replace('<pre>','')
     
     if method.new:
         method.version_started = currentversion
@@ -171,42 +158,15 @@ def parse_function(documentation_class, clazz, member, already_found, fuzzy=Fals
             new_methods.append(method)
 
     json_ref_data.append({
-        "file": filenameFromClangChild(member),
+        "file": utils.filenameFromClangChild(member),
         "type": "function",
         "name": methodname,
         "class": documentation_class.name
     })
     return method
-
-"""def update_moved_functions(filename,is_addon=False):
-    xml = objectify.parse(filename)
-    doxygen = xml.getroot()
-    
-    xmlfunctionsfile = doxygen.compounddef
-
-    
-    if xmlfunctionsfile.find('sectiondef')!=None:
-        if len([ s for s in xmlfunctionsfile.sectiondef if s.get('kind')=='func'])>0:
-            file_split = os.path.splitext(xmlfunctionsfile.compoundname.text)
-            functionsfile = getfunctionsfile(file_split[0])
-            for section in xmlfunctionsfile.sectiondef:
-                if section.get('kind')=='func':
-                    for xmlfunction in section.memberdef:
-                        for function in missing_functions:
-                            if function.name == xmlfunction.name.text:
-                                argstring = str(xmlfunction.argsstring.text)
-                                params = argstring[argstring.find('(')+1:argstring.rfind(')')]
-                                returns = xmlfunction.type.ref.text if hasattr(xmlfunction.type,'ref') else xmlfunction.type.text
-                                moved_function = functionsfile.function_by_signature(xmlfunction.name.text, returns, params)
-                                moved_function.returns = returns
-                                moved_function.description = moved_function.description + '\n\n' + function.description
-                                print "moved function: " + function.name
-                                
-            setfunctionsfile(functionsfile,is_addon)"""
-    
     
             
-def serialize_functionsfile(cursor,filename,is_addon=False):
+def serialize_functionfile(cursor,filename,is_addon=False):
     functionsfile = markdown_file.getfunctionsfile(filename)
     functions_fromcode = []
     functions_for_fuzzy_search = []
@@ -235,7 +195,10 @@ def serialize_functionsfile(cursor,filename,is_addon=False):
     #functionsfile.function_list.sort(key=lambda function: function.name)
     #if len(functionsfile.function_list)>0:
     #    markdown_file.setfunctionsfile(functionsfile,is_addon)
-    
+
+def serialize_function(cursor, filename, is_addon=False):
+    if utils.is_function(cursor):
+        return parse_function()
 def serialize_class(cursor,is_addon=False, parent=None):
 
     clazz = cursor
@@ -324,6 +287,64 @@ def serialize_class(cursor,is_addon=False, parent=None):
 
     return documentation_class.serialize()
 
+def add_class(data, offilename):
+    if offilename not in json_data:
+        json_data[offilename] = {
+            "name":offilename,
+            #"path":name,
+            "classes": [],
+            "functions": []
+        }
+    json_data[offilename]['classes'].append(data)
+
+def add_function(data, offilename):
+    if offilename not in json_data:
+        json_data[offilename] = {
+            "name":offilename,
+            #"path":name,
+            "classes": [],
+            "functions": []
+        }
+    json_data[offilename]['functions'].append(data)
+
+
+def parse_file_child(child):
+    if child.spelling.find('of')==0:
+        offilename = utils.filenameFromClangChild(child)
+
+        if utils.is_class(child):
+            i=0
+            for c in child.get_children():
+                if utils.is_variable(c) or utils.is_method(c) or c.kind == CursorKind.CXX_BASE_SPECIFIER:
+                    i+=1
+            if i>0 and child.spelling not in visited_classes:
+                new_class = DocClass(child)
+                add_class(new_class.serialize(), offilename)
+                #data['classes'].append( serialize_class(child, is_addon))
+                """
+                data = serialize_class(child, is_addon)
+                if data is not None:
+                    json_data[offilename]['classes'].append(data)
+
+                    json_ref_data.append({
+                        "file": offilename,
+                        "type": "class",
+                        "name": data['className']
+                    })
+                """
+                visited_classes.append(child.spelling)
+
+            """
+           if is_function(child):
+                if child.spelling not in visited_function and offilename != "ofMain":
+                    visited_function.append(child.spelling)
+                    json_data[offilename]['functions'].append(serialize_function(child, offilename, is_addon))
+                    json_ref_data.append({
+                        "file": offilename,
+                        "type": "function",
+                        "name": child.spelling
+                    })
+        """
 
 def parse_folder(root, files, is_addon=False):
     file_count=0
@@ -331,7 +352,7 @@ def parse_folder(root, files, is_addon=False):
 
     for name in files:
         file_count+=1
-        filename = os.path.join(root, name)
+        filepath = os.path.join(root, name)
 
         if name.find('of')==0 and os.path.splitext(name)[1]=='.h':
             #print name
@@ -341,40 +362,13 @@ def parse_folder(root, files, is_addon=False):
             #    "classes" : []
             #}
 
-            tu = clang_utils.get_tu_from_file(filename, of_root)
-            num_functions = 0
+            tu = clang_utils.get_tu_from_file(filepath, of_root)
             for child in tu.cursor.get_children():
-                if is_class(child) and child.spelling.find('of')==0:
-                    offilename = filenameFromClangChild(child)
-
-                    i=0
-                    for c in child.get_children():
-                        if is_variable(c) or is_method(c) or c.kind == CursorKind.CXX_BASE_SPECIFIER:
-                            i+=1
-                    if i>0 and child.spelling not in visited_classes:
-                        #data['classes'].append( serialize_class(child, is_addon))
-                        data = serialize_class(child, is_addon)
-                        if data is not None:
-                            if offilename not in json_data:
-                                json_data[offilename] = {
-                                    "name":offilename,
-                                    "path":name,
-                                    "content": []
-                                }
-                            json_data[offilename]['content'].append(data)
-                            json_ref_data.append({
-                                "file": offilename,
-                                "type": "class",
-                                "name": data['className']
-                            })
-
-                        visited_classes.append(child.spelling)
-                if is_function(child) and child.spelling.find('of')==0:
-                    num_functions+=1
-            functions_name = os.path.splitext(name)[0]
-            if num_functions>0 and functions_name not in visited_function_files and functions_name != "ofMain":
+                parse_file_child(child)
+            #functions_name = os.path.splitext(name)[0]
+            #if num_functions>0 and functions_name not in visited_function_files and functions_name != "ofMain":
                 #data['functions'].append(serialize_functionsfile(tu.cursor, functions_name, is_addon))
-                visited_function_files.append(functions_name)
+            #    visited_function_files.append(functions_name)
 
             #json_file.save_class(data,is_addon)
 
@@ -384,7 +378,7 @@ def parse_folder(root, files, is_addon=False):
 dir_count=0
 file_count=0
 visited_classes = []
-visited_function_files = []
+visited_function = []
 missing_functions = []
 missing_methods = []
 missing_vars = []

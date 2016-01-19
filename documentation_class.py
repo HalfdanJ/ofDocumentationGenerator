@@ -1,55 +1,114 @@
 #!/usr/bin/python
 # import documentation_functions
+from clang.cindex import CursorKind
+
+import documentation_parser
+import utils
+from documentation_function import DocFunction
 from documentation_members import DocsMethod, DocsVar
 
 import re
 import Levenshtein
 
+from documentation_variable import DocVariable
 
-class DocsClass:
-    def __init__(self, classid):
-        self.id = classid
-        self.module = ""
-        self.name = ""
-        self.new = True
-        self.advanced = False
-        self.visible = True
-        self.example = ""
-        self.reference = ""
-        self.addons = False
-        self.function_list = []
-        self.var_list = []
-        self.istemplated = False
-        self.extends = []
-        self.path = ""
 
-        self.documentation = None
+class DocClass:
+    def __init__(self, cursor):
+        print "Parse class "+cursor.spelling
+        self.cursor = cursor
 
-    def functions(self):
-        return self.function_list
+        self.data = {}
+        self.name = self.data['name'] = cursor.spelling
+
+
+        # Parse extends
+        self.data['extends'] = []
+        for child in cursor.get_children():
+            if child.kind == CursorKind.CXX_BASE_SPECIFIER:
+                if child.spelling.find("class") == 0:
+                    baseclass = child.spelling.split(' ')[1]
+                    self.data['extends'].append(baseclass)
+                else:
+                    self.data['extends'].append(child.spelling)
+
+        # Parse documentation
+        self.data['documentation'] = documentation_parser.parse_docs(cursor)
+
+        # Parse visible
+        self.data['visible'] = True
+        if self.data['documentation']['internal']:
+            self.data['visible'] = False
+
+        # Parse member children
+        self.member_variables = []
+        self.member_functions = []
+
+        for member in cursor.get_children():
+
+            # Struct decleration
+            # TODO
+            if member.kind == CursorKind.CLASS_DECL or member.kind == CursorKind.CLASS_TEMPLATE or member.kind == CursorKind.STRUCT_DECL:
+                if member.access_specifier.name.lower() == 'public':
+                    for child in member.get_children():
+                        if utils.is_variable(child) or utils.is_method(child):
+                            #print "MEMBER"+member.spelling
+                            """if classname[-1] == '_':
+                                serialize_class(member,is_addon,classname[:-1])
+                                visited_classes.append(classname[:-1] + "::" + member.spelling)
+                            else:
+                                serialize_class(member,is_addon,classname)
+                                visited_classes.append(classname + "::" + member.spelling)
+                            break"""
+
+            # Union decleration
+            # TODO
+            elif member.kind == CursorKind.UNION_DECL:
+                for union_member in member.get_children():
+                    """
+                    if utils.is_variable(union_member):
+                        #print "UNION "+union_member.spelling
+
+                        #var = parse_variable(documentation_class, clazz, union_member)
+                        #current_variables_list.append(var)
+                    if union_member.kind == CursorKind.STRUCT_DECL:
+                        for union_struct_member in union_member.get_children():
+                            if utils.is_variable(union_struct_member):
+                                #print "UNION "+union_struct_member.spelling
+
+                                #var = parse_variable(documentation_class, clazz, union_struct_member)
+                                #current_variables_list.append(var)
+                    """
+
+            elif utils.is_variable(member):
+                if member.access_specifier.name.lower() == 'public':
+                    var = DocVariable(member, self)
+                    self.member_variables.append(var)
+
+                #f.write( str(member.type.text) + " " + str(member.name.text) + "\n" )
+            elif utils.is_method(member):
+                func = DocFunction(member, self)
+                self.member_functions.append(func)
+                """
+                method = parse_function(documentation_class, clazz, member, current_methods_list)
+                if method is not None:
+                    current_methods_list.append(method)
+                else:
+                    methods_for_fuzzy_search.append(member)
+                """
+
 
     def serialize(self):
-        methods = []
-        for method in self.function_list:
-            methods.append(method.serialize())
+        self.data['member_variables'] = []
+        self.data['methods'] = []
 
-        member_variables = []
-        for var in self.var_list:
-            member_variables.append(var.serialize())
+        for var in self.member_variables:
+            self.data['member_variables'].append(var.serialize())
 
-        return {
-            "type": "class",
-            "className": self.name,
-            "visible": self.visible,
-            "advanced": self.advanced,
-            "isTemplated": self.istemplated,
-            "extends": self.extends,
-            "description": self.reference.encode('utf-8'),
-            "path": self.path,
-            "methods": methods,
-            "documentation": self.documentation,
-            "member_variables": member_variables
-        }
+        for func in self.member_functions:
+            self.data['methods'].append(func.serialize())
+
+        return self.data
 
     def get_parameter_types(self, parameters_list):
         parameters_types = []

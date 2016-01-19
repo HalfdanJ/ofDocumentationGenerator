@@ -1,7 +1,3 @@
-from documentation_members import DocsMethod
-from documentation_members import DocsVar
-from documentation_class import DocsClass
-from documentation_function import DocsFunctionsFile, DocsFunction
 import os
 import json
 
