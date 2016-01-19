@@ -4,12 +4,13 @@ from clang.cindex import CursorKind
 
 import documentation_parser
 import utils
-
+import documentation_reference
 
 class DocFunction():
     def __init__(self, cursor, parentclass):
         print "Parse function " + cursor.spelling
         self.cursor = cursor
+        self.parentclass = parentclass
 
         self.data = {}
         self.data['name'] = cursor.spelling
@@ -61,20 +62,24 @@ class DocFunction():
             else:
                 self.data['parameters'].append(argtype + " " + arg.spelling)
 
-            for part in arg.get_children():
-                if part.kind == CursorKind.INTEGER_LITERAL or \
-                                part.kind == CursorKind.CHARACTER_LITERAL or \
-                                part.kind == CursorKind.CXX_BOOL_LITERAL_EXPR or \
-                                part.kind == CursorKind.CXX_NULL_PTR_LITERAL_EXPR or \
-                                part.kind == CursorKind.FLOATING_LITERAL or \
-                                part.kind == CursorKind.IMAGINARY_LITERAL or \
-                                part.kind == CursorKind.OBJC_STRING_LITERAL or \
-                                part.kind == CursorKind.OBJ_BOOL_LITERAL_EXPR or \
-                                part.kind == CursorKind.STRING_LITERAL:
+            try:
+                for part in arg.get_children():
+                    if part.kind == CursorKind.INTEGER_LITERAL or \
+                                    part.kind == CursorKind.CHARACTER_LITERAL or \
+                                    part.kind == CursorKind.CXX_BOOL_LITERAL_EXPR or \
+                                    part.kind == CursorKind.CXX_NULL_PTR_LITERAL_EXPR or \
+                                    part.kind == CursorKind.FLOATING_LITERAL or \
+                                    part.kind == CursorKind.IMAGINARY_LITERAL or \
+                                    part.kind == CursorKind.OBJC_STRING_LITERAL or \
+                                    part.kind == CursorKind.OBJ_BOOL_LITERAL_EXPR or \
+                                    part.kind == CursorKind.STRING_LITERAL:
 
-                    self.data['parameters'][-1] += "=" + part.get_tokens().next().spelling
-                elif part.kind == CursorKind.DECL_REF_EXPR:
-                    self.data['parameters'][-1] += "=" + part.spelling
+                        self.data['parameters'][-1] += "=" + part.get_tokens().next().spelling
+                    elif part.kind == CursorKind.DECL_REF_EXPR:
+                        self.data['parameters'][-1] += "=" + part.spelling
+            except:
+                pass
 
     def serialize(self):
+        documentation_reference.add_function(self)
         return self.data

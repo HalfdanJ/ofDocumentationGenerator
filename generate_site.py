@@ -154,28 +154,26 @@ def renderFile(filedata):
             if variable['access'] != 'public':
                 continue
 
-            try:
-                section = variable["documentation"]["section"]
-                # Set section name if its not set already on the first element
-                if len(section) == 0 and len(member_variables) == 0:
-                    section = variable["documentation"]["section"] = 'Attributes'
+            section = variable["documentation"]["section"]
+            # Set section name if its not set already on the first element
+            if section is None and len(member_variables) == 0:
+                section = variable["documentation"]["section"] = 'Attributes'
 
-                if len(section) > 0 and (len(sections) == 0 or sections[-1] != section):
-                    sections.append({
-                        "title": section,
-                        "anchor": sectionAnchor(section)
-                    })
-
-                member_variables.append({
-                    "type": variable['type'],
-                    "name": variable["name"],
-                    "section": section,
-                    "section_anchor": sectionAnchor(section),
-                    "documentation": parseDocumentation(variable["documentation"])
+            if section is not None and (len(sections) == 0 or sections[-1] != section):
+                sections.append({
+                    "title": section,
+                    "anchor": sectionAnchor(section)
                 })
 
-            except:
-                pass
+            member_variables.append({
+                "type": variable['type'],
+                "name": variable["name"],
+                "section": section,
+                "section_anchor": sectionAnchor(section),
+                "documentation": parseDocumentation(variable["documentation"])
+            })
+
+
         render_data['content'].append({
             "documentation": parseDocumentation(subitem["documentation"]),
             "name": subitem['name'],

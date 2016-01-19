@@ -3,9 +3,9 @@
 from clang.cindex import CursorKind
 
 import documentation_parser
+import documentation_reference
 import utils
 from documentation_function import DocFunction
-from documentation_members import DocsMethod, DocsVar
 
 import re
 import Levenshtein
@@ -108,8 +108,10 @@ class DocClass:
         for func in self.member_functions:
             self.data['methods'].append(func.serialize())
 
-        return self.data
+        documentation_reference.add_class(self)
 
+        return self.data
+"""
     def get_parameter_types(self, parameters_list):
         parameters_types = []
         if len(parameters_list.strip(' ')) == 0:
@@ -134,14 +136,6 @@ class DocClass:
                 parameters_names.append(p.split(' ')[len(p.split(' ')) - 1])
         return parameters_names
 
-    def test_alternative_types(self, ty, other_ty, alternatives):
-        """print "-----------------------"
-        print ty.strip()
-        print other_ty.strip()
-        print "ty in alternatives " + str(ty in alternatives)
-        if ty in alternatives:
-            print "alternatives[ty].count(other_ty) " + str(alternatives[ty].count(other_ty))"""
-        return ty in alternatives and alternatives[ty].count(other_ty) > 0
 
     def fuzzy_function_search(self, name, returns, parameters, alternatives, already_found):
         most_similar_function = None
@@ -252,3 +246,5 @@ class DocClass:
 
     def is_class(self):
         return True
+
+"""
