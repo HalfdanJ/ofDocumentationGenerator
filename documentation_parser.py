@@ -30,7 +30,7 @@ def parse_docs(element):
     }
 
     doc = str("" if element.raw_comment is None else element.raw_comment).strip()
-    mode = 'brief'
+    mode = 'text'
     for line in iter(doc.splitlines()):
         line = line.strip()
         parammatch = re.search("///\s*(\\\\(\w+))", line, re.I | re.S)
@@ -46,8 +46,10 @@ def parse_docs(element):
                 param = param.lower()
                 if param == 'brief':
                     ret['text'] += text+"\n"
+                    mode = 'text'
                 elif param == 'returns':
                     ret['returns'] = text
+                    mode = 'returns'
                 elif param == 'param' or param == 'tparam':
                     paramSearch = re.search("(\\w+)\\s(.*)", text, re.I | re.S)
                     if paramSearch:
@@ -56,8 +58,10 @@ def parse_docs(element):
                     ret['sa'].append(text)
                 elif param == 'warning':
                     ret['warning'] = text
+                    mode = 'warning'
                 elif param == 'note':
                     ret['text'] += "Note: "+text+"\n"
+                    mode = 'text'
                 elif param == 'deprecated':
                     ret['deprecated'] = text
                 elif param == 'internal':
@@ -69,7 +73,7 @@ def parse_docs(element):
                     print "MISSINGPARAM"
                     print param + " | "+ text
             else:
-                ret['text'] += text+"\n"
+                ret[mode] += text+"\n"
 
 
         else:
