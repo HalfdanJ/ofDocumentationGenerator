@@ -1,0 +1,5 @@
+*.d
+_json_documentation
+_site
+
+.idea
