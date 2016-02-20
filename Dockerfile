@@ -17,5 +17,6 @@ libclang-dev=1:3.6-26ubuntu1
 RUN git clone -b master https://github.com/openframeworks/openframeworks
 #RUN git clone https://github.com/HalfdanJ/ofDocumentationGenerator
 
-RUN pip install markdown scss jinja2
+RUN pip uninstall pyparsing -y; exit 0
+RUN pip install markdown scss jinja2 pyparsing==1.5.7
 

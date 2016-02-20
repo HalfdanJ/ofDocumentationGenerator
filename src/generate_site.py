@@ -8,7 +8,11 @@ from scss import parser
 from jinja2 import Environment, FileSystemLoader
 import json
 
-outdir = '../_site/'
+dir = os.path.dirname(__file__)
+
+
+outdir = os.path.join(dir,'../_site/')
+template_dir = os.path.join(dir,'templates')
 
 
 def parseMarkdown(mk):
@@ -34,7 +38,6 @@ def parseDocumentation(doc):
 
 
 def renderToc(toc):
-    template_dir = 'templates'
     loader = FileSystemLoader(template_dir)
     env = Environment(loader=loader)
 
@@ -150,7 +153,6 @@ def parseItemFunctions(methods, sections, item, inherited):
 
 
 def renderFile(filedata):
-    template_dir = 'templates'
     loader = FileSystemLoader(template_dir)
     env = Environment(loader=loader)
 
@@ -228,7 +230,7 @@ def fileForClass(name):
     print name +" NOT FOUND"
 
 def loadData(name):
-    path = os.path.join('../_json_documentation', name)
+    path = os.path.join(dir,'../_json_documentation', name)
 
     if os.path.exists(path):
         with open(path) as data_file:
@@ -251,20 +253,35 @@ def updateToc(filedata):
 
 def compileScss():
     with open(outdir + "style.css", "w") as output:
-        output.write(parser.load('../templates/style.scss'))
+        scssPath = os.path.join(template_dir,'style.scss')
+        print scssPath
+        parsedScss = parser.load(scssPath)
+        output.write(parsedScss)
 
 
 ''' RUN '''
 
-if not os.path.exists(outdir):
-    os.makedirs(outdir)
+
+for the_file in os.listdir(outdir):
+    file_path = os.path.join(outdir, the_file)
+    try:
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+        #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+    except Exception, e:
+        print e
+
+
+shutil.rmtree(outdir)
+os.makedirs(outdir)
 
 reference = loadData('reference.json')
 
-for root, dirs, files in os.walk("../_json_documentation"):
+for root, dirs, files in os.walk(os.path.join(dir,"../_json_documentation")):
     for name in files:
         if name[0] != '.' and name != 'reference.json':
             print name
+
             data = loadData(name)
             renderFile(data)
             updateToc(data)
@@ -272,4 +289,6 @@ for root, dirs, files in os.walk("../_json_documentation"):
 
 renderToc(toc)
 compileScss()
-shutil.copyfile('templates/script.js', outdir+'script.js')
+shutil.copyfile(os.path.join(template_dir,'script.js'), os.path.join(outdir,'script.js'))
+
+print "Done generating site"
