@@ -42,16 +42,7 @@ def methodsMatching(mdfunction, jsfunction):
         pp1 = p1.strip().split(' ')
         pp2 = p2.strip().split(' ')
 
-        i = len(pp1)-1
-
-        """
-        if pp1[i] == 'const':
-            i += 1
-
-        if pp1[i][-1] == '<':
-            i += 1
-        """
-        for ii in range(0, i+1):
+        for ii in range(0, len(pp1)):
             if pp1[ii] != pp2[ii]:
                 return False
 
