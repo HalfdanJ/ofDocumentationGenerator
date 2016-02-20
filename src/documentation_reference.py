@@ -28,5 +28,5 @@ def add_class(c):
     })
 
 
-def save():
-    json_file.save('reference',json_ref_data)
+def save(outdir):
+    json_file.save(outdir,'reference',json_ref_data)

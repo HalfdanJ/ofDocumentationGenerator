@@ -1,10 +1,8 @@
 import os
 import json
 
-documentation_root = '../_json_documentation/'
 
-
-def save(name, data, is_addon=False):
+def save(documentation_root, name, data, is_addon=False):
     path = ""
     if is_addon:
         path = os.path.join(documentation_root,"addons")

@@ -4,6 +4,8 @@ import re
 import HTMLParser
 import sys
 
+import shutil
+
 import documentation_reference
 import json_file
 from documentation_class import DocClass
@@ -16,6 +18,10 @@ from documentation_function import DocFunction
 
 of_root = sys.argv[1]
 of_source = os.path.join(of_root, "libs/openFrameworks")
+
+dir = os.path.dirname(__file__)
+outdir = os.path.join(dir,'../_json_documentation/')
+
 
 of_addons = os.path.join(of_root, "addons")
 official_addons = [
@@ -41,22 +47,22 @@ alternatives = {
 }
 
 
-def add_class(data, offilename):
+def add_class(data, offilename, folder):
     if offilename not in json_data:
         json_data[offilename] = {
             "name": offilename,
-            # "path":name,
+            "folder":folder,
             "classes": [],
             "functions": []
         }
     json_data[offilename]['classes'].append(data)
 
 
-def add_function(data, offilename):
+def add_function(data, offilename, folder):
     if offilename not in json_data:
         json_data[offilename] = {
             "name": offilename,
-            # "path":name,
+            "folder":folder,
             "classes": [],
             "functions": []
         }
@@ -74,14 +80,14 @@ def parse_file_child(child):
                     i += 1
             if i > 0 and child.spelling not in visited_classes:
                 new_class = DocClass(child)
-                add_class(new_class.serialize(), offilename)
+                add_class(new_class.serialize(), offilename, new_class.folder)
                 visited_classes.append(child.spelling)
 
         if utils.is_function(child):
             if child.spelling not in visited_function and offilename != "ofMain":
                 visited_function.append(child.spelling)
                 new_func = DocFunction(child, None)
-                add_function(new_func.serialize(), offilename)
+                add_function(new_func.serialize(), offilename, new_func.folder)
 
 
 def parse_folder(root, files, is_addon=False):
@@ -107,6 +113,12 @@ new_functions = []
 new_vars = []
 new_methods = []
 
+
+if os.path.exists(outdir):
+    shutil.rmtree(outdir)
+os.makedirs(outdir)
+
+
 json_data = {}
 for root, dirs, files in os.walk(of_source):
     dir_count += 1
@@ -121,9 +133,9 @@ for addon in official_addons:
         file_count += parse_folder(root, files, True)
 """
 for key in json_data:
-    json_file.save(key, json_data[key])
+    json_file.save(outdir, key, json_data[key])
 
-documentation_reference.save()
+documentation_reference.save(outdir)
 
 if len(new_functions) > 0:
     print "added " + str(len(new_functions)) + " new functions:"

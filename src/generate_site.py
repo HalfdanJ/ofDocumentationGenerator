@@ -223,6 +223,7 @@ def renderFile(filedata):
     with open(outpath, "wb") as fh:
         fh.write(output)
 
+    os.chmod(outpath, 0o777)
 
 def fileForClass(name):
     for r in reference:
@@ -245,12 +246,10 @@ toc = {}
 
 
 def updateToc(filedata):
-    """
-    if filedata['path'] not in toc:
-        toc[filedata['path']] = []
+    if filedata['folder'] not in toc:
+        toc[filedata['folder']] = []
 
-    toc[filedata['path']].append(filedata['name'])
-    """
+    toc[filedata['folder']].append(filedata['name'])
 
 
 def compileScss():

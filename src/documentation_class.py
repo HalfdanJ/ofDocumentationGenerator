@@ -21,6 +21,10 @@ class DocClass:
         self.data = {}
         self.name = self.data['name'] = cursor.spelling
 
+        split = cursor.location.file.name.split('/')
+        self.filename = split[-1]
+        self.folder = split[-2]
+
 
         # Parse extends
         self.data['extends'] = []

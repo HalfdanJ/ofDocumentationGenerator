@@ -13,6 +13,11 @@ class DocFunction():
         self.parentclass = parentclass
 
         self.data = {}
+
+        split = cursor.location.file.name.split('/')
+        self.filename = split[-1]
+        self.folder = split[-2]
+
         self.data['name'] = cursor.spelling
         self.data['name'] = re.sub("<.*>", "", self.data['name'])
 
