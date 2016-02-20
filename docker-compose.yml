@@ -3,7 +3,7 @@ ofdocbuild:
     volumes:
         - .:/ofDocumentationGenerator
     #command: /bin/bash -c "cd /openframeworks/; git pull origin master; python /ofDocumentationGenerator/src/documentation_update.py /openframeworks/; python /ofDocumentationGenerator/src/generate_site.py;"
-    #command: /bin/bash -c "cd /openframeworks/; git pull origin master; python /ofDocumentationGenerator/src/generate_site.py;"
+    command: /bin/bash -c "cd /openframeworks/; git pull origin master; python /ofDocumentationGenerator/src/generate_site.py;"
 web:
     image: nginx
     volumes:

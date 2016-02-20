@@ -11,7 +11,7 @@ import json
 dir = os.path.dirname(__file__)
 
 
-outdir = os.path.join(dir,'../_site/')
+outdir = os.path.join(dir,'../_site/latest/')
 template_dir = os.path.join(dir,'templates')
 
 
@@ -219,8 +219,10 @@ def renderFile(filedata):
 
     # save the results
     output = template.render(render_data).encode('utf8')
-    with open(outdir + filedata['name'] + ".html", "wb") as fh:
+    outpath = outdir + filedata['name'] + ".html"
+    with open(outpath, "wb") as fh:
         fh.write(output)
+
 
 def fileForClass(name):
     for r in reference:
@@ -261,18 +263,8 @@ def compileScss():
 
 ''' RUN '''
 
-
-for the_file in os.listdir(outdir):
-    file_path = os.path.join(outdir, the_file)
-    try:
-        if os.path.isfile(file_path):
-            os.unlink(file_path)
-        #elif os.path.isdir(file_path): shutil.rmtree(file_path)
-    except Exception, e:
-        print e
-
-
-shutil.rmtree(outdir)
+if os.path.exists(outdir):
+    shutil.rmtree(outdir)
 os.makedirs(outdir)
 
 reference = loadData('reference.json')
