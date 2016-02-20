@@ -1,0 +1,11 @@
+ofdocbuild:
+    build: .
+    volumes:
+        - .:/ofDocumentationGenerator
+    command: /bin/bash -c "cd /openframeworks/; git pull origin master; python /ofDocumentationGenerator/generator/documentation_update.py /openframeworks/; python /ofDocumentationGenerator/generator/generate_site.py;"
+web:
+    image: nginx
+    volumes:
+        - ./_site:/usr/share/nginx/html:ro
+    ports:
+        - "80:80"

@@ -1,7 +1,7 @@
 import os
 import json
 
-documentation_root = '_json_documentation/'
+documentation_root = '../_json_documentation/'
 
 
 def save(name, data, is_addon=False):

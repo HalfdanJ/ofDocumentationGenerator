@@ -8,7 +8,7 @@ from scss import parser
 from jinja2 import Environment, FileSystemLoader
 import json
 
-outdir = '_site/'
+outdir = '../_site/'
 
 
 def parseMarkdown(mk):
@@ -228,7 +228,7 @@ def fileForClass(name):
     print name +" NOT FOUND"
 
 def loadData(name):
-    path = os.path.join('_json_documentation', name)
+    path = os.path.join('../_json_documentation', name)
 
     if os.path.exists(path):
         with open(path) as data_file:
@@ -251,7 +251,7 @@ def updateToc(filedata):
 
 def compileScss():
     with open(outdir + "style.css", "w") as output:
-        output.write(parser.load('templates/style.scss'))
+        output.write(parser.load('../templates/style.scss'))
 
 
 ''' RUN '''
@@ -261,7 +261,7 @@ if not os.path.exists(outdir):
 
 reference = loadData('reference.json')
 
-for root, dirs, files in os.walk("_json_documentation"):
+for root, dirs, files in os.walk("../_json_documentation"):
     for name in files:
         if name[0] != '.' and name != 'reference.json':
             print name
@@ -272,4 +272,4 @@ for root, dirs, files in os.walk("_json_documentation"):
 
 renderToc(toc)
 compileScss()
-shutil.copyfile('templates/script.js', '_site/script.js')
+shutil.copyfile('templates/script.js', outdir+'script.js')
