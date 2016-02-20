@@ -69,11 +69,11 @@ def cleanMarkup(mk, folder):
         imgpath = imgpath.replace('../','')
 
         if len(imgpath.split('/')) == 1:
-            print imgpath
             imgpath = folder + '/' + imgpath
-            m = m.replace(image.group(2), imgpath)
-            mk = mk.replace(image.group(1), m)
-            print imgpath
+
+        m = m.replace(image.group(2), imgpath)
+        mk = mk.replace(image.group(1), m)
+
     return mk
 
 
