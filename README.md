@@ -9,7 +9,7 @@
 - ```docker run -v $(pwd):/ofDocumentationGenerator -v $(OF_PATH):/openframeworks -it openframeworks/docs /bin/bash```
 
 ### Run Clang parser in docker image
-```python /ofDocumentationGenerator/src/documentation_update.py /openframeworks/```
+```python /ofDocumentationGenerator/src/main.py /openframeworks/```
 
 ### Run site genererator in docker image
 ```python /ofDocumentationGenerator/src/generate_site.py``` Outputs in `./_site`
