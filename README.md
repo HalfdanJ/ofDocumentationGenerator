@@ -13,3 +13,9 @@
 
 ### Run site genererator in docker image
 ```python /ofDocumentationGenerator/src/generate_site.py``` Outputs in `./_site`
+
+## Rackspace setup
+On rackspace following has been done:
+- `apt-get update`
+- `sudo apt-get install linux-image-extra-$(uname -r)`
+- `apt-get install docker docker-compose`
