@@ -16,9 +16,9 @@ import json_file
 import clang_utils
 import utils
 
-import documentation_reference
-from documentation_class import DocClass
-from documentation_function import DocFunction
+import clang_reference
+from clang_class import DocClass
+from clang_function import DocFunction
 
 """ Get path of openframeworks from argv """
 of_root = sys.argv[1]
@@ -140,7 +140,7 @@ for addon in official_addons:
 for key in json_data:
     json_file.save(outdir, key, json_data[key])
 
-documentation_reference.save(outdir)
+clang_reference.save(outdir)
 
 if len(new_functions) > 0:
     print "added " + str(len(new_functions)) + " new functions:"

@@ -1,7 +1,7 @@
 from clang.cindex import CursorKind
 
-import documentation_parser
-import documentation_reference
+import clang_documentation_parser
+import clang_reference
 import utils
 
 
@@ -15,7 +15,7 @@ class DocVariable():
         self.data['name'] = cursor.spelling
 
         # Parse documentation
-        self.data['documentation'] = documentation_parser.parse_docs(cursor)
+        self.data['documentation'] = clang_documentation_parser.parse_docs(cursor)
 
         # Parse visible
         self.data['visible'] = True
@@ -31,5 +31,5 @@ class DocVariable():
 
 
     def serialize(self):
-        documentation_reference.add_variable(self)
+        clang_reference.add_variable(self)
         return self.data

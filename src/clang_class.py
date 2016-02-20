@@ -2,15 +2,15 @@
 # import documentation_functions
 from clang.cindex import CursorKind
 
-import documentation_parser
-import documentation_reference
+import clang_documentation_parser
+import clang_reference
 import utils
-from documentation_function import DocFunction
+from clang_function import DocFunction
 
 import re
 import Levenshtein
 
-from documentation_variable import DocVariable
+from clang_variable import DocVariable
 
 
 class DocClass:
@@ -37,7 +37,7 @@ class DocClass:
                     self.data['extends'].append(child.spelling)
 
         # Parse documentation
-        self.data['documentation'] = documentation_parser.parse_docs(cursor)
+        self.data['documentation'] = clang_documentation_parser.parse_docs(cursor)
 
         # Parse visible
         self.data['visible'] = True
@@ -112,7 +112,7 @@ class DocClass:
         for func in self.member_functions:
             self.data['methods'].append(func.serialize())
 
-        documentation_reference.add_class(self)
+        clang_reference.add_class(self)
 
         return self.data
 """

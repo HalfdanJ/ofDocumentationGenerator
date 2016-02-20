@@ -2,9 +2,9 @@ import re
 
 from clang.cindex import CursorKind
 
-import documentation_parser
+import clang_documentation_parser
 import utils
-import documentation_reference
+import clang_reference
 
 class DocFunction():
     def __init__(self, cursor, parentclass):
@@ -22,7 +22,7 @@ class DocFunction():
         self.data['name'] = re.sub("<.*>", "", self.data['name'])
 
         # Parse documentation
-        self.data['documentation'] = documentation_parser.parse_docs(cursor)
+        self.data['documentation'] = clang_documentation_parser.parse_docs(cursor)
 
         # Parse visible
         self.data['visible'] = True
@@ -86,5 +86,5 @@ class DocFunction():
                 pass
 
     def serialize(self):
-        documentation_reference.add_function(self)
+        clang_reference.add_function(self)
         return self.data
