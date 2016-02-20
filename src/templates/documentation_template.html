@@ -59,6 +59,7 @@
                 {% endif %}
 
                 {{ item.documentation.text}}
+                {{ item.documentation.markdown}}
 
                 {% for method in item.methods %}
                     {% if method.section and (loop.first or  item.methods[loop.index-2].section != method.section) %}
@@ -82,6 +83,7 @@
                             </div>
                             <div class="description">
                                 {{variant.documentation.text}}
+                                {{variant.documentation.markdown}}
 
                                 {% if variant.documentation.parameters %}
 
@@ -157,6 +159,8 @@
                             </div>
                             <div class="description">
                                 {{variable.documentation.text}}
+
+                                {{variable.documentation.markdown}}
                             </div>
                           </div>
 

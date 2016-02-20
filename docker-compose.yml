@@ -4,8 +4,8 @@ ofdocbuild:
     volumes:
         - .:/ofDocumentationGenerator
         - $OF_PATH:/openframeworks
-        - ./markdown:/markdown
-    command: /bin/bash -c "python /ofDocumentationGenerator/src/main.py /openframeworks/; python /ofDocumentationGenerator/src/generate_site.py;"
+        - $OF_MARKDOWN_DOCUMENTATION_PATH:/markdown
+    command: /bin/bash -c "cd /ofDocumentationGenerator; python src/main.py /openframeworks/; python src/parse_markdown.py /markdown; python src/generate_site.py /markdown;"
     #command: /bin/bash -c "python /ofDocumentationGenerator/src/generate_site.py;"
 web:
     image: nginx
@@ -13,3 +13,4 @@ web:
         - ./_site:/usr/share/nginx/html:ro
     ports:
         - "80:80"
+    restart: always

@@ -8,7 +8,7 @@ import documentation_reference
 
 class DocFunction():
     def __init__(self, cursor, parentclass):
-        print "Parse function " + cursor.spelling
+        #print "Parse function " + cursor.spelling
         self.cursor = cursor
         self.parentclass = parentclass
 

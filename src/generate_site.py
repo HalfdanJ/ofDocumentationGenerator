@@ -2,14 +2,17 @@ import os
 
 import markdown as markdown
 import shutil
+import sys
 
 import re
+
 from scss import parser
 from jinja2 import Environment, FileSystemLoader
 import json
 
 dir = os.path.dirname(__file__)
 
+markdowndir = sys.argv[1]
 
 outdir = os.path.join(dir,'../_site/latest/')
 template_dir = os.path.join(dir,'templates')
@@ -20,6 +23,23 @@ def parseMarkdown(mk):
         return ""
     ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
     ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
+
+    rx = re.compile(r"!\[.+\]\((.+)\)")
+    for image in rx.finditer(mk):
+        imgpath = image.group(1)
+        imgpath = imgpath.replace('../','')
+        dest = os.path.join(outdir, imgpath)
+
+        imgpath = os.path.join(markdowndir, imgpath)
+
+        if not os.path.exists(os.path.dirname(os.path.abspath(dest))):
+            os.makedirs(os.path.dirname(os.path.abspath(dest)))
+
+        if os.path.exists(imgpath) and not os.path.exists(dest):
+            print "copy image  ",imgpath
+            shutil.copyfile(imgpath, dest)
+        #else:
+        #    raise Exception('Image '+imgpath+" doesnt exist!")
     return ret
 
 
@@ -27,6 +47,9 @@ def parseDocumentation(doc):
     doc["returns"] = parseMarkdown(doc["returns"])
     doc["warning"] = parseMarkdown(doc["warning"])
     doc["text"] = parseMarkdown(doc["text"])
+
+    if "markdown" in doc:
+        doc["markdown"] = parseMarkdown(doc["markdown"])
 
     for key in doc["parameters"].iterkeys():
         doc["parameters"][key] = parseMarkdown(doc["parameters"][key])
