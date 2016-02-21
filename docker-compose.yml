@@ -1,5 +1,5 @@
 ofdocbuild:
-    build: ./docker
+    build: ./docker_docsbuilder
     #image: openframeworks/docs
     environment:
         #OF_ROOT: /openframeworks
@@ -23,7 +23,7 @@ web:
     restart: always
 
 jenkins:
-    image: jenkins
+    build: ./docker_jenkins
     volumes:
         - ./jenkins_data:/var/jenkins_home
     ports:

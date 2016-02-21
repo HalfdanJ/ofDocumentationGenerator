@@ -64,6 +64,9 @@
       <siteName>root@ofdocbuild:22</siteName>
       <command>export OF_ROOT=/jenkins_workspace/$JOB_NAME/openframeworks;
 export OF_DOCUMENTATION_ROOT=/jenkins_workspace/$JOB_NAME/ofsite/documentation;
+export OF_DOCUMENTATION_SITE_OUTPUT=/site
+export OF_DOCUMENTATION_JSON_DIR=/tmp/json
+
 python /src/main.py</command>
     </org.jvnet.hudson.plugins.SSHBuilder>
   </builders>

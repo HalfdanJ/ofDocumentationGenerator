@@ -1,0 +1,4 @@
+locale:1.2
+multiple-scms:0.5
+git:2.4.2
+ssh:2.4
