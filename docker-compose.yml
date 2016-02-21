@@ -1,16 +1,14 @@
 ofdocbuild:
     build: ./docker_docsbuilder
-    #image: openframeworks/docs
-    #environment:
-        #OF_ROOT: /openframeworks
-        #OF_DOCUMENTATION_ROOT: /markdown
-        #OF_DOCUMENTATION_SITE_OUTPUT: /site
-        #OF_DOCUMENTATION_JSON_DIR: /tmp/json
+    container_name: ofdocbuilder
     volumes:
+        # The python source code
         - ./src:/src:ro
+
+        # Jenkins workspace will contain markdown and openframeworks
         - ./jenkins_data/workspace:/jenkins_workspace
-        #- $OF_PATH:/openframeworks:ro
-        #- $OF_MARKDOWN_DOCUMENTATION_PATH:/markdown:ro
+
+        # Output directory
         - ./_docker_site/:/site
     restart: always
 

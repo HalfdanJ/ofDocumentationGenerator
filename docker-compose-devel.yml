@@ -1,0 +1,26 @@
+##
+
+ofdocbuild:
+    build: ./docker_docsbuilder
+    container_name: ofdocbuilder
+    environment:
+        OF_ROOT: /openframeworks
+        OF_DOCUMENTATION_ROOT: /markdown
+        OF_DOCUMENTATION_SITE_OUTPUT: /site
+        OF_DOCUMENTATION_JSON_DIR: /site/json
+    volumes:
+        # The python source code
+        - ./src:/src:ro
+        # openframeworks directory
+        - $OF_PATH:/openframeworks:ro
+        # Markdown directory
+        - $OF_MARKDOWN_DOCUMENTATION_PATH:/markdown:ro
+        # Output directory
+        - ./_output/:/site
+
+web:
+    image: nginx
+    volumes:
+        - ./_docker_site:/usr/share/nginx/html:ro
+    ports:
+        - "8080:80"

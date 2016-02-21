@@ -28,6 +28,7 @@ class DocClass:
 
         # Parse extends
         self.data['extends'] = []
+
         for child in cursor.get_children():
             if child.kind == CursorKind.CXX_BASE_SPECIFIER:
                 if child.spelling.find("class") == 0:
@@ -35,7 +36,6 @@ class DocClass:
                     self.data['extends'].append(baseclass)
                 else:
                     self.data['extends'].append(child.spelling)
-
         # Parse documentation
         self.data['documentation'] = clang_documentation_parser.parse_docs(cursor)
 

@@ -146,10 +146,7 @@ def run(markdowndir, jsondir):
 
 
 if __name__ == '__main__':
-    dir = os.path.dirname(__file__)
+    json_data_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_JSON_DIR', './_json_data'))
+    markdown_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_ROOT', ''))
 
-    jsondir = os.path.join(dir, "../_json")
-
-    """ Get path of openframeworks from argv """
-    markdowndir = sys.argv[1]
-    run(markdowndir, jsondir)
+    run(markdown_root, json_data_root)

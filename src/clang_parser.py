@@ -59,8 +59,9 @@ alternatives = {
 }
 """
 
-
+""" Add class to json data output """
 def add_class(data, offilename, folder):
+    print "Add class ",offilename
     if offilename not in json_data:
         json_data[offilename] = {
             "name": offilename,
@@ -71,6 +72,7 @@ def add_class(data, offilename, folder):
     json_data[offilename]['classes'].append(data)
 
 
+""" Add global function to json data output """
 def add_function(data, offilename, folder):
     if offilename not in json_data:
         json_data[offilename] = {
@@ -103,12 +105,12 @@ def parse_file_child(child):
                 add_function(new_func.serialize(), offilename, new_func.folder)
 
 
-def parse_folder(root, files, is_addon=False):
+def parse_folder(of_root, folder, files, is_addon=False):
     for name in files:
-        filepath = os.path.join(root, name)
+        filepath = os.path.join(folder, name)
 
         if name.split('.')[0] not in json_data.keys() and name.find('of') == 0 and os.path.splitext(name)[1] == '.h':
-            tu = clang_utils.get_tu_from_file(filepath, root)
+            tu = clang_utils.get_tu_from_file(filepath, of_root)
             for child in tu.cursor.get_children():
                 parse_file_child(child)
 
@@ -127,7 +129,10 @@ def run(of_root, outdir):
     for root, dirs, files in os.walk(of_source):
         #dir_count += 1
         print root, files
-        parse_folder(root, files, False)
+        parse_folder(of_root, root, files, False)
+
+    #parse_folder(of_root, of_source+"/video", ['ofVideoPlayer.h'], False)
+
 
     """
     for addon in official_addons:
@@ -142,7 +147,7 @@ def run(of_root, outdir):
 
     # Save the reference file
     clang_reference.save(outdir)
-
+    """
     if len(new_functions) > 0:
         print "added " + str(len(new_functions)) + " new functions:"
         for f in new_functions:
@@ -172,14 +177,12 @@ def run(of_root, outdir):
         print "removed " + str(len(missing_vars))
         for v in missing_vars:
             print "\t- " + v.name + "  from " + v.clazz
+    """
 
 if __name__ == '__main__':
-    of_root = sys.argv[1]
+    of_root = os.path.abspath(os.getenv('OF_ROOT', ''))
+    json_data_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_JSON_DIR', './_json_data'))
 
-    """ json output dir """
-    dir = os.path.dirname(__file__)
-    outdir = os.path.join(dir, '../_json_documentation/')
-
-    run(of_root, outdir)
+    run(of_root, json_data_root)
 
 

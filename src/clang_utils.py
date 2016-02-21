@@ -55,20 +55,19 @@ def srcrangestr(x):
     return '%s:%d:%d - %s:%d:%d' % (x.start.file, x.start.line, x.start.column, x.end.file, x.end.line, x.end.column)
 
 gcc_includes = builtin_flags_gcc()
-print gcc_includes
 def get_tu_from_file(filepath, of_root):
     #f = open(filepath)
     #content = f.read()
     #filename = os.path.basename(filepath)
     #files = [(filename,content)]
 
-    print "Parse "+filepath
     if sys.platform == "darwin":
         args = ("-x c++ -arch x86_64 -fmessage-length=0  -std=c++11 -stdlib=libc++ -Wno-trigraphs -fpascal-strings " + gcc_includes + " -isysroot -D__MACOSX_CORE__  -MT dependencies -MMD -I{OF_ROOT}/libs/openFrameworks -I{OF_ROOT}/libs/openFrameworks/.settings -I{OF_ROOT}/libs/openFrameworks/3d -I{OF_ROOT}/libs/openFrameworks/app -I{OF_ROOT}/libs/openFrameworks/communication -I{OF_ROOT}/libs/openFrameworks/events -I{OF_ROOT}/libs/openFrameworks/gl -I{OF_ROOT}/libs/openFrameworks/graphics -I{OF_ROOT}/libs/openFrameworks/math -I{OF_ROOT}/libs/openFrameworks/output -I{OF_ROOT}/libs/openFrameworks/sound -I{OF_ROOT}/libs/openFrameworks/types -I{OF_ROOT}/libs/openFrameworks/utils -I{OF_ROOT}/libs/openFrameworks/video -I{OF_ROOT}/libs/poco/include -I{OF_ROOT}/libs/freetype/include -I{OF_ROOT}/libs/freetype/include/freetype2 -I{OF_ROOT}/libs/fmodex/include -I{OF_ROOT}/libs/glew/include -I{OF_ROOT}/libs/FreeImage/include -I{OF_ROOT}/libs/tess2/include -I{OF_ROOT}/libs/cairo/include/cairo -I{OF_ROOT}/libs/rtAudio/include -I{OF_ROOT}/libs/glfw/include -I{OF_ROOT}/libs/boost/include -I{OF_ROOT}/libs/utf8cpp/include -I{OF_ROOT}/libs/openssl/include -DDEBUG")\
             .format(OF_ROOT=of_root).split(" ")
     else:
         args = ("-Wall -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_GTK -DOF_USING_MPG123 -D_REENTRANT -pthread -xc++ " + gcc_includes + " -I/usr/include/gstreamer-1.0 -I/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include -I/usr/include/AL -I/usr/include/alsa -I/usr/include/GL -I/usr/include/libdrm -I/usr/include/gtk-3.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/gtk-3.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/mirclient -I/usr/include/mircommon -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I{OF_ROOT}/libs/cpp-netlib/include -I{OF_ROOT}/libs/cpp-netlib/include/cpp-netlib -I{OF_ROOT}/libs/cpp-netlib/include/cpp-netlib/network -I{OF_ROOT}/libs/fmodex/include -I{OF_ROOT}/libs/glfw/include -I{OF_ROOT}/libs/glfw/include/GLFW -I{OF_ROOT}/libs/kiss/include -I{OF_ROOT}/libs/poco/include -I{OF_ROOT}/libs/sndfile/include -I{OF_ROOT}/libs/tess2/include -I{OF_ROOT}/libs/utf8cpp/include -I{OF_ROOT}/libs/utf8cpp/include/utf8 -I{OF_ROOT}/libs/openFrameworks -I{OF_ROOT}/libs/openFrameworks/build -I{OF_ROOT}/libs/openFrameworks/utils -I{OF_ROOT}/libs/openFrameworks/communication -I{OF_ROOT}/libs/openFrameworks/app -I{OF_ROOT}/libs/openFrameworks/events -I{OF_ROOT}/libs/openFrameworks/graphics -I{OF_ROOT}/libs/openFrameworks/math -I{OF_ROOT}/libs/openFrameworks/types -I{OF_ROOT}/libs/openFrameworks/sound -I{OF_ROOT}/libs/openFrameworks/gl -I{OF_ROOT}/libs/openFrameworks/3d -I{OF_ROOT}/libs/openFrameworks/video -DDEBUG")\
             .format(OF_ROOT=of_root).split(" ")
+    print args
     index = Index.create()
     tu = index.parse(filepath, args=args,
             options=TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD )

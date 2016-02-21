@@ -311,10 +311,9 @@ class SiteGenerator:
         shutil.copyfile(os.path.join(template_dir,'script.js'), os.path.join(outdir,'script.js'))
 
 if __name__ == '__main__':
-    markdowndir = sys.argv[1]
-
-    outdir = os.path.join(dir,'../_site/latest/')
-    jsondir = os.path.join(dir,"../_json_documentation")
+    markdown_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_ROOT', ''))
+    json_data_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_JSON_DIR', './_json_data'))
+    site_output = os.path.abspath(os.getenv('OF_DOCUMENTATION_SITE_OUTPUT', './_site'))
 
     generator = SiteGenerator()
-    generator.run(markdowndir, jsondir, outdir)
+    generator.run(markdown_root, json_data_root, os.path.join(site_output,'latest'))
