@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """
 This will run the clang parser on openFrameworks,
 and generate a json file for each file in openframeworks
@@ -20,14 +19,21 @@ import clang_reference
 from clang_class import DocClass
 from clang_function import DocFunction
 
-""" Get path of openframeworks from argv """
-of_root = sys.argv[1]
-of_source = os.path.join(of_root, "libs/openFrameworks")
+dir_count = 0
+file_count = 0
+visited_classes = []
+visited_function = []
+missing_functions = []
+missing_methods = []
+missing_vars = []
+new_classes = []
+new_functions = []
+new_vars = []
+new_methods = []
+json_data = {}
 
-""" json output dir """
-dir = os.path.dirname(__file__)
-outdir = os.path.join(dir,'../_json_documentation/')
 
+"""
 of_addons = os.path.join(of_root, "addons")
 official_addons = [
     "ofxAccelerometer",
@@ -42,6 +48,7 @@ official_addons = [
     "ofxThreadedImageLoader",
     "ofxXmlSettings",
 ]
+
 currentversion = "0.9.0"
 alternatives = {
     'size_t': ['int', 'unsigned int', 'long', 'unsigned long'],
@@ -50,6 +57,7 @@ alternatives = {
     'unsigned long': ['int', 'unsigned int', 'long'],
     'unsigned long long': ['int', 'unsigned int', 'long'],
 }
+"""
 
 
 def add_class(data, offilename, folder):
@@ -100,74 +108,75 @@ def parse_folder(root, files, is_addon=False):
         filepath = os.path.join(root, name)
 
         if name.split('.')[0] not in json_data.keys() and name.find('of') == 0 and os.path.splitext(name)[1] == '.h':
-            tu = clang_utils.get_tu_from_file(filepath, of_root)
+            tu = clang_utils.get_tu_from_file(filepath, root)
             for child in tu.cursor.get_children():
                 parse_file_child(child)
 
 
-""" main """
-dir_count = 0
-file_count = 0
-visited_classes = []
-visited_function = []
-missing_functions = []
-missing_methods = []
-missing_vars = []
-new_classes = []
-new_functions = []
-new_vars = []
-new_methods = []
 
 
-if os.path.exists(outdir):
-    shutil.rmtree(outdir)
-os.makedirs(outdir)
+def run(of_root, outdir):
+    of_source = os.path.join(of_root, "libs/openFrameworks")
+
+    if os.path.exists(outdir):
+        shutil.rmtree(outdir)
+    os.makedirs(outdir)
 
 
-json_data = {}
-for root, dirs, files in os.walk(of_source):
-    dir_count += 1
-    print root, files
-    parse_folder(root, files, False)
-# parse_folder("/Users/jonas/Development/openframeworks/openframeworks/libs/openFrameworks/gl/", ["ofTexture.h"], False)
+    for root, dirs, files in os.walk(of_source):
+        #dir_count += 1
+        print root, files
+        parse_folder(root, files, False)
+    # parse_folder("/Users/jonas/Development/openframeworks/openframeworks/libs/openFrameworks/gl/", ["ofTexture.h"], False)
 
-"""
-for addon in official_addons:
-    for root, dirs, files in os.walk(os.path.join(of_addons, addon, "src")):
-        dir_count += 1
-        file_count += parse_folder(root, files, True)
-"""
-for key in json_data:
-    json_file.save(outdir, key, json_data[key])
+    """
+    for addon in official_addons:
+        for root, dirs, files in os.walk(os.path.join(of_addons, addon, "src")):
+            dir_count += 1
+            file_count += parse_folder(root, files, True)
+    """
+    for key in json_data:
+        json_file.save(outdir, key, json_data[key])
 
-clang_reference.save(outdir)
+    clang_reference.save(outdir)
 
-if len(new_functions) > 0:
-    print "added " + str(len(new_functions)) + " new functions:"
-    for f in new_functions:
-        print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  to " + f.functionsfile
+    if len(new_functions) > 0:
+        print "added " + str(len(new_functions)) + " new functions:"
+        for f in new_functions:
+            print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  to " + f.functionsfile
 
-if len(missing_functions) > 0:
-    print "removed " + str(len(missing_functions)) + " functions"
-    for f in missing_functions:
-        print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  from " + f.functionsfile
+    if len(missing_functions) > 0:
+        print "removed " + str(len(missing_functions)) + " functions"
+        for f in missing_functions:
+            print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  from " + f.functionsfile
 
-if len(new_methods) > 0:
-    print "added " + str(len(new_methods)) + " new methods:"
-    for f in new_methods:
-        print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  to " + f.clazz
+    if len(new_methods) > 0:
+        print "added " + str(len(new_methods)) + " new methods:"
+        for f in new_methods:
+            print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  to " + f.clazz
 
-if len(missing_methods) > 0:
-    print "removed " + str(len(missing_methods)) + " methods"
-    for f in missing_methods:
-        print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  from " + f.clazz
+    if len(missing_methods) > 0:
+        print "removed " + str(len(missing_methods)) + " methods"
+        for f in missing_methods:
+            print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  from " + f.clazz
 
-if len(new_vars) > 0:
-    print "added " + str(len(new_vars)) + " new vars:"
-    for v in new_vars:
-        print "\t- " + v.name + "  to " + v.clazz
+    if len(new_vars) > 0:
+        print "added " + str(len(new_vars)) + " new vars:"
+        for v in new_vars:
+            print "\t- " + v.name + "  to " + v.clazz
 
-if len(missing_vars) > 0:
-    print "removed " + str(len(missing_vars))
-    for v in missing_vars:
-        print "\t- " + v.name + "  from " + v.clazz
+    if len(missing_vars) > 0:
+        print "removed " + str(len(missing_vars))
+        for v in missing_vars:
+            print "\t- " + v.name + "  from " + v.clazz
+
+if __name__ == '__main__':
+    of_root = sys.argv[1]
+
+    """ json output dir """
+    dir = os.path.dirname(__file__)
+    outdir = os.path.join(dir, '../_json_documentation/')
+
+    run(of_root, outdir)
+
+
