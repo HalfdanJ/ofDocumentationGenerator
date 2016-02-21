@@ -6,3 +6,5 @@ _site
 main.cpp
 _dsite
 _json_data
+jenkins_data/
+_docker_site
