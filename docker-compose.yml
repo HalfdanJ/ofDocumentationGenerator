@@ -1,7 +1,7 @@
 ofdocbuild:
     build: ./docker_docsbuilder
     #image: openframeworks/docs
-    environment:
+    #environment:
         #OF_ROOT: /openframeworks
         #OF_DOCUMENTATION_ROOT: /markdown
         #OF_DOCUMENTATION_SITE_OUTPUT: /site
