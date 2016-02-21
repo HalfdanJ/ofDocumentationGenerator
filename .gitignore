@@ -4,3 +4,5 @@ _site
 
 .idea
 main.cpp
+_dsite
+_json_data
