@@ -1,5 +1,3 @@
-##
-
 ofdocbuild:
     build: ./docker_docsbuilder
     container_name: ofdocbuilder
@@ -21,6 +19,6 @@ ofdocbuild:
 web:
     image: nginx
     volumes:
-        - ./_docker_site:/usr/share/nginx/html:ro
+        - ./_output:/usr/share/nginx/html:ro
     ports:
         - "8080:80"

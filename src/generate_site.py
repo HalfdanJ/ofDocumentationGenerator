@@ -3,7 +3,7 @@ import os
 import markdown as markdown
 import shutil
 import sys
-
+import math
 import re
 
 from scss import parser
@@ -20,7 +20,6 @@ class SiteGenerator:
     markdowndir = ''
     jsondir = ''
     outdir = ''
-
 
     def parseMarkdown(self, mk):
         if mk is None:
@@ -70,9 +69,22 @@ class SiteGenerator:
 
         template = env.get_template('toc_template.html')
 
+        extra = 10
+
+        count = 0
+        totalcount = 1
+        for key in toc.keys():
+            totalcount += len(toc[key]) + extra
+
+        cols = [[],[],[]]
+        for key in toc.keys():
+            count += len(toc[key]) + extra
+            index = int(math.floor(3.0*count / totalcount))
+            cols[index].append({ 'name': key, 'files': toc[key] })
+
+
         output = template.render({
-            "folders": toc.keys(),
-            "content": toc
+            "content": cols
         }).encode('utf8')
 
         # to save the results
@@ -299,13 +311,12 @@ class SiteGenerator:
         for root, dirs, files in os.walk(jsondir):
             for name in files:
                 if name[0] != '.' and name != 'reference.json':
-                    #print name
-
+                    print "Site Generator - Parse "+name
                     data = self.loadData(name)
                     self.renderFile(data, reference)
                     self.updateToc(data)
 
-
+        print "Site Generator - Generate index"
         self.renderToc(self.toc)
         self.compileScss()
         shutil.copyfile(os.path.join(template_dir,'script.js'), os.path.join(outdir,'script.js'))
