@@ -4,8 +4,8 @@ ofdocbuild:
     environment:
         #OF_ROOT: /openframeworks
         #OF_DOCUMENTATION_ROOT: /markdown
-        OF_DOCUMENTATION_SITE_OUTPUT: /site
-        OF_DOCUMENTATION_JSON_DIR: /tmp/json
+        #OF_DOCUMENTATION_SITE_OUTPUT: /site
+        #OF_DOCUMENTATION_JSON_DIR: /tmp/json
     volumes:
         - ./src:/src:ro
         - ./jenkins_data/workspace:/jenkins_workspace

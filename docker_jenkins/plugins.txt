@@ -1,4 +1,6 @@
 locale:1.2
 multiple-scms:0.5
+git-client:1.19.5
+scm-api:1.0
 git:2.4.2
 ssh:2.4
