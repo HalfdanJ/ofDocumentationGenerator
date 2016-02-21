@@ -8,13 +8,13 @@ ofdocbuild:
         - ./jenkins_data/workspace:/jenkins_workspace
 
         # Output directory
-        - ./_docker_site/:/site
+        - ./_output/:/site
     restart: always
 
 web:
     image: nginx
     volumes:
-        - ./_docker_site:/usr/share/nginx/html:ro
+        - ./_output:/usr/share/nginx/html:ro
     ports:
         - "80:80"
     restart: always
