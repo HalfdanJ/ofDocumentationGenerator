@@ -14,7 +14,7 @@ All of these components are bundled in Docker containers so they are very easy t
 - `docker-compose up -d` Builds and starts the documentation docker image, and a nginx webserver image that are sharing data
 - `docker-compose build` Rebuilds (if required) the docker images
 
-Jenkins is now running on port `:8080`, and the webserver on `:80`
+Jenkins is now running on port `:8080`, and the webserver on `:80`.
 
 ## Run development setup
 A stripped down version of the docker setup without Jenkins can be run with the following command
@@ -42,8 +42,11 @@ docker exec ofdocbuilder python /src/parse_markdown.py
 docker exec ofdocbuilder python /src/generate_site.py
 ```
 
-After this, the site is visible on `http://youlocalip:8080/latest`
-(it needs to be your local ip, and not localhost)
+After this, the site is visible on `http://dockermachineip:8080/latest`,
+you can find your machine ip by runnning
+```
+docker-machine ip default
+```
 
 ## Rackspace setup
 On rackspace following has been done:
