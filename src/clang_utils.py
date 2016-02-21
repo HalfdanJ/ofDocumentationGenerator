@@ -35,8 +35,8 @@ def get_tu(source, lang='c', all_warnings=False, flags=[]):
     return TranslationUnit.from_source(name, args, unsaved_files=[(name, source)])
 
 def builtin_flags_gcc():
-    subprocess.call(["touch","main.cpp"])
-    p = subprocess.Popen(["clang","-E","-P","-v","-dD","-std=c++1y","-xc++","main.cpp"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    subprocess.call(["touch","/tmp/main.cpp"])
+    p = subprocess.Popen(["clang","-E","-P","-v","-dD","-std=c++1y","-xc++","/tmp/main.cpp"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     state = "start"
     includes = ""
     for line in iter(p.stdout.read().splitlines()):

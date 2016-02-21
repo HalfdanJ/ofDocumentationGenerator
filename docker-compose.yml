@@ -1,22 +1,23 @@
 ofdocbuild:
-    build: .
+    build: ./docker
     #image: openframeworks/docs
     environment:
-        OF_ROOT: /openframeworks
-        OF_DOCUMENTATION_ROOT: /markdown
+        #OF_ROOT: /openframeworks
+        #OF_DOCUMENTATION_ROOT: /markdown
         OF_DOCUMENTATION_SITE_OUTPUT: /site
         OF_DOCUMENTATION_JSON_DIR: /tmp/json
     volumes:
-        - .:/src:ro
-        - $OF_PATH:/openframeworks:ro
-        - $OF_MARKDOWN_DOCUMENTATION_PATH:/markdown:ro
-        - ./_dsite/:/site
-    #command: /bin/bash -c "python /src/src/main.py"
+        - ./src:/src:ro
+        - ./jenkins_data/workspace:/jenkins_workspace
+        #- $OF_PATH:/openframeworks:ro
+        #- $OF_MARKDOWN_DOCUMENTATION_PATH:/markdown:ro
+        - ./_docker_site/:/site
+    restart: always
 
 web:
     image: nginx
     volumes:
-        - ./_dsite:/usr/share/nginx/html:ro
+        - ./_docker_site:/usr/share/nginx/html:ro
     ports:
         - "80:80"
     restart: always
@@ -28,3 +29,5 @@ jenkins:
     ports:
         - "8080:8080"
     restart: always
+    links:
+        - "ofdocbuild"

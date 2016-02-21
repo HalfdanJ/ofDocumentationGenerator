@@ -59,7 +59,14 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
-  <builders/>
+  <builders>
+    <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.4">
+      <siteName>root@ofdocbuild:22</siteName>
+      <command>export OF_ROOT=/jenkins_workspace/$JOB_NAME/openframeworks;
+export OF_DOCUMENTATION_ROOT=/jenkins_workspace/$JOB_NAME/ofsite/documentation;
+python /src/main.py</command>
+    </org.jvnet.hudson.plugins.SSHBuilder>
+  </builders>
   <publishers/>
   <buildWrappers/>
 </project>
