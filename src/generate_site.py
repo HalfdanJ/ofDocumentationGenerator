@@ -76,7 +76,7 @@ class SiteGenerator:
         }).encode('utf8')
 
         # to save the results
-        with open(os.path.join(self.outdir(self.outdir, "index.html", "wb"))) as fh:
+        with open(os.path.join(self.outdir,self.outdir, "index.html"), "wb") as fh:
             fh.write(output)
 
 
@@ -277,7 +277,7 @@ class SiteGenerator:
 
 
     def compileScss(self):
-        with open(os.path.join(self.outdir ,"style.css", "w")) as output:
+        with open(os.path.join(self.outdir ,"style.css"), "w") as output:
             scssPath = os.path.join(template_dir,'style.scss')
             #print scssPath
             parsedScss = parser.load(scssPath)

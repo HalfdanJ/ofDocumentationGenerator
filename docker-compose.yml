@@ -1,11 +1,17 @@
 ofdocbuild:
     build: .
     #image: openframeworks/docs
+    environment:
+        OF_ROOT: /openframeworks
+        OF_DOCUMENTATION_ROOT: /markdown
+        OF_DOCUMENTATION_SITE_OUTPUT: /site
+        OF_DOCUMENTATION_JSON_DIR: /tmp/json
     volumes:
-        - .:/ofDocumentationGenerator
-        - $OF_PATH:/openframeworks
-        - $OF_MARKDOWN_DOCUMENTATION_PATH:/markdown
-    command: /bin/bash -c "cd /ofDocumentationGenerator; python src/main.py /openframeworks/; python src/parse_markdown.py /markdown; python src/generate_site.py /markdown;"
+        - .:/src:ro
+        - $OF_PATH:/openframeworks:ro
+        - $OF_MARKDOWN_DOCUMENTATION_PATH:/markdown:ro
+        - ./_dsite/:/site
+    command: /bin/bash -c "python /src/src/main.py"
     #command: /bin/bash -c "python /ofDocumentationGenerator/src/generate_site.py;"
 web:
     image: nginx
