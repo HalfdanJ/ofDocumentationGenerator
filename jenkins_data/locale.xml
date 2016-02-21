@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<locale plugin="locale@1.2">
+  <systemLocale>en_US</systemLocale>
+  <ignoreAcceptLanguage>true</ignoreAcceptLanguage>
+</locale>

@@ -11,12 +11,20 @@ ofdocbuild:
         - $OF_PATH:/openframeworks:ro
         - $OF_MARKDOWN_DOCUMENTATION_PATH:/markdown:ro
         - ./_dsite/:/site
-    command: /bin/bash -c "python /src/src/main.py"
-    #command: /bin/bash -c "python /ofDocumentationGenerator/src/generate_site.py;"
+    #command: /bin/bash -c "python /src/src/main.py"
+
 web:
     image: nginx
     volumes:
-        - ./_site:/usr/share/nginx/html:ro
+        - ./_dsite:/usr/share/nginx/html:ro
     ports:
         - "80:80"
+    restart: always
+
+jenkins:
+    image: jenkins
+    volumes:
+        - ./jenkins_data:/var/jenkins_home
+    ports:
+        - "8080:8080"
     restart: always
