@@ -8,21 +8,39 @@
 
     <!-- Site Properities -->
     <title>ofDoc -  {{ pageTitle }}</title>
-    <link rel="stylesheet" type="text/css" class="ui" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.css">
+    <link rel="stylesheet" type="text/css" class="ui" href="//oss.maxcdn.com/semantic-ui/2.1.8/semantic.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
 
     <!-- font -->
     <link href="http://fonts.googleapis.com/css?family=Inconsolata:400,700" rel="stylesheet" type="text/css">
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.js"></script>
+    <script src="http://oss.maxcdn.com/semantic-ui/2.1.8/semantic.min.js"></script>
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+    <script src="script.js"></script>
 
 </head>
 <body>
 
-    <div class="ui container toc" style="margin-top:50px">
-        <h1 class="ui dividing header">openFrameworks Documentation</h1>
+    <div id="main" class="ui container toc">
+
+
+        <div class="ui sticky top menu">
+            <a class="item" href='/latest/'>
+                ofDoc
+            </a>
+
+            <div class="right menu">
+                <div class="item">
+                    <div class="ui transparent icon input">
+                        <input type="text" placeholder="Search...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <h1 class="ui dividing header mainheader">openFrameworks Documentation</h1>
 
         <div class="ui relaxed grid">
             <div class="three column row">
@@ -46,7 +64,7 @@
 
 
         <script>
-            $('.ui.accordion')
-            .accordion()
+        $('.ui.accordion')
+        .accordion()
         </script>
     </body>

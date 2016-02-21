@@ -2,6 +2,11 @@ $( document ).ready(function() {
  $('.ui.accordion')
         .accordion()
 
+$('.ui.sticky')
+  .sticky({
+    context: '#main'
+  })
+
 
   var menu = $(".navigator");
 
