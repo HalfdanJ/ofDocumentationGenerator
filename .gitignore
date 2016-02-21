@@ -1,10 +1,5 @@
 *.d
-_json_documentation
-_site
-
 .idea
-main.cpp
-_dsite
-_json_data
+
 jenkins_data/
-_docker_site
+_output
