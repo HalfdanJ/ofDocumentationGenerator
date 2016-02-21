@@ -118,16 +118,16 @@ def parse_folder(root, files, is_addon=False):
 def run(of_root, outdir):
     of_source = os.path.join(of_root, "libs/openFrameworks")
 
+    # Prepare the outdir
     if os.path.exists(outdir):
         shutil.rmtree(outdir)
     os.makedirs(outdir)
 
-
+    # Run the clang parser
     for root, dirs, files in os.walk(of_source):
         #dir_count += 1
         print root, files
         parse_folder(root, files, False)
-    # parse_folder("/Users/jonas/Development/openframeworks/openframeworks/libs/openFrameworks/gl/", ["ofTexture.h"], False)
 
     """
     for addon in official_addons:
@@ -135,9 +135,12 @@ def run(of_root, outdir):
             dir_count += 1
             file_count += parse_folder(root, files, True)
     """
+
+    # Save the output json data
     for key in json_data:
         json_file.save(outdir, key, json_data[key])
 
+    # Save the reference file
     clang_reference.save(outdir)
 
     if len(new_functions) > 0:

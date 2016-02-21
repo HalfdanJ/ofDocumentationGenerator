@@ -11,14 +11,9 @@ import re
 import json_file
 import markdown_file
 
-dir = os.path.dirname(__file__)
-
-jsondir = os.path.join(dir,"../_json_documentation")
-
-""" Get path of openframeworks from argv """
-markdowndir = sys.argv[1]
-
 """ Check if the methods from markdown and js are matching"""
+
+
 def methodsMatching(mdfunction, jsfunction):
     mdreturns = mdfunction['returns']
     jsreturns = jsfunction['returns']
@@ -38,7 +33,7 @@ def methodsMatching(mdfunction, jsfunction):
     if len(mdparams) == len(jsparams) == 0:
         return True
 
-    for p1, p2 in zip(mdparams,jsparams):
+    for p1, p2 in zip(mdparams, jsparams):
         pp1 = p1.strip().split(' ')
         pp2 = p2.strip().split(' ')
 
@@ -52,12 +47,13 @@ def methodsMatching(mdfunction, jsfunction):
 
     return True
 
+
 def cleanMarkup(mk, folder):
     rx = re.compile(r"!(\[.+\]\((.+)\))")
     for image in rx.finditer(mk):
         m = image.group(1)
         imgpath = image.group(2)
-        imgpath = imgpath.replace('../','')
+        imgpath = imgpath.replace('../', '')
 
         if len(imgpath.split('/')) == 1:
             imgpath = folder + '/' + imgpath
@@ -68,9 +64,10 @@ def cleanMarkup(mk, folder):
     return mk
 
 
-
 """ Load the JSON file """
-def loadJsonData(name):
+
+
+def loadJsonData(name, jsondir):
     path = os.path.join(jsondir, name)
 
     if os.path.exists(path):
@@ -79,32 +76,37 @@ def loadJsonData(name):
     else:
         return None
 
-def loadClassMarkdown(folder, name):
+
+def loadClassMarkdown(folder, name, markdowndir):
     return markdown_file.getclass(name, markdowndir)
 
-def loadFunctionsMarkdown(folder, name):
+
+def loadFunctionsMarkdown(folder, name, markdowndir):
     return markdown_file.getfunctionsfile(name, markdowndir)
 
+
 """ Loads the markdown, and adds the description to JSON file"""
-def enrichFile(data):
-    markdownFunc = loadFunctionsMarkdown(data['folder'],data['name'])
+
+
+def enrichFile(data, markdowndir):
+    markdownFunc = loadFunctionsMarkdown(data['folder'], data['name'], markdowndir)
     folder = data['folder']
 
     # Global functions
     for function in data['functions']:
-        #methodfound = False
+        # methodfound = False
         for mdmethod in markdownFunc['functions']:
             if mdmethod['name'] == function['name'] and 'description' in mdmethod:
                 if methodsMatching(mdmethod, function):
                     function['documentation']['markdown'] = cleanMarkup(mdmethod['description'], folder)
-                    #if methodfound:
+                    # if methodfound:
                     #    raise Exception(function['name'],methodfound, parameters,function['parameters'] )
-                    #methodfound = mdmethod['parameters']
+                    # methodfound = mdmethod['parameters']
                     ##break
 
     # Classes
     for classdata in data['classes']:
-        markdownClass = loadClassMarkdown(data['folder'],classdata['name'])
+        markdownClass = loadClassMarkdown(data['folder'], classdata['name'], markdowndir)
 
         if 'description' in markdownClass:
             classdata['documentation']['markdown'] = cleanMarkup(markdownClass['description'], folder)
@@ -115,10 +117,10 @@ def enrichFile(data):
             for mdmethod in markdownClass['functions']:
                 if mdmethod['name'] == method['name'] and 'description' in mdmethod:
                     if methodsMatching(mdmethod, method):
-                        method['documentation']['markdown'] = cleanMarkup(mdmethod['description'],folder)
-                        #if methodfound:
+                        method['documentation']['markdown'] = cleanMarkup(mdmethod['description'], folder)
+                        # if methodfound:
                         #    raise Exception(mdmethod['name'],methodfound, mdmethod['parameters'],method['parameters'] )
-                        #methodfound = mdmethod['parameters']
+                        # methodfound = mdmethod['parameters']
                         break
 
         # Class variables
@@ -130,16 +132,24 @@ def enrichFile(data):
 
 """ RUN """
 
-def run():
+
+def run(markdowndir, jsondir):
     for root, dirs, files in os.walk(jsondir):
         for name in files:
             if name[0] != '.' and name != 'reference.json':
-
                 print name
-                data = loadJsonData(name)
+                data = loadJsonData(name, jsondir)
 
-                enrichFile(data)
+                enrichFile(data, markdowndir)
                 json_file.save(jsondir, os.path.splitext(name)[0], data)
+                print jsondir, os.path.splitext(name)[0]
 
 
-run()
+if __name__ == '__main__':
+    dir = os.path.dirname(__file__)
+
+    jsondir = os.path.join(dir, "../_json")
+
+    """ Get path of openframeworks from argv """
+    markdowndir = sys.argv[1]
+    run(markdowndir, jsondir)
