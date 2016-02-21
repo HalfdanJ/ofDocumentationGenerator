@@ -1,14 +1,20 @@
-## openFrameworks documentation generator
+# openFrameworks documentation generator
 This is the system that produces and hosts the openFrameworks documentation. It contains several parts:
 
 - **Source code parser** - Based on Python Clang bindings, parses the entire source code of openFrameworks for doxygen style comments and structure.
 It outputs the information in a custom JSON structure used internally
 - **Markdown parser** - Injects comments from markdown folder into the JSON structure
 - **Site generator** - Based on the JSON files, a static HTML site is produced based on the templates in `src/templates`
+- **Jenkins** - A Jenkins instance that takes webhooks from github, and ssh into the builder and runs the scripts
+- **Web server** - A nginx instance is used to serve the outputted files
+
+All of these components are bundled in Docker containers so they are very easy to start on your own system
 
 ## Run full docker setup
 - `docker-compose up -d` Builds and starts the documentation docker image, and a nginx webserver image that are sharing data
 - `docker-compose build` Rebuilds (if required) the docker images
+
+Jenkins is now running on port `:8080`, and the webserver on `:80`
 
 ## Run development setup
 A stripped down version of the docker setup without Jenkins can be run with the following command
