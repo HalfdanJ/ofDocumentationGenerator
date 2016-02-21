@@ -313,7 +313,7 @@ class SiteGenerator:
                 if name[0] != '.' and name != 'reference.json':
                     print "Site Generator - Parse "+name
                     data = self.loadData(name)
-                    self.renderFile(data, reference)
+                    #self.renderFile(data, reference)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"
