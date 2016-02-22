@@ -73,7 +73,11 @@
                     {% endif %}
 
                     {{ item.documentation.text}}
+
+                    {% if item.documentation.markdown %}
+                    <p><b> Markdown:</b></p>
                     {{ item.documentation.markdown}}
+                    {% endif %}
 
                     {% for method in item.methods %}
                     {% if method.section and (loop.first or  item.methods[loop.index-2].section != method.section) %}
@@ -97,7 +101,11 @@
                                 </div>
                                 <div class="description">
                                     {{variant.documentation.text}}
-                                    {{variant.documentation.markdown}}
+
+                                    {% if variant.documentation.markdown %}
+                                    <p><b> Markdown:</b></p>
+                                    {{ variant.documentation.markdown}}
+                                    {% endif %}
 
                                     {% if variant.documentation.parameters %}
 
@@ -174,7 +182,11 @@
                                 <div class="description">
                                     {{variable.documentation.text}}
 
-                                    {{variable.documentation.markdown}}
+                                    {% if variable.documentation.markdown %}
+                                    <p><b> Markdown:</b></p>
+                                    {{ variable.documentation.markdown}}
+                                    {% endif %}
+
                                 </div>
                             </div>
 

@@ -13,7 +13,11 @@ import json
 dir = os.path.dirname(__file__)
 
 template_dir = os.path.join(dir,'templates')
+loader = FileSystemLoader(template_dir)
+env = Environment(loader=loader)
 
+template = env.get_template('documentation_template.html')
+toc_template = env.get_template('toc_template.html')
 
 class SiteGenerator:
     toc = {}
@@ -64,10 +68,6 @@ class SiteGenerator:
 
 
     def renderToc(self, toc):
-        loader = FileSystemLoader(template_dir)
-        env = Environment(loader=loader)
-
-        template = env.get_template('toc_template.html')
 
         extra = 10
 
@@ -83,7 +83,7 @@ class SiteGenerator:
             cols[index].append({ 'name': key, 'files': toc[key] })
 
 
-        output = template.render({
+        output = toc_template.render({
             "content": cols
         }).encode('utf8')
 
@@ -192,10 +192,6 @@ class SiteGenerator:
 
 
     def renderFile(self, filedata, reference):
-        loader = FileSystemLoader(template_dir)
-        env = Environment(loader=loader)
-
-        template = env.get_template('documentation_template.html')
         render_data = {
             "pageTitle": filedata["name"],
             "content": []
@@ -302,12 +298,14 @@ class SiteGenerator:
         self.jsondir = jsondir
         self.outdir = outdir
 
+        print "Site Generator - cleanup"
         if os.path.exists(outdir):
             shutil.rmtree(outdir)
         os.makedirs(outdir)
 
         reference = self.loadData('reference.json')
 
+        print "Site Generator - start individual pages"
         for root, dirs, files in os.walk(jsondir):
             for name in files:
                 if name[0] != '.' and name != 'reference.json':
@@ -322,6 +320,7 @@ class SiteGenerator:
         shutil.copyfile(os.path.join(template_dir,'script.js'), os.path.join(outdir,'script.js'))
 
 if __name__ == '__main__':
+    print "Start"
     markdown_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_ROOT', ''))
     json_data_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_JSON_DIR', './_json_data'))
     site_output = os.path.abspath(os.getenv('OF_DOCUMENTATION_SITE_OUTPUT', './_site'))
