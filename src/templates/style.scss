@@ -151,9 +151,12 @@ $sourceCodeFont : 'Source Code Pro', monospace;
 }
 
 .codehilite {
+    margin: 14px 0;
     padding-left: 34px;
-    margin: 18px 0px;
+    padding: 8px 20px;
     font-size: 12px;
+    background-color: #F7F7F7;
+    border-radius: 3px;
 }
 
 pre.prettyprint, code.prettyprint {
