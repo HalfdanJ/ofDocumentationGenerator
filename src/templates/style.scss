@@ -1,3 +1,6 @@
+$sourceCodeFont : 'Source Code Pro', monospace;
+
+
 
 * {
 
@@ -15,6 +18,8 @@
 
 
 }
+
+
 
 
 .ui.fixed.sticky+h1 {
@@ -95,11 +100,11 @@
     }
 
     .group-name {
-        font-family: 'Inconsolata', monospace;
+        font-family: $sourceCodeFont;
         color:#428bca;
     }
     .kind {
-        font-family: 'Inconsolata', monospace;
+        font-family: $sourceCodeFont;
         color:#CCC;
     }
 
@@ -107,7 +112,7 @@
         margin-bottom: 10px;
 
         .memberVariant {
-            font-family: 'Inconsolata', monospace;
+            font-family: $sourceCodeFont;
             .type {
 
             }
@@ -148,10 +153,11 @@
 .codehilite {
     padding-left: 34px;
     margin: 18px 0px;
+    font-size: 12px;
 }
 
 pre.prettyprint, code.prettyprint {
-    font-family: 'Inconsolata', monospace;
+    font-family: $sourceCodeFont;
 
     .pln {
         //color: #c7254e;
