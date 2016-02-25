@@ -1,6 +1,97 @@
 $sourceCodeFont : 'Source Code Pro', monospace;
+$brandColor : #ee3987;
+$documentationGridColor : #E8E8E8;
+
+// Overwrite materialize standards
+nav {
+    background-color: white;
+    a {
+        color: black !important;
+    }
+}
+
+.collapsible {
+    box-shadow: none;
+    margin-bottom: 1px;
+    margin-top: 3px;
+    border: 0;
+
+    .collapsible-header {
+        border-bottom:1px solid white;
+    }
+    .collapsible-body {
+        border:0;
+
+        p {
+            padding: 0;
+        }
+    }
+
+    li {
+        border: 1px solid white;
+    }
+    li.active {
+        border: 1px solid $documentationGridColor;
+        transition-duration: 0.3s;
+
+        .collapsible-header {
+            transition-duration: 0.3s;
+            border-bottom:1px solid $documentationGridColor;
+        }
+    }
+}
+
+// Code style
+.codehilite {
+    margin: 14px 0;
+    padding-left: 34px;
+    padding: 8px 20px;
+    font-size: 12px;
+    background-color: rgba(0,0,0,0.04);
+    border-radius: 3px;
+}
 
 
+// Front page
+#toc {
+    .folder-name, .file-name {
+        display: block;
+    }
+
+    .folder-name {
+        font-size: 16px;
+        color: $brandColor;
+        margin-top:12px;
+    }
+    a.file-name {
+        color:gray;
+        font-weight: 300;
+
+        &:hover {
+            color:black;
+        }
+    }
+}
+
+#documentation {
+    .navigator {
+        position: fixed;
+
+        a {
+            color: black;
+            transition-duration: 0.3s;
+        }
+
+        .selected {
+            a {
+                margin-left: 10px;
+                color: $brandColor;
+            }
+        }
+    }
+}
+
+/*
 
 * {
 
@@ -236,3 +327,4 @@ pre.prettyprint, code.prettyprint {
         }
     }
  }
+*/
