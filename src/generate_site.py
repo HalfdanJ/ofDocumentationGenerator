@@ -329,8 +329,8 @@ class SiteGenerator:
                 if name[0] != '.' and name != 'reference.json':
                     print "Site Generator - Parse "+name
                     data = self.loadData(name)
-                    if name == 'ofVec2f.json':
-                        self.renderFile(data, reference)
+                    #if name == 'ofVec2f.json':
+                    self.renderFile(data, reference)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"
