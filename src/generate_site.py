@@ -1,6 +1,5 @@
 import os
 
-import markdown as markdown
 import shutil
 import sys
 import math
@@ -9,6 +8,8 @@ import re
 from scss import parser
 from jinja2 import Environment, FileSystemLoader
 import json
+
+from generate_site_parse_markdown import SiteParseMarkdown
 
 dir = os.path.dirname(__file__)
 
@@ -21,48 +22,24 @@ toc_template = env.get_template('toc_template.html')
 
 class SiteGenerator:
     toc = {}
-    markdowndir = ''
     jsondir = ''
     outdir = ''
 
-    def parseMarkdown(self, mk):
-        if mk is None:
-            return ""
-        ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
-        ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
-
-        rx = re.compile(r"!\[.+\]\((.+)\)")
-        for image in rx.finditer(mk):
-            imgpath = image.group(1)
-            imgpath = imgpath.replace('../','')
-            dest = os.path.join(self.outdir, imgpath)
-
-            imgpath = os.path.join(self.markdowndir, imgpath)
-
-            if not os.path.exists(os.path.dirname(os.path.abspath(dest))):
-                os.makedirs(os.path.dirname(os.path.abspath(dest)))
-
-            if os.path.exists(imgpath) and not os.path.exists(dest):
-                #print "copy image  ",imgpath
-                shutil.copyfile(imgpath, dest)
-            #else:
-            #    raise Exception('Image '+imgpath+" doesnt exist!")
-        return ret
-
+    markdownParser = SiteParseMarkdown()
 
     def parseDocumentation(self, doc):
-        doc["returns"] = self.parseMarkdown(doc["returns"])
-        doc["warning"] = self.parseMarkdown(doc["warning"])
-        doc["text"] = self.parseMarkdown(doc["text"])
+        doc["returns"] = self.markdownParser.parseMarkdown(doc["returns"])
+        doc["warning"] = self.markdownParser.parseMarkdown(doc["warning"])
+        doc["text"] = self.markdownParser.parseMarkdown(doc["text"])
 
         if "markdown" in doc:
-            doc["markdown"] = self.parseMarkdown(doc["markdown"])
+            doc["markdown"] = self.markdownParser.parseMarkdown(doc["markdown"])
 
         for key in doc["parameters"].iterkeys():
-            doc["parameters"][key] = self.parseMarkdown(doc["parameters"][key])
+            doc["parameters"][key] = self.markdownParser.parseMarkdown(doc["parameters"][key])
 
         for i in range(0, len(doc["sa"])):
-            doc["sa"][i] = self.parseMarkdown(doc["sa"][i])
+            doc["sa"][i] = self.markdownParser.parseMarkdown(doc["sa"][i])
 
         return doc
 
@@ -312,9 +289,11 @@ class SiteGenerator:
 
     ''' RUN '''
     def run(self, markdowndir, jsondir, outdir):
-        self.markdowndir = markdowndir
         self.jsondir = jsondir
         self.outdir = outdir
+
+        self.markdownParser.outdir = self.outdir
+        self.markdownParser.markdowndir = markdowndir
 
         print "Site Generator - cleanup"
         if os.path.exists(outdir):
@@ -329,8 +308,8 @@ class SiteGenerator:
                 if name[0] != '.' and name != 'reference.json':
                     print "Site Generator - Parse "+name
                     data = self.loadData(name)
-                    #if name == 'ofVec2f.json':
-                    self.renderFile(data, reference)
+                    if name == 'ofVec2f.json':
+                        self.renderFile(data, reference)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"

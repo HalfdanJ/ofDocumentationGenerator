@@ -97,7 +97,6 @@ nav {
 
         .collection-item {
             padding-left:15px;
-
             border-top: 1px solid $documentationGridColor;
             &:first-child{
                 border:0;
@@ -123,6 +122,7 @@ nav {
         li.active {
             border: 1px solid $documentationGridColor;
             transition-duration: 0.3s;
+            margin-bottom:15px;
 
             .collapsible-header {
                 transition-duration: 0.3s;
@@ -130,6 +130,8 @@ nav {
 
                 min-height: 3rem;
                 line-height:3rem;
+
+                color: $brandColor;
             }
         }
     }
