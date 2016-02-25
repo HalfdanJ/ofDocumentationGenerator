@@ -11,8 +11,20 @@ nav {
 }
 
 
+
+// Inline code blocks
+.prettyprint {
+    background-color: rgba(0,0,0,0.04);
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
 // Code style
 .codehilite {
+    .prettyprint {
+        padding:0;
+        background-color: transparent;
+    }
     margin: 14px 0;
     padding-left: 34px;
     padding: 8px 20px;
@@ -20,6 +32,7 @@ nav {
     background-color: rgba(0,0,0,0.04);
     border-radius: 3px;
 }
+
 
 
 // Front page
@@ -84,6 +97,11 @@ nav {
 
         .collection-item {
             padding-left:15px;
+
+            border-top: 1px solid $documentationGridColor;
+            &:first-child{
+                border:0;
+            }
         }
 
         .collapsible-header {
@@ -135,6 +153,33 @@ nav {
     .memberVariant {
         font-family: $sourceCodeFont;
         font-size: 0.9em;
+    }
+
+    h6 {
+        font-weight: 500;
+    }
+
+    table {
+        width:inherit;
+
+        tr {
+            &:last-child {
+                td {
+                    border-bottom: 0;
+                }
+            }
+        }
+        td {
+            padding: 2px 9px;
+
+            border-right: 1px solid $documentationGridColor;
+            border-bottom: 1px solid $documentationGridColor;
+
+            &:last-child {
+                border-right: 0;
+            }
+        }
+
     }
 }
 

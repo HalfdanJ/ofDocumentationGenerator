@@ -132,21 +132,21 @@
 
                                         {% if variant.documentation.returns %}
                                         <div class="returns">
-                                            <div class="ui tiny header">Returns</div>
+                                            <h6>Returns</h6>
                                             {{ variant.documentation.returns }}
                                         </div>
                                         {% endif %}
 
                                         {% if variant.documentation.warning %}
                                         <div class="warning">
-                                            <div class="ui tiny header">Warning</div>
+                                            <h6>Warning</h6>
                                             {{ variant.documentation.warning }}
                                         </div>
                                         {% endif %}
 
                                         {% if variant.documentation.sa %}
                                         <div class="sa">
-                                            <div class="ui tiny header">See also</div>
+                                            <h6>See also</h6>
                                             <ul>
                                                 {% for sa in variant.documentation.sa %}
                                                 <li>{{sa}}</li>
@@ -161,6 +161,7 @@
                                     <!-- Markdown documentation  -->
                                     {% if method.variants[0].documentation.markdown %}
                                     <li class="collection-item">
+                                        <h6>Description</h6>
                                         {{ method.variants[0].documentation.markdown}}
                                     </li>
                                     {% endif %}
