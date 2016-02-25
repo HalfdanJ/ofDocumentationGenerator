@@ -3,11 +3,27 @@ $( document ).ready(function() {
         accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
     });
 
-    var menu = $(".navigator");
+
+    $('.dropdown-button').dropdown({
+        inDuration: 300,
+        outDuration: 225,
+        constrain_width: false, // Does not change width of dropdown to that of the activator
+        hover: true, // Activate on hover
+        gutter: 0, // Spacing from edge
+        belowOrigin: false, // Displays dropdown below the button
+        alignment: 'left' // Displays dropdown with edge aligned to the left of button
+      }
+    );
+
+
+
+    var menu = $(".sections-navigator");
 
     // All list items
     var offset = 150;
     var menuItems = menu.find("a");
+
+    menuItems.first().parent().addClass('selected')
 
     // Anchors corresponding to menu items
     var scrollItems = menuItems.map(function(){

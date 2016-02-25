@@ -97,12 +97,15 @@ def parse_file_child(child):
                 new_class = DocClass(child)
                 add_class(new_class.serialize(), offilename, new_class.folder)
                 visited_classes.append(child.spelling)
+                clang_reference.add_class(new_class)
 
         if utils.is_function(child):
             if child.spelling not in visited_function and offilename != "ofMain":
                 visited_function.append(child.spelling)
                 new_func = DocFunction(child, None)
                 add_function(new_func.serialize(), offilename, new_func.folder)
+                clang_reference.add_function(new_func)
+
 
 
 def parse_folder(of_root, folder, files, is_addon=False):
@@ -184,5 +187,3 @@ if __name__ == '__main__':
     json_data_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_JSON_DIR', './_json_data'))
 
     run(of_root, json_data_root)
-
-

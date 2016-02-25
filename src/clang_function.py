@@ -4,7 +4,6 @@ from clang.cindex import CursorKind
 
 import clang_documentation_parser
 import utils
-import clang_reference
 
 class DocFunction():
     def __init__(self, cursor, parentclass):
@@ -17,6 +16,7 @@ class DocFunction():
         split = cursor.location.file.name.split('/')
         self.filename = split[-1]
         self.folder = split[-2]
+        self.data['folder'] = self.folder;
 
         self.data['name'] = cursor.spelling
         self.data['name'] = re.sub("<.*>", "", self.data['name'])
@@ -86,5 +86,4 @@ class DocFunction():
                 pass
 
     def serialize(self):
-        clang_reference.add_function(self)
         return self.data

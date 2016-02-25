@@ -10,36 +10,6 @@ nav {
     }
 }
 
-.collapsible {
-    box-shadow: none;
-    margin-bottom: 1px;
-    margin-top: 3px;
-    border: 0;
-
-    .collapsible-header {
-        border-bottom:1px solid white;
-    }
-    .collapsible-body {
-        border:0;
-
-        p {
-            padding: 0;
-        }
-    }
-
-    li {
-        border: 1px solid white;
-    }
-    li.active {
-        border: 1px solid $documentationGridColor;
-        transition-duration: 0.3s;
-
-        .collapsible-header {
-            transition-duration: 0.3s;
-            border-bottom:1px solid $documentationGridColor;
-        }
-    }
-}
 
 // Code style
 .codehilite {
@@ -77,6 +47,21 @@ nav {
     .navigator {
         position: fixed;
 
+        .breadcrump {
+            font-weight: 300;
+            li {
+                display:inline;
+            }
+        }
+
+        .class {
+            font-weight: bold;
+        }
+        .section {
+            margin:0;
+            padding:0;
+        }
+
         a {
             color: black;
             transition-duration: 0.3s;
@@ -84,10 +69,72 @@ nav {
 
         .selected {
             a {
-                margin-left: 10px;
+                margin-left: -4px;
                 color: $brandColor;
             }
         }
+    }
+
+
+    .collapsible {
+        box-shadow: none;
+        margin-bottom: 1px;
+        margin-top: 3px;
+        border: 0;
+
+        .collection-item {
+            padding-left:15px;
+        }
+
+        .collapsible-header {
+            border-bottom:1px solid white;
+            min-height: 10px;
+            line-height: 22px;
+        }
+        .collapsible-body {
+            border:0;
+
+            p {
+                padding: 0;
+            }
+        }
+
+        li {
+            border: 1px solid white;
+        }
+        li.active {
+            border: 1px solid $documentationGridColor;
+            transition-duration: 0.3s;
+
+            .collapsible-header {
+                transition-duration: 0.3s;
+                border-bottom:1px solid $documentationGridColor;
+
+                min-height: 3rem;
+                line-height:3rem;
+            }
+        }
+    }
+
+    .header-label {
+        font-size: 0.6em;
+        font-weight: 300;
+        color: #AFAFAF
+    }
+
+    .kind {
+        color:#D2D2D2;
+        letter-spacing: 1px;
+        font-family: $sourceCodeFont;
+    }
+
+    .name {
+        font-weight: bold;
+    }
+
+    .memberVariant {
+        font-family: $sourceCodeFont;
+        font-size: 0.9em;
     }
 }
 

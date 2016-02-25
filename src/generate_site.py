@@ -193,23 +193,34 @@ class SiteGenerator:
 
     def renderFile(self, filedata, reference):
         render_data = {
-            "pageTitle": filedata["name"],
-            "content": []
+            "file": filedata["name"],
+            "folder": filedata['folder'],
+            "content": [],
+            "otherFilesInFolder" : []
         }
+
+
+        for r in reference:
+            if r['folder'] == filedata['folder'] and r['file'] not in render_data['otherFilesInFolder']:
+                render_data['otherFilesInFolder'].append(r['file'])
 
         sections = []
         methods = []
 
+        # Global stuff
         self.parseItemFunctions(methods, sections, filedata, False, reference)
-        render_data['content'].append({
-            "documentation": None,
-            "name": "Functions",
-            "methods": methods,
-            "member_variables": [],
-            "sections": sections,
-            "extends": None
-        })
+        if len(methods) > 0:
+            render_data['content'].append({
+                "documentation": None,
+                "name": "Functions",
+                "methods": methods,
+                "member_variables": [],
+                "sections": sections,
+                "extends": None,
+                "type": 'global'
+            })
 
+        # Classes
         for subitem in filedata['classes']:
             if not subitem['visible']:
                 continue
@@ -249,8 +260,15 @@ class SiteGenerator:
                 "methods": methods,
                 "member_variables": member_variables,
                 "sections": sections,
-                "extends": subitem['extends']
+                "extends": subitem['extends'],
+                "type": 'class'
             })
+
+        if len(render_data['content']) == 1 and render_data['content'][0]['name'] == render_data['file']:
+            render_data['showPageTitle'] = False;
+        else:
+            render_data['showPageTitle'] = True;
+
 
         # save the results
         output = template.render(render_data).encode('utf8')
@@ -311,8 +329,8 @@ class SiteGenerator:
                 if name[0] != '.' and name != 'reference.json':
                     print "Site Generator - Parse "+name
                     data = self.loadData(name)
-                    #if name == 'ofVec2f.json':
-                    self.renderFile(data, reference)
+                    if name == 'ofVec2f.json':
+                        self.renderFile(data, reference)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"

@@ -9,6 +9,7 @@ def add_variable(var):
         "file": utils.filenameFromClangChild(var.cursor),
         "type": "variable",
         "name": var.data['name'],
+        "folder": var.data['folder'],
         "class": var.parentclass.data['name']  if var.parentclass else None
     })
 
@@ -17,6 +18,7 @@ def add_function(func):
         "file": utils.filenameFromClangChild(func.cursor),
         "type": "function",
         "name": func.data['name'],
+        "folder": func.data['folder'],
         "class": func.parentclass.data['name'] if func.parentclass else None
     })
 
@@ -24,6 +26,7 @@ def add_class(c):
     json_ref_data.append({
         "file": utils.filenameFromClangChild(c.cursor),
         "type": "class",
+        "folder": c.data['folder'],
         "name": c.data['name'],
     })
 

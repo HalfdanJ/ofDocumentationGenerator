@@ -5,28 +5,56 @@
 <div id="documentation">
     <div class="row">
         <div class="col m3" id="sidemenu">
+
             <div class="navigator">
-                {% for item in content %}
-                <span class="class">{{ item.name }}</span>
-                <ul class="section">
-                    {% for section in item.sections %}
-                    <li class="chapter">
-                        <a href="#{{ section.anchor }}">{{ section.title }}</a>
-                    </li>
+                <div class="breadcrump">
+                    <ul>
+                        <li>
+                            <a href="/latest">{{ folder }}</a>
+                        </li>
+                        <li class="splitter">
+                            >
+                        </li>
+                        <li>
+                            <a href="#" data-activates='dropdown1' class="dropdown-button">{{ file }}</a>
+                        </li>
+                    </ul>
+                    <!-- Dropdown Structure -->
+                    <ul id='dropdown1' class='dropdown-content'>
+                        {% for file in otherFilesInFolder %}
+                        <li><a href="/latest/{{file}}.html">{{file}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="sections-navigator">
+                    {% for item in content %}
+                    {% if item.sections|length > 0 %}
+                    <span class="class">{{ item.name }}</span>
+                    <ul class="section">
+                        {% for section in item.sections %}
+                        <li class="chapter">
+                            <a href="#{{ section.anchor }}">{{ section.title }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
                     {% endfor %}
-                </ul>
-                {% endfor %}
+                </div>
             </div>
         </div>
 
 
 
         <div class="col m9 offset-m3" id="documentation-content">
-            <h3>{{pageTitle}}</h3>
+            {% if showPageTitle %}
+            <h4>{{file}}</h4>
+            {% endif %}
+
             {% for item in content %}
             <div class="item">
 
-                <h5>{{item.name}}</h5>
+                <h4>{{item.name}} <span class="header-label">{{item.type}}</span></h4>
                 {% if item.extends %}
                 <div class="inherits-header">Inherits from:
                     {% for extend in item.extends %}
