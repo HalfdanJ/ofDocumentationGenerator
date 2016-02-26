@@ -62,6 +62,7 @@ nav {
 
         .breadcrump {
             font-weight: 300;
+            margin-bottom: 25px;
             li {
                 display:inline;
             }
@@ -159,6 +160,11 @@ nav {
 
     h6 {
         font-weight: 500;
+    }
+
+    blockquote {
+        border-left-color: $brandColor;
+        color: #777;
     }
 
     table {

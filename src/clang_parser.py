@@ -65,6 +65,7 @@ def add_class(data, offilename, folder):
     if offilename not in json_data:
         json_data[offilename] = {
             "name": offilename,
+            "type": 'file',
             "folder":folder,
             "classes": [],
             "functions": []
@@ -77,6 +78,7 @@ def add_function(data, offilename, folder):
     if offilename not in json_data:
         json_data[offilename] = {
             "name": offilename,
+            "type": 'file',
             "folder":folder,
             "classes": [],
             "functions": []
@@ -97,14 +99,14 @@ def parse_file_child(child):
                 new_class = DocClass(child)
                 add_class(new_class.serialize(), offilename, new_class.folder)
                 visited_classes.append(child.spelling)
-                clang_reference.add_class(new_class)
+                #clang_reference.add_class(new_class)
 
         if utils.is_function(child):
             if child.spelling not in visited_function and offilename != "ofMain":
                 visited_function.append(child.spelling)
                 new_func = DocFunction(child, None)
                 add_function(new_func.serialize(), offilename, new_func.folder)
-                clang_reference.add_function(new_func)
+                #clang_reference.add_function(new_func)
 
 
 

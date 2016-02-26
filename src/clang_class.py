@@ -20,6 +20,7 @@ class DocClass:
 
         self.data = {}
         self.name = self.data['name'] = cursor.spelling
+        self.data['type'] = 'class'
 
         split = cursor.location.file.name.split('/')
         self.filename = split[-1]

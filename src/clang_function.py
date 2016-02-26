@@ -1,7 +1,7 @@
 import re
 
 from clang.cindex import CursorKind
-
+import clang_reference
 import clang_documentation_parser
 import utils
 
@@ -20,6 +20,7 @@ class DocFunction():
 
         self.data['name'] = cursor.spelling
         self.data['name'] = re.sub("<.*>", "", self.data['name'])
+        self.data['type'] = 'function'
 
         # Parse documentation
         self.data['documentation'] = clang_documentation_parser.parse_docs(cursor)
@@ -51,6 +52,8 @@ class DocFunction():
 
     def parse_parameters(self):
         self.data['parameters'] = []
+        self.data['parameter_names'] = []
+        self.data['parameter_types'] = []
 
         # Parse the arguments into a stirng
         for arg in self.cursor.get_children():
@@ -62,10 +65,14 @@ class DocFunction():
                 continue
 
             argtype = utils.substitutetype(arg.type.spelling)
+            self.data['parameter_names'].append(arg.spelling)
+            self.data['parameter_types'].append(argtype)
+
             if argtype[-1] == '&' or argtype[-1] == '*':
                 self.data['parameters'].append(argtype + arg.spelling)
             else:
                 self.data['parameters'].append(argtype + " " + arg.spelling)
+
 
             try:
                 for part in arg.get_children():
@@ -86,4 +93,5 @@ class DocFunction():
                 pass
 
     def serialize(self):
+        clang_reference.add_function(self)
         return self.data
