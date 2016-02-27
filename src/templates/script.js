@@ -1,7 +1,4 @@
 $( document ).ready(function() {
-    $('.collapsible').collapsible({
-        accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
-    });
 
 
     $('.dropdown-button').dropdown({
@@ -30,6 +27,34 @@ $( document ).ready(function() {
         var item = $($(this).attr("href"));
         if (item.length) { return item; }
     });
+
+    $('a[href*="#"]:not([href="#"]').on('click',function (e) {
+	    e.preventDefault();
+
+	    var target = this.hash;
+	    var $target = $(target);
+
+        if(!$(target+" .collapsible-header").hasClass('active')){
+            $(target+" .collapsible-header").click()
+        };
+
+	    $('html, body').stop().animate({
+	        'scrollTop': $target.offset().top - 80
+	    }, 400, 'swing', function () {
+	        window.location.hash = target;
+	    });
+	});
+
+    if(window.location.hash){
+        if(!$(window.location.hash+" .collapsible-header").hasClass('active')){
+            $(window.location.hash+" .collapsible-header").click()
+        };
+
+        $target = $(window.location.hash)
+        $('html, body').stop().animate({
+            'scrollTop': $target.offset().top - 80
+        }, 400, 'swing');
+    }
 
     // Bind to scroll to update the menu
     $(window).scroll(function(){

@@ -83,6 +83,14 @@ class SiteGenerator:
             return ""
         return prefix+'_'+''.join(x for x in section.title() if not x.isspace())
 
+    def itemAnchor(self, item, parent):
+        if  parent['type'] == 'class':
+            prefix = parent['name']
+        else:
+            prefix = 'global'
+
+        return prefix+'_'+item['name']
+
 
     def parseItemFunctions(self, methods, sections, item, inherited):
 
@@ -148,6 +156,7 @@ class SiteGenerator:
             if not found:
                 methods.append({
                     "name": method["name"],
+                    "anchor": self.itemAnchor(method, item),
                     "section": section,
                     "section_anchor": self.sectionAnchor(section, item),
                     "variants": [m]
@@ -176,10 +185,10 @@ class SiteGenerator:
 
             section = variable["documentation"]["section"]
             # Set section name if its not set already on the first element
-            if section is None and len(member_variables) == 0:
+            if section is None and len(ret_variables) == 0:
                 section = variable["documentation"]["section"] = 'Attributes'
 
-            if section is not None and (len(sections) == 0 or sections[-1] != section):
+            if section is not None and (len(ret_sections) == 0 or ret_sections[-1] != section):
                 ret_sections.append({
                     "title": section,
                     "anchor": self.sectionAnchor(section, item)
@@ -188,8 +197,9 @@ class SiteGenerator:
             ret_variables.append({
                 "type": variable['type'],
                 "name": variable["name"],
+                "anchor": self.itemAnchor(variable, item),
                 "section": section,
-                "section_anchor": self.sectionAnchor(section, subitem),
+                "section_anchor": self.sectionAnchor(section, item),
                 "documentation": self.parseDocumentation(variable["documentation"], item)
             })
 

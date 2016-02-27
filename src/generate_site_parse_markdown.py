@@ -8,58 +8,76 @@ class SiteParseMarkdown:
     markdowndir = ''
     reference = []
 
-    def searchForGlobalReference(self, classWord, funcWord):
+    def searchForGlobalReference(self, word, nextchar):
         #print classWord+" "+funcWord
         isFunction = False
-        if funcWord[-1] == '(':
-            funcWord = funcWord[0:-1]
+        if nextchar == '(':
             isFunction = True
 
         for item in self.reference:
             if isFunction and item['type'] == 'function' and item['class'] is None:
-                if item['name'] == funcWord:
+                if item['name'] == word:
                     return item
 
             if not isFunction and item['type'] == 'class':
-                if item['name'] == funcWord:
+                if item['name'] == word:
                     return item
 
 
-    def searchForClassReference(self, classWord, funcWord, scope):
-
+    def searchForClassReference(self, word, nextchar, scope):
+        #print word, scope, nextchar
         isFunction = False
-        if funcWord[-1] == '(':
-            funcWord = funcWord[0:-1]
+        if nextchar == '(':
             isFunction = True
 
         for item in self.reference:
             if isFunction and item['type'] == 'function' and item['class'] == scope:
-                if item['name'] == funcWord:
+                if item['name'] == word:
                     return item
 
             if not isFunction and item['type'] == 'variable' and item['class'] == scope:
-                if item['name'] == funcWord:
+                if item['name'] == word:
                     return item
 
     def linkToReferenceItem(self, item):
-        return item['file']+".html"+"#"+item['name']
+        prefix = 'global'
+        if 'class' in item and item['class']:
+            prefix = item['class']
 
-    def replaceWithLink(self, html, ref):
-        link = self.linkToReferenceItem(ref)
+        anchor = '{}_{}'.format(prefix, item['name'])
 
-        # Pattern that tries to not match elements that already are in links
-        pattern = re.compile("(?<!href=\")"+ref['name']+"(?!\">)(?!</a>)")
+        return '<a href="{file}.html#{anchor}">{name}</a>'.format(file=item['file'], name=item['name'], anchor=anchor)
 
-        ret = pattern.sub('<a href="'+link+'">'+ref['name']+'</a>', html)
-        return ret
+    def replaceWithLink(self, word, nextchar, scope):
+        if nextchar is None:
+            nextchar = ''
+
+        ref = self.searchForGlobalReference(word, nextchar)
+        if ref and ref['name'] != scope:
+            return self.linkToReferenceItem(ref)+nextchar
+
+        if scope is not None and ref is None:
+            ref = self.searchForClassReference(word, nextchar, scope)
+            if ref is not None and ref['name'] != scope:
+                return self.linkToReferenceItem(ref)+nextchar
+
+        return word+nextchar
+
+
 
     def replaceLinks(self, html, contextClass):
         scope = None
         if contextClass['type'] == 'class':
             scope = contextClass['name']
 
-        # Check all text to see if its refering to something in reference
-        pattern = re.compile(r'((\w+)\.)?(\w+\(?)')
+        # Search for all words not encapsulated in <a href...
+        html = re.sub(r'(?P<word>(?<!<a href=")(?<!#)\w+(?!</a>)(?!">))(?P<nextchar>\()?',
+            lambda m1:
+                self.replaceWithLink(m1.group('word'), m1.group('nextchar'), scope)
+            , html)
+
+        """
+        pattern = re.compile(r'((\w+)\.)?(\w+?)')
         for (_word1, classWord, funcWord) in re.findall(pattern, html):
             ref = self.searchForGlobalReference(classWord, funcWord)
             if ref is not None and (scope is None or ref['name'] != scope):
@@ -69,6 +87,7 @@ class SiteParseMarkdown:
                 ref = self.searchForClassReference(classWord, funcWord, scope)
                 if ref is not None and ['name'] != scope:
                     html = self.replaceWithLink(html, ref)
+        """
 
 
         return html
