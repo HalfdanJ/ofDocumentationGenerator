@@ -50,6 +50,9 @@ class SiteParseMarkdown:
     Return a link to an item (function, var, class)
     """
     def linkToReferenceItem(self, item, text):
+        if item is None:
+            return text
+
         prefix = 'global'
         if 'class' in item and item['class']:
             prefix = item['class']
