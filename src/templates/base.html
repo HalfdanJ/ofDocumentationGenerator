@@ -18,19 +18,23 @@
     <link href="http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <div class="navbar-fixed">
-        <nav>
-            <div class="nav-wrapper">
-                <!--<a href="#!" class="brand-logo"><img src="http://openframeworks.cc/assets/images/of-logo.svg"/></a>-->
-                <a href="/latest/" class="brand-logo">ofDoc</a>
-                <ul class="right hide-on-med-and-down">
-                    <!--<li><a href="sass.html">Sass</a></li>
-                    <li><a href="badges.html">Components</a></li>--->
-                </ul>
-            </div>
-        </nav>
-    </div>
+    <div id="top-bar">
+        <div class="container">
+            <div class="row">
+                <div class="col m8">
+                    <img class="oFlogo" src="http://openframeworks.cc/assets/images/of-logo.svg"/>
+                </div>
+                <div class="col m4">
+                    <div class="input-field">
 
+                    <input id="search" type="search"></input>
+                    <label for="search"><i class="material-icons">search</i></label>
+                </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <div class="container">
         {% block content %}{% endblock %}
     </div>
