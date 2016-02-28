@@ -385,7 +385,7 @@ class SiteGenerator:
 
         self.compileScss()
         shutil.copyfile(os.path.join(template_dir,'script.js'), os.path.join(outdir,'script.js'))
-        shutil.copyfile(os.path.join(jsondir,'reference.json'), os.path.join(outdir,'reference.json'))
+	#shutil.copyfile(os.path.join(jsondir,'reference.json'), os.path.join(outdir,'reference.json'))
 
 if __name__ == '__main__':
     print "Start"
