@@ -44,21 +44,26 @@ class SiteGenerator:
         return doc
 
 
-    def renderToc(self, toc):
+    def renderToc(self, toc, rules):
+        extra = 1
 
-        extra = 10
+        # remove internal files from toc
+        import fnmatch
+        for key in toc.keys():
+            toc[key] = filter(lambda file: not any(fnmatch.fnmatch(file, rule) for rule in rules), toc[key])
+            toc[key].sort()
+
 
         count = 0
         totalcount = 1
-        for key in toc.keys():
+        for key in sorted(toc.keys()):
             totalcount += len(toc[key]) + extra
 
         cols = [[],[],[]]
-        for key in toc.keys():
+        for key in sorted(toc.keys()):
             count += len(toc[key]) + extra
             index = int(math.floor(3.0*count / totalcount))
             cols[index].append({ 'name': key, 'files': toc[key] })
-
 
         output = toc_template.render({
             "content": cols
@@ -247,11 +252,11 @@ class SiteGenerator:
             member_variables = []
             self.parseItemVariables(member_variables, sections, subitem)
 
-	    # Extends
-	    extends =  map(lambda name:
-		self.markdownParser.linkToReferenceItem(self.markdownParser.searchForGlobalReference(name,''),name),
+            # Extends
+            extends =  map(lambda name:
+                self.markdownParser.linkToReferenceItem(self.markdownParser.searchForGlobalReference(name,''),name),
 
-		subitem['extends'])
+                subitem['extends'])
 
             # Class item
             render_data['content'].append({
@@ -260,7 +265,7 @@ class SiteGenerator:
                 "methods": methods,
                 "member_variables": member_variables,
                 "sections": sections,
-		"extends": extends,
+                "extends": extends,
                 "type": 'class'
             })
 
@@ -330,12 +335,16 @@ class SiteGenerator:
                 if name[0] != '.' and name != 'reference.json':
                     print "Site Generator - Parse "+name
                     data = self.loadData(name)
-                    #if name == 'ofSoundPlayer.json':
-                    self.renderFile(data)
+		    #if name == 'ofSoundPlayer.json':
+		    self.renderFile(data)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"
-        self.renderToc(self.toc)
+
+        with open(os.path.join(markdowndir, 'internal_files'),'r') as internal_files:
+            rules = internal_files.read().split('\n')
+
+        self.renderToc(self.toc, rules)
         self.compileScss()
         shutil.copyfile(os.path.join(template_dir,'script.js'), os.path.join(outdir,'script.js'))
 

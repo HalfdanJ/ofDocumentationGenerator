@@ -24,6 +24,7 @@ nav {
     .prettyprint {
         padding:0;
         background-color: transparent;
+        font-family: $sourceCodeFont;
     }
     margin: 14px 0;
     padding-left: 34px;
@@ -31,6 +32,10 @@ nav {
     font-size: 12px;
     background-color: rgba(0,0,0,0.04);
     border-radius: 3px;
+
+    a {
+        font-weight: 600;
+    }
 }
 
 // Front page
