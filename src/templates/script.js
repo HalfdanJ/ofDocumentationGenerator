@@ -122,12 +122,12 @@ $( document ).ready(function() {
         for(var i=0;i<num;i++){
             var res = searchResult[i];
             var el = $('<li>');
-            var link = $('<a href="' + res.url + '.html">');
+            var link = $('<a href="' + res.url + '">');
 
             el.append(link);
 
             if(res['class']){
-            link.append('<span class="searchClass">'+res['class']+'.</span>')    
+            link.append('<span class="searchClass">'+res['class']+'.</span>')
             }
             link.append('<span class="searchName">'+res.name+'</span>')
 
