@@ -12,6 +12,7 @@ class SiteParseMarkdown:
     global_reference = {}
     classes_reference = {}
 
+
     """
     Search for a word in global reference
     """
@@ -87,7 +88,7 @@ class SiteParseMarkdown:
     Search html for words that can be replaced with internal
     links to other documentation
     """
-    def createLinks(self, html, contextClass):
+    def createInternalLinks(self, html, contextClass):
         scope = None
         if contextClass['type'] == 'class':
             scope = contextClass['name']
@@ -107,13 +108,9 @@ class SiteParseMarkdown:
         if mk is None:
             return ""
 
-        # Run markdown parser
-        ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
-        ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
-
         # Images
         rx = re.compile(r"!\[.+\]\((.+)\)")
-        for image in rx.finditer(ret):
+        for image in rx.finditer(mk):
             imgpath = image.group(1)
             imgpath = imgpath.replace('../','')
             dest = os.path.join(self.outdir, imgpath)
@@ -126,11 +123,19 @@ class SiteParseMarkdown:
             if os.path.exists(imgpath) and not os.path.exists(dest):
                 print "copy image  ",imgpath
                 shutil.copyfile(imgpath, dest)
-            #else:
+            else:
+                print "Could not find "+imgpath
             #    raise Exception('Image '+imgpath+" doesnt exist!")
 
-        # Create links
-        ret = self.createLinks(ret, contextClass)
+        # Run markdown parser
+        ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
+        ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
+
+
+
+        # Create internal links
+        ret = self.createInternalLinks(ret, contextClass)
+
 
         return ret
 

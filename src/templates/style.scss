@@ -179,8 +179,31 @@ nav {
     }
 
     .markdown-doc {
+        h1 {
+            font-size: 36px;
+        }
+        h2 {
+            font-size: 32px
+        }
+        h3 {
+            font-size: 28px;
+        }
         h4 {
             font-size: 22px;
+        }
+        h5 {
+            font-size: 18px;
+        }
+    }
+
+    .item {
+        margin-bottom: 50px;
+    }
+
+    .parameters {
+        .arg-name {
+            font-family: $sourceCodeFont;
+            font-weight: 600;
         }
     }
 
