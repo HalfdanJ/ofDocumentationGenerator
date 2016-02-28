@@ -55,7 +55,6 @@ nav {
 }
 
 #documentation {
-    
     .navigator {
         position: fixed;
 
@@ -134,6 +133,13 @@ nav {
                 color: $brandColor;
             }
         }
+
+    }
+
+    .inherits-header {
+        color: #AFAFAF;
+        margin-top: -17px;
+        font-weight: 300;
     }
 
     .header-label {
@@ -188,242 +194,10 @@ nav {
         }
 
     }
-}
-
-/*
-
-* {
-
-    h1, h2, h3, h4 {
-        font-weight: 200 !important;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-    }
-    h1 {
-        font-size: 38px !important;
-        border-bottom: 0 !important;
-    }
-    h4 {
-        font-size: 20px !important;
-    }
-
-
-}
-
-
-
-
-.ui.fixed.sticky+h1 {
-  margin-top: 56px;
-}
-.ui.fixed.sticky+div {
-  margin-top: 56px;
-}
-
-.menu {
-    border-radius: 0px !important;
-    border-top: 0 !important;
-    box-shadow: 0 0 0 0 !important;
-
-    //background-color: white !important;
-
-}
-// Front page
-.toc {
-    .mainheader {
-        font-weight: 200 !important;
-        font-size: 42px !important;
-
-    }
-
-    .folder {
-        font-size: 24px;
-        font-weight: 200 !important;
-    }
-
-    .ui.link.list {
-        margin-bottom:20px;
-    }
-
-
-}
-
-.maincontainer {
-    margin-right: auto;
-    margin-left: auto;
-    width: 1170px;
-}
-
-.subheader {
-    color: #aaa;
-    margin-bottom: 13px;
-    margin-top: -8px;
 
     a {
-        color: #aaa;
-        text-decoration:underline;
-    }
-}
-
-.method {
-
-    .title{
-        border: 1px solid #FFF;
-        padding-left: 8px !important;
-        transition-duration: 0.3s;
-
-        &.active {
-            border: 1px solid #e6e6e6;
-            border-width: 1px 1px 0px 1px;
-            padding-left: 16px !important;
-        }
-    }
-    .content {
-        border: 1px solid #e6e6e6;
-        border-width: 0px 1px 1px 1px;
-
-        .container{
-            padding:0px 16px 8px 16px;
-        }
-        background: #f8f8f8;
-
-
-    }
-
-    .group-name {
-        font-family: $sourceCodeFont;
-        color:#428bca;
-    }
-    .kind {
-        font-family: $sourceCodeFont;
-        color:#CCC;
-    }
-
-    .content {
-        margin-bottom: 10px;
-
-        .memberVariant {
-            font-family: $sourceCodeFont;
-            .type {
-
-            }
-            .name {
-                font-weight:bold;
-            }
-            .args {
-            }
-        }
-
-        .description {
-            padding-top: 10px;
-            padding-left: 25px;
-
-            .header {
-                margin-bottom: 2px;
-                margin-top: 10px;
-            }
-        }
-
-        hr {
-            border: 0;
-            border-top: 1px solid #e2e2e2;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-
+        color: $brandColor
     }
 
 
 }
-
-.section-header {
-    font-weight: 200;
-}
-
-.codehilite {
-    margin: 14px 0;
-    padding-left: 34px;
-    padding: 8px 20px;
-    font-size: 12px;
-    background-color: #F7F7F7;
-    border-radius: 3px;
-}
-
-pre.prettyprint, code.prettyprint {
-    font-family: $sourceCodeFont;
-
-    .pln {
-        //color: #c7254e;
-        //background-color: #f9f2f4;
-    }
-}
-
-
-#content {
- margin-left: 300px !important;
-     width: 734px;
- }
-
-.navigator {
-    border-bottom: 0;
-    bottom: 0;
-    overflow: auto;
-    position: fixed;
-    top: 90px;
-    width: 230px;
-
-    #nav-parts {
-        color: gray;
-        font-weight: 100;
-        line-height: 140%;
-        list-style-type: none;
-        margin: 0;
-        padding-left: 0px;
-
-        li.group {
-            font-family: Helvetica;
-            font-size: 1.5em;
-            line-height: 150%;
-            list-style-type: none;
-            margin: 0;
-            padding: 10px 30px 10px 0px;
-            cursor: pointer;
-            color: #333;
-            overflow: hidden;
-
-            ul {
-                padding:0;
-
-                span {
-                    line-height: 40px;
-                    font-size: 17px;
-                    display:block;
-                }
-                li.chapter {
-                    display: block;
-                    line-height: 13px;
-                    margin: 9px 0px;
-                    padding-left: 10px;
-
-
-                    a {
-                        font-size: 12px;
-                        color: gray;
-                        transition: color 0.2s ease, padding 0.2s ease;
-                        padding-left: 0px;
-
-
-                    }
-
-                     &.selected {
-                        a{
-                            color: #ee3987;
-                            padding-left: 5px;
-                        }
-                    }
-                }
-            }
-        }
-    }
- }
-*/

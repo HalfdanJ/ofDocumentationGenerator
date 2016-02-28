@@ -247,6 +247,12 @@ class SiteGenerator:
             member_variables = []
             self.parseItemVariables(member_variables, sections, subitem)
 
+	    # Extends
+	    extends =  map(lambda name:
+		self.markdownParser.linkToReferenceItem(self.markdownParser.searchForGlobalReference(name,''),name),
+
+		subitem['extends'])
+
             # Class item
             render_data['content'].append({
                 "documentation": self.parseDocumentation(subitem["documentation"], subitem),
@@ -254,7 +260,7 @@ class SiteGenerator:
                 "methods": methods,
                 "member_variables": member_variables,
                 "sections": sections,
-                "extends": subitem['extends'],
+		"extends": extends,
                 "type": 'class'
             })
 

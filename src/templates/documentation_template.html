@@ -58,7 +58,7 @@
                 {% if item.extends %}
                 <div class="inherits-header">Inherits from:
                     {% for extend in item.extends %}
-                    <a href="{{extend}}.html">{{ extend }}</a>
+                    {{extend}}
                     {% if not loop.last %}
                     ,&nbsp;
                     {% endif %}

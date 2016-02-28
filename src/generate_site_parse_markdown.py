@@ -45,19 +45,18 @@ class SiteParseMarkdown:
                 if not isFunction and item['type'] != 'function':
                     return item
 
-    
 
     """
     Return a link to an item (function, var, class)
     """
-    def linkToReferenceItem(self, item):
+    def linkToReferenceItem(self, item, text):
         prefix = 'global'
         if 'class' in item and item['class']:
             prefix = item['class']
 
         anchor = '{}_{}'.format(prefix, item['name'])
 
-        return '<a href="{file}.html#{anchor}">{name}</a>'.format(file=item['file'], name=item['name'], anchor=anchor)
+        return '<a href="{file}.html#{anchor}">{name}</a>'.format(file=item['file'], name=text, anchor=anchor)
 
     """
     Check word if its replaceable, and return the replacing
@@ -69,13 +68,13 @@ class SiteParseMarkdown:
         # Search in global scope for matches
         ref = self.searchForGlobalReference(word, nextchar)
         if ref and ref['name'] != scope:
-            return self.linkToReferenceItem(ref)+nextchar
+            return self.linkToReferenceItem(ref, word)+nextchar
 
         # Search in class scope for matches
         if scope is not None and ref is None:
             ref = self.searchForClassReference(word, nextchar, scope)
             if ref is not None and ref['name'] != scope:
-                return self.linkToReferenceItem(ref)+nextchar
+                return self.linkToReferenceItem(ref, word)+nextchar
 
         # No match
         return word+nextchar
