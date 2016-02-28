@@ -311,6 +311,7 @@ class SiteGenerator:
         self.markdownParser.outdir = self.outdir
         self.markdownParser.markdowndir = markdowndir
         self.markdownParser.reference = self.reference
+        self.markdownParser.populateLookupTable()
 
         print "Site Generator - cleanup"
         if os.path.exists(outdir):
@@ -323,8 +324,8 @@ class SiteGenerator:
                 if name[0] != '.' and name != 'reference.json':
                     print "Site Generator - Parse "+name
                     data = self.loadData(name)
-                    #if name == 'ofSoundPlayer.json':
-                    self.renderFile(data)
+                    if name == 'ofSoundPlayer.json':
+                        self.renderFile(data)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"

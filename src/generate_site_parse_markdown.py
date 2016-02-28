@@ -2,43 +2,54 @@ import markdown as markdown
 import os
 import shutil
 import re
+from sets import Set
 
 class SiteParseMarkdown:
     outdir = ''
     markdowndir = ''
     reference = []
 
+    global_reference = {}
+    classes_reference = {}
+
+    """
+    Search for a word in global reference
+    """
     def searchForGlobalReference(self, word, nextchar):
         #print classWord+" "+funcWord
         isFunction = False
         if nextchar == '(':
             isFunction = True
 
-        for item in self.reference:
-            if isFunction and item['type'] == 'function' and item['class'] is None:
-                if item['name'] == word:
-                    return item
+        if word in self.global_reference:
+            item = self.global_reference[word]
+            if isFunction and item['type'] == 'function':
+                return item
+            if not isFunction and item['type'] != 'function':
+                return item
 
-            if not isFunction and item['type'] == 'class':
-                if item['name'] == word:
-                    return item
-
-
+    """
+    Search for a word in class reference
+    """
     def searchForClassReference(self, word, nextchar, scope):
         #print word, scope, nextchar
         isFunction = False
         if nextchar == '(':
             isFunction = True
 
-        for item in self.reference:
-            if isFunction and item['type'] == 'function' and item['class'] == scope:
-                if item['name'] == word:
+        if scope in self.classes_reference:
+            if word in self.classes_reference[scope]:
+                item = self.classes_reference[scope][word]
+                if isFunction and item['type'] == 'function':
+                    return item
+                if not isFunction and item['type'] != 'function':
                     return item
 
-            if not isFunction and item['type'] == 'variable' and item['class'] == scope:
-                if item['name'] == word:
-                    return item
+    
 
+    """
+    Return a link to an item (function, var, class)
+    """
     def linkToReferenceItem(self, item):
         prefix = 'global'
         if 'class' in item and item['class']:
@@ -48,24 +59,33 @@ class SiteParseMarkdown:
 
         return '<a href="{file}.html#{anchor}">{name}</a>'.format(file=item['file'], name=item['name'], anchor=anchor)
 
+    """
+    Check word if its replaceable, and return the replacing
+    """
     def replaceWithLink(self, word, nextchar, scope):
         if nextchar is None:
             nextchar = ''
 
+        # Search in global scope for matches
         ref = self.searchForGlobalReference(word, nextchar)
         if ref and ref['name'] != scope:
             return self.linkToReferenceItem(ref)+nextchar
 
+        # Search in class scope for matches
         if scope is not None and ref is None:
             ref = self.searchForClassReference(word, nextchar, scope)
             if ref is not None and ref['name'] != scope:
                 return self.linkToReferenceItem(ref)+nextchar
 
+        # No match
         return word+nextchar
 
 
-
-    def replaceLinks(self, html, contextClass):
+    """
+    Search html for words that can be replaced with internal
+    links to other documentation
+    """
+    def createLinks(self, html, contextClass):
         scope = None
         if contextClass['type'] == 'class':
             scope = contextClass['name']
@@ -76,30 +96,16 @@ class SiteParseMarkdown:
                 self.replaceWithLink(m1.group('word'), m1.group('nextchar'), scope)
             , html)
 
-        """
-        pattern = re.compile(r'((\w+)\.)?(\w+?)')
-        for (_word1, classWord, funcWord) in re.findall(pattern, html):
-            ref = self.searchForGlobalReference(classWord, funcWord)
-            if ref is not None and (scope is None or ref['name'] != scope):
-                html = self.replaceWithLink(html, ref)
-
-            if scope is not None and ref is None:
-                ref = self.searchForClassReference(classWord, funcWord, scope)
-                if ref is not None and ['name'] != scope:
-                    html = self.replaceWithLink(html, ref)
-        """
-
-
         return html
 
-
+    """
+    Given some markdown and optional context class, return html
+    """
     def parseMarkdown(self, mk, contextClass):
-
-        #print scope
         if mk is None:
             return ""
 
-
+        # Run markdown parser
         ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
         ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
 
@@ -121,14 +127,24 @@ class SiteParseMarkdown:
             #else:
             #    raise Exception('Image '+imgpath+" doesnt exist!")
 
-        ret = self.replaceLinks(ret, contextClass)
-
-
-
-
-        #
-        #         print funcWord
-        #     #print word1+"  "+word2+"  "+word3
-
+        # Create links
+        ret = self.createLinks(ret, contextClass)
 
         return ret
+
+    def populateLookupTable(self):
+        for item in self.reference:
+            if 'class' in item and item['class'] and item['class'] not in self.classes_reference:
+                self.classes_reference[item['class']] = {}
+
+            if item['type'] == 'class':
+                self.global_reference[item['name']] = item
+            if item['type'] == 'function' or item['type'] == 'variable':
+                if item['class'] is None:
+                    self.global_reference[item['name']] = item
+                else:
+                    self.classes_reference[item['class']][item['name']] = item
+
+        #import pprint
+        #pp = pprint.PrettyPrinter(depth=6)
+        #pp.pprint( self.classes_reference)
