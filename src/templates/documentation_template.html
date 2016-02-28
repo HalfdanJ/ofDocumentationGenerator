@@ -70,7 +70,7 @@
 
                 {% if item.documentation.markdown %}
                 <p><b> Markdown:</b></p>
-                {{ item.documentation.markdown}}
+                <div class="markdown-doc">{{ item.documentation.markdown}}</div>
                 {% endif %}
 
 
@@ -162,7 +162,7 @@
                                     {% if method.variants[0].documentation.markdown %}
                                     <li class="collection-item">
                                         <h6>Description</h6>
-                                        {{ method.variants[0].documentation.markdown}}
+                                        <div class="markdown-doc">{{ method.variants[0].documentation.markdown}}</div>
                                     </li>
                                     {% endif %}
 
@@ -201,7 +201,7 @@
 
                                 {% if variable.documentation.markdown %}
                                 <li class="collection-item">
-                                    {{ variable.documentation.markdown}}
+                                    <div class="markdown-doc">{{ variable.documentation.markdown}}</div>
                                 </li>
                                 {% endif %}
 

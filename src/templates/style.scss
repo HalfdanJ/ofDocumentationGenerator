@@ -76,6 +76,7 @@ nav {
         }
         .section {
             margin:0;
+            margin-bottom: 12px;
             padding:0;
         }
 
@@ -175,6 +176,12 @@ nav {
     blockquote {
         border-left-color: $brandColor;
         color: #777;
+    }
+
+    .markdown-doc {
+        h4 {
+            font-size: 22px;
+        }
     }
 
     table {
