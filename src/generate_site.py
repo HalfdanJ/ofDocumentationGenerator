@@ -4,6 +4,7 @@ import shutil
 import sys
 import math
 import re
+from sets import Set
 
 from scss import parser
 from jinja2 import Environment, FileSystemLoader
@@ -24,6 +25,7 @@ class SiteGenerator:
     toc = {}
     jsondir = ''
     outdir = ''
+    internal_files_rules = []
 
     markdownParser = SiteParseMarkdown()
 
@@ -44,13 +46,16 @@ class SiteGenerator:
         return doc
 
 
-    def renderToc(self, toc, rules):
+    def isFileInternal(self, file):
+        import fnmatch
+        return any(fnmatch.fnmatch(file, rule) for rule in self.internal_files_rules)
+
+    def renderToc(self, toc):
         extra = 1
 
         # remove internal files from toc
-        import fnmatch
         for key in toc.keys():
-            toc[key] = filter(lambda file: not any(fnmatch.fnmatch(file, rule) for rule in rules), toc[key])
+            toc[key] = filter(lambda file: not self.isFileInternal(file), toc[key])
             toc[key].sort()
 
 
@@ -70,8 +75,37 @@ class SiteGenerator:
         }).encode('utf8')
 
         # to save the results
-        with open(os.path.join(self.outdir,self.outdir, "index.html"), "wb") as fh:
+        with open(os.path.join(self.outdir, "index.html"), "wb") as fh:
             fh.write(output)
+
+    def generateSearchReference(self):
+        data = {'classes':[], 'functions':[], 'variables':[]}
+        funcSet = Set()
+
+        for item in self.reference:
+            url = self.markdownParser.urlToReferenceItem(item),
+
+            if not self.isFileInternal(item['file']):
+                d = {
+                    'name':item['name'],
+                    'url':url
+                }
+                if item['type'] == 'class':
+                    data['classes'].append(d)
+                if item['type'] == 'function':
+                    if item['name'] not in funcSet \
+                        and item['name'][0] != '~'\
+                        and item['name'] != item['class']:
+
+                        d['class'] = item['class']
+                        data['functions'].append(d)
+                        funcSet.add(item['name'])
+                if item['type'] == 'variable':
+                    d['class'] = item['class']
+                    data['variables'].append(d)
+
+        with open(os.path.join(self.outdir, "search.json"), 'w') as outfile:
+            json.dump(data, outfile)
 
 
     def sectionAnchor(self, section, item):
@@ -319,6 +353,9 @@ class SiteGenerator:
 
         self.reference = self.loadData('reference.json')
 
+        with open(os.path.join(markdowndir, 'internal_files'),'r') as internal_files:
+            self.internal_files_rules = internal_files.read().split('\n')
+
         self.markdownParser.outdir = self.outdir
         self.markdownParser.markdowndir = markdowndir
         self.markdownParser.reference = self.reference
@@ -341,12 +378,14 @@ class SiteGenerator:
 
         print "Site Generator - Generate index"
 
-        with open(os.path.join(markdowndir, 'internal_files'),'r') as internal_files:
-            rules = internal_files.read().split('\n')
 
-        self.renderToc(self.toc, rules)
+
+        self.renderToc(self.toc)
+        self.generateSearchReference()
+
         self.compileScss()
         shutil.copyfile(os.path.join(template_dir,'script.js'), os.path.join(outdir,'script.js'))
+        shutil.copyfile(os.path.join(jsondir,'reference.json'), os.path.join(outdir,'reference.json'))
 
 if __name__ == '__main__':
     print "Start"

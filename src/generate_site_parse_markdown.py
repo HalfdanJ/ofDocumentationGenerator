@@ -47,10 +47,7 @@ class SiteParseMarkdown:
                     return item
 
 
-    """
-    Return a link to an item (function, var, class)
-    """
-    def linkToReferenceItem(self, item, text):
+    def urlToReferenceItem(self, item):
         if item is None:
             return text
 
@@ -58,9 +55,18 @@ class SiteParseMarkdown:
         if 'class' in item and item['class']:
             prefix = item['class']
 
-        anchor = '{}_{}'.format(prefix, item['name'])
+        return '{}.html#{}_{}'.format(item['file'], prefix, item['name'])
 
-        return '<a href="{file}.html#{anchor}">{name}</a>'.format(file=item['file'], name=text, anchor=anchor)
+    """
+    Return a link to an item (function, var, class)
+    """
+    def linkToReferenceItem(self, item, text):
+        if item is None:
+            return text
+
+        url = self.urlToReferenceItem(item)
+
+        return '<a href="{url}">{name}</a>'.format(url=url, name=text)
 
     """
     Check word if its replaceable, and return the replacing

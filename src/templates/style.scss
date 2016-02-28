@@ -53,6 +53,15 @@ nav {
     .oFlogo {
         width: 86px;
     }
+    .header {
+        display: inline;
+        font-weight: 300;
+        text-transform: uppercase;
+        margin-left: 5px;
+        position: relative;
+        top: -13px;
+        font-size: 16.5px;
+    }
     .container {
         padding:0;
     }
@@ -68,6 +77,43 @@ nav {
     label {
         top: -50px;
         position: relative;
+    }
+
+    #search-result {
+        max-width: 500px;
+        //max-height: 400px;
+        min-width: 100%;
+        overflow:scroll;
+        position: absolute;
+        top: 46px;
+        right: -2px;
+        background: white;
+        border: 1px solid #E6E6E6;
+        li {
+            list-style: none;
+
+            &:hover {
+                background-color: rgb(247, 247, 247);
+            }
+
+            a {
+                padding: 5px 9px;
+                display: block;
+                color:black;
+                text-align: right;
+                font-size: 16px;
+
+                .searchName {
+                    margin-right:6px;
+                }
+                .searchType {
+                    font-weight: 200;
+                }
+                .searchClass {
+                    font-weight: 200;
+                }
+            }
+        }
     }
 }
 
