@@ -66,11 +66,12 @@
                 </div>
                 {% endif %}
 
-                {{ item.documentation.text}}
 
                 {% if item.documentation.markdown %}
-                <p><b> Markdown:</b></p>
+                <div class="inline-doc framed">{{ item.documentation.text}}</div>
                 <div class="markdown-doc">{{ item.documentation.markdown}}</div>
+                {% else %}
+                <div class="inline-doc">{{ item.documentation.text}}</div>
                 {% endif %}
 
 

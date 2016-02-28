@@ -178,7 +178,7 @@ nav {
         color: #777;
     }
 
-    .markdown-doc {
+    .markdown-doc, .inline-doc {
         h1 {
             font-size: 36px;
         }
@@ -193,6 +193,15 @@ nav {
         }
         h5 {
             font-size: 18px;
+        }
+    }
+
+    .inline-doc {
+        &.framed {
+            margin: 20px 0;
+            padding-left: 20px;
+            border-left: 5px solid #A9A9A9;
+            color: #777;
         }
     }
 
