@@ -18,10 +18,12 @@ import utils
 import clang_reference
 from clang_class import DocClass
 from clang_function import DocFunction
+from clang_enum import DocEnum
 
 dir_count = 0
 file_count = 0
 visited_classes = []
+visited_enums = []
 visited_function = []
 missing_functions = []
 missing_methods = []
@@ -61,14 +63,15 @@ alternatives = {
 
 """ Add class to json data output """
 def add_class(data, offilename, folder):
-    print "Add class ",offilename
+    #print "Add class ",offilename
     if offilename not in json_data:
         json_data[offilename] = {
             "name": offilename,
             "type": 'file',
             "folder":folder,
             "classes": [],
-            "functions": []
+            "functions": [],
+            "enums":[]
         }
     json_data[offilename]['classes'].append(data)
 
@@ -81,15 +84,27 @@ def add_function(data, offilename, folder):
             "type": 'file',
             "folder":folder,
             "classes": [],
-            "functions": []
+            "functions": [],
+            "enums":[]
         }
     json_data[offilename]['functions'].append(data)
+
+def add_enum(data, offilename, folder):
+    if offilename not in json_data:
+        json_data[offilename] = {
+            "name": offilename,
+            "type": 'file',
+            "folder":folder,
+            "classes": [],
+            "functions": [],
+            "enums":[]
+        }
+    json_data[offilename]['enums'].append(data)
 
 
 def parse_file_child(child):
     if child.spelling.find('of') == 0:
         offilename = utils.filenameFromClangChild(child)
-
         if utils.is_class(child):
             i = 0
             for c in child.get_children():
@@ -101,13 +116,20 @@ def parse_file_child(child):
                 visited_classes.append(child.spelling)
                 #clang_reference.add_class(new_class)
 
-        if utils.is_function(child):
+        elif utils.is_function(child):
             if child.spelling not in visited_function and offilename != "ofMain":
                 visited_function.append(child.spelling)
                 new_func = DocFunction(child, None)
                 add_function(new_func.serialize(), offilename, new_func.folder)
                 #clang_reference.add_function(new_func)
 
+        elif utils.is_enum(child):
+            if child.spelling not in visited_enums:
+                new_enum = DocEnum(child)
+                add_enum(new_enum.serialize(), offilename, new_enum.folder)
+                visited_enums.append(child.spelling)
+        #else:
+        #   print "-- ",child.spelling, child.kind
 
 
 def parse_folder(of_root, folder, files, is_addon=False):
@@ -133,7 +155,7 @@ def run(of_root, outdir):
     # Run the clang parser
     for root, dirs, files in os.walk(of_source):
         #dir_count += 1
-        print root, files
+        #print root, files
         parse_folder(of_root, root, files, False)
 
     #parse_folder(of_root, of_source+"/video", ['ofVideoPlayer.h'], False)

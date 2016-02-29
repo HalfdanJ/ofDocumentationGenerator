@@ -30,6 +30,25 @@ def add_class(c):
         "name": c.data['name'],
     })
 
+def add_enum(c):
+    file = utils.filenameFromClangChild(c.cursor)
+    json_ref_data.append({
+        "file": file,
+        "type": "enum",
+        "folder": c.data['folder'],
+        "name": c.data['name'],
+    })
+
+    for o in c.data['options']:
+        json_ref_data.append({
+            "file": file,
+            "type": "enum_option",
+            "folder": c.data['folder'],
+            "name": o['name'],
+            "enum": c.data['name']
+        })
+
+
 
 def save(outdir):
     json_file.save(outdir,'reference',json_ref_data)

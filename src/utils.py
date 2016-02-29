@@ -16,6 +16,9 @@ def is_method(member):
 def is_function(member):
     return (member.kind == CursorKind.FUNCTION_DECL or member.kind == CursorKind.FUNCTION_TEMPLATE) and not is_class(member.semantic_parent)
 
+def is_enum(member):
+    return member.kind == CursorKind.ENUM_DECL
+
 def filenameFromClangChild(child):
     return os.path.basename(child.location.file.name).split('.')[0]
 

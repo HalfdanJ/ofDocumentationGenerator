@@ -71,21 +71,25 @@ $( document ).ready(function() {
         };
 
         $target = $(window.location.hash)
-        $('html, body').stop().animate({
-            'scrollTop': $target.offset().top - 80
-        }, 400, 'swing');
+
+        if($target.length){
+            $('html, body').stop().animate({
+                'scrollTop': $target.offset().top - 80
+            }, 400, 'swing');
+        }
     }
 
     var options = {
         keys: ['name'],
         threshold: 0.15
     }
-    var searchClasses, searchFunctions, searchVariables ;
+    var searchClasses, searchFunctions, searchVariables, searchEnums;
 
     $.getJSON('search.json', function(json){
         searchClasses = new Fuse(json['classes'], options);
         searchFunctions = new Fuse(json['functions'], options);
         searchVariables = new Fuse(json['variables'], options);
+        searchEnums = new Fuse(json['enums'], options);
 
         console.log("Done");
     })
@@ -93,7 +97,6 @@ $( document ).ready(function() {
     var search = function(term){
         var max = 30;
 
-        console.log(term);
         searchResult = searchClasses.search(term)
         for(var i=0;i<searchResult.length;i++){ searchResult[i].type = 'class' }
 
@@ -101,6 +104,12 @@ $( document ).ready(function() {
             var funcs = searchFunctions.search(term);
             for(var i=0;i<funcs.length;i++){ funcs[i].type = 'function' }
             searchResult.push.apply(searchResult, funcs)
+        }
+
+        if(searchResult.length < max){
+            var enums = searchEnums.search(term);
+            for(var i=0;i<enums.length;i++){ enums[i].type = 'enum' }
+            searchResult.push.apply(searchResult, enums)
         }
 
         if(searchResult.length < max){

@@ -188,7 +188,7 @@
                     <li>
                         <div class="collapsible-header">
                             <span class="method-name">{{ variable.name }}</span>
-                            <span class="kind"> variable</span>
+                            <span class="kind"> {{ variable.type }}</span>
                         </div>
                         <div class="collapsible-body">
                             <ul class="collection">
@@ -198,6 +198,36 @@
                                         <span class="name">{{variable.name}}</span>
                                     </div>
                                     {{variable.documentation.text}}
+
+
+                                    <!-- enum options -->
+                                    {% if variable.enum_options %}
+                                    <div class="parameters">
+                                        <table>
+                                            <tbody>
+                                                {% for val in variable.enum_options %}
+                                                <tr>
+                                                    <td class='arg-name'>
+                                                        {{ val.name }}
+                                                    </td>
+                                                    <td style="color:gray">
+                                                        {{ val.value }}
+                                                    </td>
+                                                    <td >
+                                                        {{ val.documentation.text }}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% endif %}
+                                    <!-- end options -->
+
+
+                                    {% if variable.options %}
+                                    {% endif %}
+
                                 </li>
 
                                 {% if variable.documentation.markdown %}

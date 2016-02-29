@@ -53,42 +53,6 @@ LOOKUP_TABLE = {
     ",":   "cpp_sequencing"
 }
 
-""" Check if the methods from markdown and js are matching"""
-
-"""
-def methodsMatching(mdfunction, jsfunction):
-    mdreturns = mdfunction['returns']
-    jsreturns = jsfunction['returns']
-
-    if jsreturns != mdreturns:
-        return False
-
-    mdparams = mdfunction['parameters'].split(',')
-    if len(mdparams) == 1 and mdparams[0] == '':
-        mdparams = []
-
-    jsparams = jsfunction['parameters']
-
-    if len(mdparams) != len(jsparams):
-        return False
-
-    if len(mdparams) == len(jsparams) == 0:
-        return True
-
-    for p1, p2 in zip(mdparams, jsparams):
-        pp1 = p1.strip().split(' ')
-        pp2 = p2.strip().split(' ')
-
-        for ii in range(0, len(pp1)):
-            if pp1[ii] != pp2[ii]:
-                return False
-
-        if pp1[-1][0] == '*' or pp1[-1][0] == '&':
-            if pp1[-1][0] != pp2[-1][0]:
-                return False
-
-    return True
-"""
 
 def getMarkdownMethodName(methodname):
     match = re.match("^operator(\\W+)", methodname, re.I | re.S)
@@ -151,6 +115,16 @@ def enrichFile(data, markdowndir):
         if markdown:
             function['documentation']['markdown'] = cleanMarkup(markdown, folder)
 
+    # Global functions
+    for enum in data['enums']:
+        #print "- ",function['name']
+        filename = data['folder']+'/'+data['name']+'.'+enum['name']+'.md'
+        #print "-- ",filename
+
+        markdown = loadMarkdownFile(filename, markdowndir)
+        if markdown:
+            enum['documentation']['markdown'] = cleanMarkup(markdown, folder)
+
     # Classes
     for classdata in data['classes']:
         filename = data['folder']+'/'+classdata['name']+'.md'
@@ -176,48 +150,6 @@ def enrichFile(data, markdowndir):
             if markdown:
                 variable['documentation']['markdown'] = cleanMarkup(markdown, folder)
 
-
-
-    """
-    markdownFunc = loadFunctionsMarkdown(data['folder'], data['name'], markdowndir)
-
-    # Global functions
-    for function in data['functions']:
-        # methodfound = False
-        for mdmethod in markdownFunc['functions']:
-            if mdmethod['name'] == function['name'] and 'description' in mdmethod:
-                if methodsMatching(mdmethod, function):
-                    function['documentation']['markdown'] = cleanMarkup(mdmethod['description'], folder)
-                    # if methodfound:
-                    #    raise Exception(function['name'],methodfound, parameters,function['parameters'] )
-                    # methodfound = mdmethod['parameters']
-                    ##break
-
-    # Classes
-    for classdata in data['classes']:
-        markdownClass = loadClassMarkdown(data['folder'], classdata['name'], markdowndir)
-
-        if 'description' in markdownClass:
-            classdata['documentation']['markdown'] = cleanMarkup(markdownClass['description'], folder)
-
-        # Class methods
-        for method in classdata['methods']:
-            methodfound = False
-            for mdmethod in markdownClass['functions']:
-                if mdmethod['name'] == method['name'] and 'description' in mdmethod:
-                    if methodsMatching(mdmethod, method):
-                        method['documentation']['markdown'] = cleanMarkup(mdmethod['description'], folder)
-                        # if methodfound:
-                        #    raise Exception(mdmethod['name'],methodfound, mdmethod['parameters'],method['parameters'] )
-                        # methodfound = mdmethod['parameters']
-                        break
-
-        # Class variables
-        for variable in classdata['member_variables']:
-            for mdvar in markdownClass['vars']:
-                if mdvar['name'] == variable['name'] and 'description' in mdvar:
-                    variable['documentation']['markdown'] = cleanMarkup(mdvar['description'], folder)
-    """
 
 
 """ RUN """

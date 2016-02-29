@@ -51,11 +51,15 @@ class SiteParseMarkdown:
         if item is None:
             return text
 
+        name = item['name']
+        if item['type'] == 'enum_option':
+            name = item['enum']
+
         prefix = 'global'
         if 'class' in item and item['class']:
             prefix = item['class']
 
-        return '{}.html#{}_{}'.format(item['file'], prefix, item['name'])
+        return '{}.html#{}_{}'.format(item['file'], prefix, name)
 
     """
     Return a link to an item (function, var, class)
@@ -107,6 +111,12 @@ class SiteParseMarkdown:
 
         return html
 
+    def parseMarkdownCodeBlock(self, mk):
+        ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
+        ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
+        return ret
+
+
     """
     Given some markdown and optional context class, return html
     """
@@ -134,10 +144,7 @@ class SiteParseMarkdown:
             #    raise Exception('Image '+imgpath+" doesnt exist!")
 
         # Run markdown parser
-        ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
-        ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
-
-
+        ret = self.parseMarkdownCodeBlock(mk)
 
         # Create internal links
         ret = self.createInternalLinks(ret, contextClass)

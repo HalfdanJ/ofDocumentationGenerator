@@ -4,6 +4,7 @@ import shutil
 import sys
 import math
 import re
+import copy
 from sets import Set
 
 from scss import parser
@@ -78,8 +79,13 @@ class SiteGenerator:
         with open(os.path.join(self.outdir, "index.html"), "wb") as fh:
             fh.write(output)
 
+    """
+    Creates a json file optimized for searching
+    Different types are split up in different arrays, since types have
+    different weight in search results
+    """
     def generateSearchReference(self):
-        data = {'classes':[], 'functions':[], 'variables':[]}
+        data = {'classes':[], 'functions':[], 'variables':[], 'enums':[]}
         funcSet = Set()
 
         for item in self.reference:
@@ -92,6 +98,7 @@ class SiteGenerator:
                 }
                 if item['type'] == 'class':
                     data['classes'].append(d)
+
                 if item['type'] == 'function':
                     if item['name'] not in funcSet \
                         and item['name'][0] != '~'\
@@ -100,9 +107,14 @@ class SiteGenerator:
                         d['class'] = item['class']
                         data['functions'].append(d)
                         funcSet.add(item['name'])
+
                 if item['type'] == 'variable':
                     d['class'] = item['class']
                     data['variables'].append(d)
+
+                if item['type'] == 'enum' or item['type'] == 'enum_option':
+                    data['enums'].append(d)
+
 
         with open(os.path.join(self.outdir, "search.json"), 'w') as outfile:
             json.dump(data, outfile)
@@ -130,9 +142,10 @@ class SiteGenerator:
 
         return prefix+'_'+item['name']
 
-
+    """
+    Parse item for all its functions, and return data ready to render by jinja
+    """
     def parseItemFunctions(self, methods, sections, item, inherited):
-
         if 'methods' in item:
             functions = item['methods']
         else:
@@ -147,14 +160,12 @@ class SiteGenerator:
                 continue
 
 
-            # try:
             # Set section name if its not set already on the first element
             section = method["documentation"]["section"]
 
             # Set section name if its not set already on the first element
             if section is None and len(methods) == 0 and item['type'] == 'class':
                 section = method["documentation"]["section"] = 'Functions'
-
 
             if section and len(section) > 0 and (len(sections) == 0 or sections[-1] != section):
                 sections.append({
@@ -217,6 +228,9 @@ class SiteGenerator:
                                 if otherClass['name'] == filename:
                                     self.parseItemFunctions(methods, sections, otherClass, filename)
 
+    """
+    Parse item for all its variables
+    """
     def parseItemVariables(self, ret_variables, ret_sections, item):
         for variable in item["member_variables"]:
             if variable['access'] != 'public':
@@ -242,6 +256,40 @@ class SiteGenerator:
                 "documentation": self.parseDocumentation(variable["documentation"], item)
             })
 
+    """
+    Parse item for all its enums
+    """
+    def parseItemEnums(self, ret_enums, ret_sections, item):
+        for enum in item["enums"]:
+
+            section = enum["documentation"]["section"]
+            # Set section name if its not set already on the first element
+            if section is None and len(ret_enums) == 0:
+                section = enum["documentation"]["section"] = 'Attributes'
+
+            if section is not None and (len(ret_sections) == 0 or ret_sections[-1] != section):
+                ret_sections.append({
+                    "title": section,
+                    "anchor": self.sectionAnchor(section, item)
+                })
+
+            #print enum['options']
+            #options = "<code class='prettyprint'>{}</code>".format('<br/>'.join(['{} = {}'.format(o['name'], o['value']) for o in enum['options']]))
+
+            ret_enums.append({
+                "type": enum['type'],
+                "name": enum["name"],
+                "enum_options": enum['options'],
+                "anchor": self.itemAnchor(enum, item),
+                "section": section,
+                "section_anchor": self.sectionAnchor(section, item),
+                "documentation": self.parseDocumentation(enum["documentation"], item)
+            })
+
+
+    """
+    Render documentation item
+    """
     def renderFile(self, filedata):
         render_data = {
             "file": filedata["name"],
@@ -256,21 +304,27 @@ class SiteGenerator:
                 render_data['otherFilesInFolder'].append(r['file'])
 
         # Init values
-        sections = []
-        methods = []
+        global_sections = []
+        global_methods = []
+        global_attributes = []
 
         # Global functions
-        self.parseItemFunctions(methods, sections, filedata, False)
-        if len(methods) > 0:
+        self.parseItemFunctions(global_methods, global_sections, filedata, False)
+        # Global enums
+        self.parseItemEnums(global_attributes, global_sections, filedata)
+
+        # If there is anything global
+        if len(global_methods) > 0 or len(global_attributes) > 0:
             render_data['content'].append({
                 "documentation": None, # TODO
                 "name": "Global functions",
-                "methods": methods,
-                "member_variables": [], # TODO
-                "sections": sections,
+                "methods": global_methods,
+                "member_variables": global_attributes,
+                "sections": global_sections,
                 "extends": None,
                 "type": 'global'
             })
+
 
         # Classes
         for subitem in filedata['classes']:
@@ -385,7 +439,7 @@ class SiteGenerator:
 
         self.compileScss()
         shutil.copyfile(os.path.join(template_dir,'script.js'), os.path.join(outdir,'script.js'))
-	#shutil.copyfile(os.path.join(jsondir,'reference.json'), os.path.join(outdir,'reference.json'))
+        #shutil.copyfile(os.path.join(jsondir,'reference.json'), os.path.join(outdir,'reference.json'))
 
 if __name__ == '__main__':
     print "Start"
