@@ -1,4 +1,7 @@
 $( document ).ready(function() {
+    //$('.tooltipped').tooltip({delay: 50});
+
+
     //
     // Side menu
     //
@@ -43,7 +46,7 @@ $( document ).ready(function() {
 
 
     // Hash
-    $('a[href*="#"]:not([href="#"]').on('click',function (e) {
+    $('a[href*="#"]:not([href="#"])').on('click',function (e) {
 
         var target = this.hash;
         var $target = $(target);

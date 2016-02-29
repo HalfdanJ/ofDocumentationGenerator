@@ -235,7 +235,7 @@ nav {
 
     .actions {
         transition-duration: 0.1s;
-        opacity: 0;
+        //opacity: 0;
         position: absolute;
         right: 0px;
         top: 5px;
@@ -244,12 +244,20 @@ nav {
         }
         a {
             color: gray;
+            display: inline-block;
+            margin-left: 10px;
+
             &:hover{
                 color: $brandColor;
             }
-
-
         }
+
+    
+        .zmdi-edit {
+            top: -2px;
+            font-size: 1.1em;
+        }
+
     }
 
     .item:hover {
