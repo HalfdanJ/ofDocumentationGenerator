@@ -11,9 +11,9 @@ import shutil
 
 from clang.cindex import CursorKind
 
-import json_file
+from utils import json_file
+
 import clang_utils
-import utils
 
 import clang_reference
 from clang_class import DocClass
@@ -104,11 +104,11 @@ def add_enum(data, offilename, folder):
 
 def parse_file_child(child):
     if child.spelling.find('of') == 0:
-        offilename = utils.filenameFromClangChild(child)
-        if utils.is_class(child):
+        offilename = clang_utils.filenameFromClangChild(child)
+        if clang_utils.is_class(child):
             i = 0
             for c in child.get_children():
-                if utils.is_variable(c) or utils.is_method(c) or c.kind == CursorKind.CXX_BASE_SPECIFIER:
+                if clang_utils.is_variable(c) or clang_utils.is_method(c) or c.kind == CursorKind.CXX_BASE_SPECIFIER:
                     i += 1
             if i > 0 and child.spelling not in visited_classes:
                 new_class = DocClass(child)
@@ -116,14 +116,14 @@ def parse_file_child(child):
                 visited_classes.append(child.spelling)
                 #clang_reference.add_class(new_class)
 
-        elif utils.is_function(child):
+        elif clang_utils.is_function(child):
             if child.spelling not in visited_function and offilename != "ofMain":
                 visited_function.append(child.spelling)
                 new_func = DocFunction(child, None)
                 add_function(new_func.serialize(), offilename, new_func.folder)
                 #clang_reference.add_function(new_func)
 
-        elif utils.is_enum(child):
+        elif clang_utils.is_enum(child):
             if child.spelling not in visited_enums:
                 new_enum = DocEnum(child)
                 add_enum(new_enum.serialize(), offilename, new_enum.folder)
@@ -205,9 +205,10 @@ def run(of_root, outdir):
         for v in missing_vars:
             print "\t- " + v.name + "  from " + v.clazz
     """
-
+"""
 if __name__ == '__main__':
     of_root = os.path.abspath(os.getenv('OF_ROOT', ''))
     json_data_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_JSON_DIR', './_json_data'))
 
     run(of_root, json_data_root)
+"""

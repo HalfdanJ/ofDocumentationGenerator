@@ -1,12 +1,12 @@
 import json_file
-import utils
+import clang_utils
 
 json_ref_data = []
 
 
 def add_variable(var):
     json_ref_data.append({
-        "file": utils.filenameFromClangChild(var.cursor),
+        "file": clang_utils.filenameFromClangChild(var.cursor),
         "type": "variable",
         "name": var.data['name'],
         "folder": var.data['folder'],
@@ -15,7 +15,7 @@ def add_variable(var):
 
 def add_function(func):
     json_ref_data.append({
-        "file": utils.filenameFromClangChild(func.cursor),
+        "file": clang_utils.filenameFromClangChild(func.cursor),
         "type": "function",
         "name": func.data['name'],
         "folder": func.data['folder'],
@@ -24,14 +24,14 @@ def add_function(func):
 
 def add_class(c):
     json_ref_data.append({
-        "file": utils.filenameFromClangChild(c.cursor),
+        "file": clang_utils.filenameFromClangChild(c.cursor),
         "type": "class",
         "folder": c.data['folder'],
         "name": c.data['name'],
     })
 
 def add_enum(c):
-    file = utils.filenameFromClangChild(c.cursor)
+    file = clang_utils.filenameFromClangChild(c.cursor)
     json_ref_data.append({
         "file": file,
         "type": "enum",

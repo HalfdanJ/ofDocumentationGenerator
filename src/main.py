@@ -1,22 +1,10 @@
 import os
 import sys
-#from flask import Flask, request
 import json
 
-import clang_parser
-import parse_markdown
-import generate_site
-
-"""
-app = Flask(__name__)
-
-@app.route('/',methods=['POST'])
-def foo():
-    data = json.loads(request.data)
-    #print "New commit by: {}".format(data['commits'][0]['author']['name'])
-    return "OK"
-
-"""
+from clang_parser import clang_parser
+from markdown_parser import parse_markdown
+from site_generator import generate_site
 
 def run(of_root, markdown_root, json_data_root, site_output):
     print "Run clang parser"

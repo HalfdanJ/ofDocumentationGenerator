@@ -8,8 +8,7 @@ import json
 
 import re
 
-import json_file
-import markdown_file
+from utils import json_file
 
 LOOKUP_TABLE = {
     "<<":  "cpp_left_shift",
@@ -165,10 +164,3 @@ def run(markdowndir, jsondir):
                 enrichFile(data, markdowndir)
                 json_file.save(jsondir, os.path.splitext(name)[0], data)
                 #print jsondir, os.path.splitext(name)[0]
-
-
-if __name__ == '__main__':
-    json_data_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_JSON_DIR', './_json_data'))
-    markdown_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_ROOT', ''))
-
-    run(markdown_root, json_data_root)

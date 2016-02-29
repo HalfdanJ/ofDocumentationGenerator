@@ -4,7 +4,7 @@ from clang.cindex import CursorKind
 
 import clang_documentation_parser
 import clang_reference
-import utils
+import clang_utils
 from clang_function import DocFunction
 
 import re
@@ -56,7 +56,7 @@ class DocClass:
             if member.kind == CursorKind.CLASS_DECL or member.kind == CursorKind.CLASS_TEMPLATE or member.kind == CursorKind.STRUCT_DECL:
                 if member.access_specifier.name.lower() == 'public':
                     for child in member.get_children():
-                        if utils.is_variable(child) or utils.is_method(child):
+                        if clang_utils.is_variable(child) or clang_utils.is_method(child):
                             #print "MEMBER"+member.spelling
                             """if classname[-1] == '_':
                                 serialize_class(member,is_addon,classname[:-1])
@@ -71,27 +71,27 @@ class DocClass:
             elif member.kind == CursorKind.UNION_DECL:
                 for union_member in member.get_children():
                     """
-                    if utils.is_variable(union_member):
+                    if clang_utils.is_variable(union_member):
                         #print "UNION "+union_member.spelling
 
                         #var = parse_variable(documentation_class, clazz, union_member)
                         #current_variables_list.append(var)
                     if union_member.kind == CursorKind.STRUCT_DECL:
                         for union_struct_member in union_member.get_children():
-                            if utils.is_variable(union_struct_member):
+                            if clang_utils.is_variable(union_struct_member):
                                 #print "UNION "+union_struct_member.spelling
 
                                 #var = parse_variable(documentation_class, clazz, union_struct_member)
                                 #current_variables_list.append(var)
                     """
 
-            elif utils.is_variable(member):
+            elif clang_utils.is_variable(member):
                 if member.access_specifier.name.lower() == 'public':
                     var = DocVariable(member, self)
                     self.member_variables.append(var)
 
                 #f.write( str(member.type.text) + " " + str(member.name.text) + "\n" )
-            elif utils.is_method(member):
+            elif clang_utils.is_method(member):
                 func = DocFunction(member, self)
                 self.member_functions.append(func)
                 """

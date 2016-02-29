@@ -37,9 +37,9 @@ docker exec ofdocbuilder python /src/main.py
 
 Alternatively you can run parts of the process
 ```
-docker exec ofdocbuilder python /src/clang_parser.py
-docker exec ofdocbuilder python /src/parse_markdown.py
-docker exec ofdocbuilder python /src/generate_site.py
+docker exec ofdocbuilder python /src/main_clang.py
+docker exec ofdocbuilder python /src/main_markdown.py
+docker exec ofdocbuilder python /src/main_site_generation.py
 ```
 
 After this, the site is visible on `http://dockermachineip:8080/latest`,

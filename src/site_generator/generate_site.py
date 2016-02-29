@@ -356,7 +356,8 @@ class SiteGenerator:
                 "sections": sections,
                 "extends": extends,
                 "type": 'class',
-                "sourceUrl" : 'https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/{}/{}.h#L{}'.format(filedata["folder"], filedata["name"], subitem["line"])
+                "sourceUrl" : 'https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/{}/{}.h#L{}'.format(filedata["folder"], filedata["name"], subitem["line"]),
+                "markdownUrl": 'https://github.com/workergnome/ofdocs_markdown/blob/master/{}/{}.md'.format(filedata['folder'], subitem['name'])
             })
 
         if len(render_data['content']) == 1 and render_data['content'][0]['name'] == render_data['file']:
@@ -428,8 +429,8 @@ class SiteGenerator:
                 if name[0] != '.' and name != 'reference.json':
                     print "Site Generator - Parse "+name
                     data = self.loadData(name)
-		    #if name == 'ofSoundPlayer.json':
-		    self.renderFile(data)
+                    if name == 'ofTypes.json':
+                        self.renderFile(data)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"
@@ -442,12 +443,3 @@ class SiteGenerator:
         self.compileScss()
         shutil.copyfile(os.path.join(template_dir,'script.js'), os.path.join(outdir,'script.js'))
         #shutil.copyfile(os.path.join(jsondir,'reference.json'), os.path.join(outdir,'reference.json'))
-
-if __name__ == '__main__':
-    print "Start"
-    markdown_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_ROOT', ''))
-    json_data_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_JSON_DIR', './_json_data'))
-    site_output = os.path.abspath(os.getenv('OF_DOCUMENTATION_SITE_OUTPUT', './_site'))
-
-    generator = SiteGenerator()
-    generator.run(markdown_root, json_data_root, os.path.join(site_output,'latest'))

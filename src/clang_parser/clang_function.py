@@ -3,7 +3,7 @@ import re
 from clang.cindex import CursorKind
 import clang_reference
 import clang_documentation_parser
-import utils
+import clang_utils
 
 class DocFunction():
     def __init__(self, cursor, parentclass):
@@ -41,7 +41,7 @@ class DocFunction():
             not parentclass is None and self.data['name'] == parentclass.name):
             returns = ""
         else:
-            returns = utils.substitutetype(cursor.result_type.spelling)
+            returns = clang_utils.substitutetype(cursor.result_type.spelling)
             returns = ("" if returns is None else returns)
 
         self.data['returns'] = returns
@@ -64,7 +64,7 @@ class DocFunction():
             if arg.kind != CursorKind.PARM_DECL:
                 continue
 
-            argtype = utils.substitutetype(arg.type.spelling)
+            argtype = clang_utils.substitutetype(arg.type.spelling)
             self.data['parameter_names'].append(arg.spelling)
             self.data['parameter_types'].append(argtype)
 
