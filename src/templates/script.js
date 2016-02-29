@@ -94,6 +94,7 @@ $( document ).ready(function() {
         console.log("Done");
     })
 
+    $('#search-result').hide();
     var search = function(term){
         var max = 30;
 
