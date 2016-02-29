@@ -9,7 +9,8 @@
     <!-- Site Properities -->
     <title>{% block pagetitle %}ofDoc{% endblock %}</title>
 
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -27,11 +28,11 @@
                         <div class="header">language reference</div>
                     </a>
                 </div>
-                <div class="col m4">
+                <div class="col m4" style="50px">
                     <div class="input-field">
 
                         <input id="search" placeholder="search" type="search"></input>
-                        <label for="search"><i class="material-icons">search</i></label>
+                        <label for="search"><i class="zmdi zmdi-search "></i></label>
                         <div id="search-result"></div>
                     </div>
 

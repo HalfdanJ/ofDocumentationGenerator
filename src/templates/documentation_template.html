@@ -50,28 +50,37 @@
             <!--{% if showPageTitle %}
             <h4>{{file}}</h4>
             {% endif %}-->
-
             {% for item in content %}
             <div class="item">
-
-                <h4>{{item.name}} <span class="header-label">{{item.type}}</span></h4>
-                {% if item.extends %}
-                <div class="inherits-header">Inherits from:
-                    {% for extend in item.extends %}
-                    {{extend}}
-                    {% if not loop.last %}
-                    ,&nbsp;
-                    {% endif %}
-                    {% endfor %}
+                <div class="actions">
+                    <a href="{{item.sourceUrl}}" class=" tooltipped" data-position="bottom" data-delay="50" data-tooltip="View source on github"><i class="zmdi zmdi-code"></i></a>
                 </div>
-                {% endif %}
+
+                <h4>
+                    {{item.name}}
+                    <span class="header-label">{{item.type}}</span>
+                </h4>
+                <div class="inherits-header">
+                    <!--{{item.type}} <i class="zmdi zmdi-github-alt"></i>-->
+                    {% if item.extends %}
+                        Inherits from:
+                        {% for extend in item.extends %}
+                        {{extend}}
+                        {% if not loop.last %}
+                        ,&nbsp;
+                        {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
 
 
+                <div class="inline-doc framed">
+                    <div class="doc-content">{{ item.documentation.text}}</div>
+                </div>
                 {% if item.documentation.markdown %}
-                <div class="inline-doc framed">{{ item.documentation.text}}</div>
-                <div class="markdown-doc">{{ item.documentation.markdown}}</div>
-                {% else %}
-                <div class="inline-doc">{{ item.documentation.text}}</div>
+                <div class="markdown-doc">
+                    <div class="doc-content">{{ item.documentation.markdown}}</div>
+                </div>
                 {% endif %}
 
 
@@ -194,7 +203,7 @@
                             <ul class="collection">
                                 <li class="collection-item">
                                     <div class="memberVariant">
-                                        <span class="type">{{variable.type}} </span>
+                                        <span class="type">{{variable.kind}} </span>
                                         <span class="name">{{variable.name}}</span>
                                     </div>
                                     {{variable.documentation.text}}
@@ -202,7 +211,7 @@
 
                                     <!-- enum options -->
                                     {% if variable.enum_options %}
-                                    <div class="parameters">
+                                    <div class="parameters" style="margin-top:15px">
                                         <table>
                                             <tbody>
                                                 {% for val in variable.enum_options %}
@@ -210,9 +219,9 @@
                                                     <td class='arg-name'>
                                                         {{ val.name }}
                                                     </td>
-                                                    <td style="color:gray">
+                                                    <!--<td style="color:gray">
                                                         {{ val.value }}
-                                                    </td>
+                                                    </td>-->
                                                     <td >
                                                         {{ val.documentation.text }}
                                                     </td>

@@ -26,7 +26,7 @@ class DocClass:
         self.filename = split[-1]
         self.folder = split[-2]
         self.data['folder'] = self.folder
-
+        self.data['line'] = cursor.location.line
         # Parse extends
         self.data['extends'] = []
 

@@ -250,6 +250,7 @@ class SiteGenerator:
             ret_variables.append({
                 "type": variable['type'],
                 "name": variable["name"],
+                "kind": variable['kind'],
                 "anchor": self.itemAnchor(variable, item),
                 "section": section,
                 "section_anchor": self.sectionAnchor(section, item),
@@ -354,7 +355,8 @@ class SiteGenerator:
                 "member_variables": member_variables,
                 "sections": sections,
                 "extends": extends,
-                "type": 'class'
+                "type": 'class',
+                "sourceUrl" : 'https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/{}/{}.h#L{}'.format(filedata["folder"], filedata["name"], subitem["line"])
             })
 
         if len(render_data['content']) == 1 and render_data['content'][0]['name'] == render_data['file']:

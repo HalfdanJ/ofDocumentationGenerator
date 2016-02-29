@@ -32,7 +32,7 @@ class DocVariable():
 
         self.data['constant'] = cursor.result_type.is_volatile_qualified()
         self.data['static'] = cursor.kind == CursorKind.VAR_DECL
-        self.data['type'] = utils.substitutetype(cursor.type.spelling)
+        self.data['kind'] = utils.substitutetype(cursor.type.spelling)
 
 
     def serialize(self):
