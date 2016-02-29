@@ -44,20 +44,23 @@ $( document ).ready(function() {
 
     // Hash
     $('a[href*="#"]:not([href="#"]').on('click',function (e) {
-        e.preventDefault();
 
         var target = this.hash;
         var $target = $(target);
 
-        if(!$(target+" .collapsible-header").hasClass('active')){
-            $(target+" .collapsible-header").click()
-        };
+        if($target.length){
+            e.preventDefault();
 
-        $('html, body').stop().animate({
-            'scrollTop': $target.offset().top - 80
-        }, 400, 'swing', function () {
-            window.location.hash = target;
-        });
+            if(!$(target+" .collapsible-header").hasClass('active')){
+                $(target+" .collapsible-header").click()
+            };
+
+            $('html, body').stop().animate({
+                'scrollTop': $target.offset().top - 80
+            }, 400, 'swing', function () {
+                window.location.hash = target;
+            });
+        }
     });
 
 
