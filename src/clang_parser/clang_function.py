@@ -57,7 +57,7 @@ class DocFunction():
 
         # Parse the arguments into a stirng
         for arg in self.cursor.get_children():
-            if arg.kind.is_attribute():
+            if arg.kind.is_unexposed():
                 # TODO: we suppose only attributes are the deprecated ones
                 self.data['deprecated'] = True
                 return

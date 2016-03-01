@@ -18,7 +18,7 @@
                             >
                         </li>
                         <li>
-                            <a href="#" data-activates='dropdown1' class="dropdown-button">{{ file }}</a>
+                            <a href="#" data-activates='dropdown1' class="dropdown-button" style="width:225px; display:inline-block">{{ file }}</a>
                         </li>
                     </ul>
                     <!-- Dropdown Structure -->
@@ -49,6 +49,10 @@
 
         <!-- MAIN CONTENT -->
         <div class="col m9 offset-m3" id="documentation-content">
+            <!--{% if showPageTitle %}
+            <h4 class="item-header"> {{ file }}</h4>
+            {% endif %}-->
+
             {% for item in content %}
             <div class="item">
                 <div class="actions">
@@ -60,14 +64,14 @@
                     {% endif %}
                 </div>
 
-                <h4>
+                <h4 class="item-header">
                     {{item.name}}
                     <span class="header-label">{{item.type}}</span>
                 </h4>
 
+                {% if item.extends %}
                 <div class="inherits-header">
                     <!--{{item.type}} <i class="zmdi zmdi-github-alt"></i>-->
-                    {% if item.extends %}
                         Inherits from:
                         {% for extend in item.extends %}
                         {{extend}}
@@ -75,8 +79,8 @@
                         ,&nbsp;
                         {% endif %}
                         {% endfor %}
-                    {% endif %}
                 </div>
+                {% endif %}
 
                 <div class="inline-doc framed">
                     {{ item.documentation.text}}
@@ -98,10 +102,14 @@
                             <div class="collapsible-header">
                                 <span class="method-name">{{ method.name }}</span>
                                 <span class="kind"> ()</span>
+
                                 {% if method.deprecated %}
                                 <span class="deprecated-notice">deprecated</span>
                                 {% endif %}
+
+                                {% if method.variants[0].documentation.brief %}
                                 <span class="brief"> {{ method.variants[0].documentation.brief }}</span>
+                                {% endif %}
 
                             </div>
                             <div class="collapsible-body">
@@ -205,7 +213,10 @@
                         <div class="collapsible-header">
                             <span class="method-name">{{ variable.name }}</span>
                             <span class="kind"> {{ variable.type }}</span>
+
+                            {% if variable.documentation.brief %}
                             <span class="brief"> {{ variable.documentation.brief }}</span>
+                            {% endif %}
                         </div>
                         <div class="collapsible-body">
                             <ul class="collection">

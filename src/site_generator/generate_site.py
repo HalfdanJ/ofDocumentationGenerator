@@ -217,6 +217,12 @@ class SiteGenerator:
 
             # Method not alreay added, so add it
             if not found:
+                if method['name'] == 'draw':
+                    print method['documentation']['text']
+                    print ', '.join(method["parameters"])
+                    print self.parseBrief(method['documentation'])
+
+
                 ret_methods.append({
                     "name": method["name"],
                     "deprecated": method['deprecated'],
@@ -279,8 +285,8 @@ class SiteGenerator:
 
             section = enum["documentation"]["section"]
             # Set section name if its not set already on the first element
-            if section is None and len(ret_enums) == 0:
-                section = enum["documentation"]["section"] = 'Attributes'
+            if section is None and ( len(ret_enums) == 0 or ret_enums[-1]['type'] != enum['type']):
+                section = enum["documentation"]["section"] = 'Enums'
 
             if section is not None and (len(ret_sections) == 0 or ret_sections[-1] != section):
                 ret_sections.append({
@@ -333,7 +339,8 @@ class SiteGenerator:
         if len(global_methods) > 0 or len(global_attributes) > 0:
             render_data['content'].append({
                 "documentation": None, # TODO
-                "name": "Global functions",
+                #"name": "Global functions",
+                "name": filedata['name'],
                 "methods": global_methods,
                 "member_variables": global_attributes,
                 "sections": global_sections,
@@ -378,12 +385,11 @@ class SiteGenerator:
                 "markdownUrl": markdownUrl
             })
 
-        """
+
         if len(render_data['content']) == 1 and render_data['content'][0]['name'] == render_data['file']:
             render_data['showPageTitle'] = False;
         else:
             render_data['showPageTitle'] = True;
-        """
 
         # save the results
         output = template.render(render_data).encode('utf8')
