@@ -16,8 +16,9 @@ class DocVariable():
         self.data['type'] = 'variable'
 
         split = cursor.location.file.name.split('/')
-        self.filename = split[-1]
-        self.data['folder'] = split[-2]
+        self.data['filename'] = self.filename = split[-1]
+        self.data['folder']   = self.folder = split[-2]
+        self.data['line'] = cursor.location.line
 
         # Parse documentation
         self.data['documentation'] = clang_documentation_parser.parse_docs(cursor)

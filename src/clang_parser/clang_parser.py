@@ -67,6 +67,7 @@ def add_class(data, offilename, folder):
     if offilename not in json_data:
         json_data[offilename] = {
             "name": offilename,
+            "filename": offilename+'.h',
             "type": 'file',
             "folder":folder,
             "classes": [],
@@ -81,6 +82,7 @@ def add_function(data, offilename, folder):
     if offilename not in json_data:
         json_data[offilename] = {
             "name": offilename,
+            "filename": offilename+'.h',
             "type": 'file',
             "folder":folder,
             "classes": [],
@@ -93,6 +95,7 @@ def add_enum(data, offilename, folder):
     if offilename not in json_data:
         json_data[offilename] = {
             "name": offilename,
+            "filename": offilename+'.h',
             "type": 'file',
             "folder":folder,
             "classes": [],

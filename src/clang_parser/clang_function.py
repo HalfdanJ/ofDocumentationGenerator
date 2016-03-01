@@ -14,9 +14,9 @@ class DocFunction():
         self.data = {}
 
         split = cursor.location.file.name.split('/')
-        self.filename = split[-1]
-        self.folder = split[-2]
-        self.data['folder'] = self.folder;
+        self.data['filename'] = self.filename = split[-1]
+        self.data['folder']   = self.folder = split[-2]
+        self.data['line'] = cursor.location.line
 
         self.data['name'] = cursor.spelling
         self.data['name'] = re.sub("<.*>", "", self.data['name'])

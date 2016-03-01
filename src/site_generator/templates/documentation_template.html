@@ -1,49 +1,65 @@
 {% extends "base.html" %}
 {% block pagetitle %}openFrameworks - {{ pageTitle }}{% endblock %}
 
+<!-- MACROS -->
+{% macro actions(item)  -%}
+<div class="actions">
+    {% if item.markdownUrl %}
+    <a href="{{ item.markdownUrl }}" target="_blank" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="View documentation on github"><i class="zmdi zmdi-edit"></i></a>
+    {% endif %}
+    {% if item.sourceUrl %}
+    <a href="{{ item.sourceUrl }}" target="_blank" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="View source on github"><i class="zmdi zmdi-code"></i></a>
+    {% endif %}
+</div>
+{%- endmacro %}
+
+<!-- END MACROS -->
+
+
 {% block content %}
 <div id="documentation">
     <div class="row">
 
         <!-- SIDE MENU -->
         <div class="col m3" id="sidemenu">
+            <div class="navigator-wrap">
+                <div class="navigator">
+                    <div class="breadcrump">
+                        <ul>
+                            <li>
+                                <a href="/latest">{{ folder }}</a>
+                            </li>
+                            <li class="splitter">
+                                >
+                            </li>
+                            <li>
+                                <a href="#" data-activates='dropdown1' class="dropdown-button" style="width:225px; display:inline-block">{{ file }}</a>
+                            </li>
+                        </ul>
+                        <!-- Dropdown Structure -->
+                        <ul id='dropdown1' class='dropdown-content'>
+                            {% for file in otherFilesInFolder %}
+                            <li><a href="/latest/{{file}}.html">{{file}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
 
-            <div class="navigator">
-                <div class="breadcrump">
-                    <ul>
-                        <li>
-                            <a href="/latest">{{ folder }}</a>
-                        </li>
-                        <li class="splitter">
-                            >
-                        </li>
-                        <li>
-                            <a href="#" data-activates='dropdown1' class="dropdown-button" style="width:225px; display:inline-block">{{ file }}</a>
-                        </li>
-                    </ul>
-                    <!-- Dropdown Structure -->
-                    <ul id='dropdown1' class='dropdown-content'>
-                        {% for file in otherFilesInFolder %}
-                        <li><a href="/latest/{{file}}.html">{{file}}</a></li>
+                    <div class="sections-navigator">
+                        {% for item in content %}
+                        {% if item.sections|length > 0 %}
+                        <span class="class">{{ item.name }}</span>
+                        <ul class="section">
+                            {% for section in item.sections %}
+                            <li class="chapter">
+                                <a href="#{{ section.anchor }}">{{ section.title }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
                         {% endfor %}
-                    </ul>
+                    </div>
                 </div>
-
-                <div class="sections-navigator">
-                    {% for item in content %}
-                    {% if item.sections|length > 0 %}
-                    <span class="class">{{ item.name }}</span>
-                    <ul class="section">
-                        {% for section in item.sections %}
-                        <li class="chapter">
-                            <a href="#{{ section.anchor }}">{{ section.title }}</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                    {% endfor %}
                 </div>
-            </div>
         </div>
         <!-- END SIDE -->
 
@@ -55,40 +71,34 @@
 
             {% for item in content %}
             <div class="item">
-                <div class="actions">
-                    {% if item.markdownUrl %}
-                    <a href="{{ item.markdownUrl }}" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="View documentation on github"><i class="zmdi zmdi-edit"></i></a>
+                <div class="action-block">
+                    {{ actions(item) }}
+
+                    <h4 class="item-header">
+                        {{item.name}}
+                        <span class="header-label">{{item.type}}</span>
+                    </h4>
+
+                    {% if item.extends %}
+                    <div class="inherits-header">
+                        <!--{{item.type}} <i class="zmdi zmdi-github-alt"></i>-->
+                            Inherits from:
+                            {% for extend in item.extends %}
+                            {{extend}}
+                            {% if not loop.last %}
+                            ,&nbsp;
+                            {% endif %}
+                            {% endfor %}
+                    </div>
                     {% endif %}
-                    {% if item.sourceUrl %}
-                    <a href="{{ item.sourceUrl }}" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="View source on github"><i class="zmdi zmdi-code"></i></a>
-                    {% endif %}
-                </div>
 
-                <h4 class="item-header">
-                    {{item.name}}
-                    <span class="header-label">{{item.type}}</span>
-                </h4>
-
-                {% if item.extends %}
-                <div class="inherits-header">
-                    <!--{{item.type}} <i class="zmdi zmdi-github-alt"></i>-->
-                        Inherits from:
-                        {% for extend in item.extends %}
-                        {{extend}}
-                        {% if not loop.last %}
-                        ,&nbsp;
-                        {% endif %}
-                        {% endfor %}
+                    <div class="inline-doc framed">
+                        {{ item.documentation.text}}
+                    </div>
+                    <div class="markdown-doc">
+                        {{ item.documentation.markdown}}
+                    </div>
                 </div>
-                {% endif %}
-
-                <div class="inline-doc framed">
-                    {{ item.documentation.text}}
-                </div>
-                <div class="markdown-doc">
-                    {{ item.documentation.markdown}}
-                </div>
-
 
                 <!-- Methods -->
                 {% for method in item.methods %}
@@ -118,8 +128,9 @@
                                 <ul class="collection">
 
                                     {% for variant in method.variants %}
-                                    <li class="collection-item">
+                                    <li class="collection-item action-block">
                                         <div class="memberVariant">
+                                            {{ actions(variant) }}
                                             <span class="variant-type">{{variant.returns}} </span>
                                             <span class="variant-name">{{method.name}}</span>
                                             <span class="variant-args">({{variant.parameters}})</span>

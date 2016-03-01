@@ -31,6 +31,22 @@ class SiteGenerator:
 
     markdownParser = SiteParseMarkdown()
 
+    def getSourceUrl(self, filedata, item=None):
+        url = 'https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/{}/{}'.format(filedata["folder"], filedata["filename"])
+        if item and 'line' in item and item['line']:
+             url = url +'#L{}'.format(item['line'])
+        return url
+
+    def getMarkdownUrl(self, filedata, doc, item=None):
+        name = item['name']
+        if filedata['type'] == 'class':
+            name = '{}.{}'.format(filedata['name'],item['name'])
+
+        markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/new/master/{}/?filename={}.md'.format(filedata['folder'], name)
+        if 'markdown' in doc and len(doc['markdown']) > 0:
+            markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/blob/master/{}/{}.md'.format(filedata['folder'], name)
+        return markdownUrl
+
     def currentTime(self):
         return time.strftime("%d %b %Y %H:%M UTC")
 
@@ -185,11 +201,15 @@ class SiteGenerator:
                     "anchor": self.sectionAnchor(section, item)
                 })
 
+            doc = self.parseDocumentation(method["documentation"], item)
+
             new_variant = {
                 "returns": method["returns"],
                 "parameters": ', '.join(method["parameters"]),
                 "parameter_types": ', '.join(method["parameter_types"]),
-                "documentation": self.parseDocumentation(method["documentation"], item),
+                "documentation": doc,
+                "sourceUrl" : self.getSourceUrl(item, method),
+                "markdownUrl": self.getMarkdownUrl(item, doc, method)
             }
 
             if inherited is not False:
@@ -345,7 +365,9 @@ class SiteGenerator:
                 "member_variables": global_attributes,
                 "sections": global_sections,
                 "extends": None,
-                "type": 'global'
+                "type": 'global',
+                "sourceUrl" : self.getSourceUrl(filedata),
+
             })
 
 
@@ -369,9 +391,7 @@ class SiteGenerator:
 
             doc = self.parseDocumentation(subitem["documentation"], subitem)
 
-            markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/new/master/{}/?filename={}.md'.format(filedata['folder'], subitem['name'])
-            if 'markdown' in doc and len(doc['markdown']) > 0:
-                markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/blob/master/{}/{}.md'.format(filedata['folder'], subitem['name'])
+
             # Class item
             render_data['content'].append({
                 "documentation": doc,
@@ -381,8 +401,8 @@ class SiteGenerator:
                 "sections": sections,
                 "extends": extends,
                 "type": 'class',
-                "sourceUrl" : 'https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/{}/{}.h#L{}'.format(filedata["folder"], filedata["name"], subitem["line"]),
-                "markdownUrl": markdownUrl
+                "sourceUrl" : self.getSourceUrl(filedata, subitem),
+                "markdownUrl": self.getMarkdownUrl(filedata, doc, subitem)
             })
 
 

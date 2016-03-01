@@ -166,9 +166,15 @@ nav {
 }
 
 #documentation {
-
-    .navigator {
+    .navigator-wrap {
         position: fixed;
+        padding-bottom: 200px;
+        height: 100%;
+        overflow: hidden;
+    }
+    .navigator {
+        height: 100%;
+        overflow: scroll;
 
         .breadcrump {
             font-weight: 300;
@@ -233,6 +239,7 @@ nav {
             overflow: hidden;
             transition-duration: 0.3s;
             font-weight: 300;
+            position: relative;
         }
         .collapsible-body {
             border:0;
@@ -283,7 +290,7 @@ nav {
         transition-duration: 0.1s;
         opacity: 0.0;
         position: absolute;
-        right: 0px;
+        right: 5px;
         top: 5px;
         i {
             font-size: 1.3em;
@@ -306,7 +313,7 @@ nav {
 
     }
 
-    .item:hover {
+    .action-block:hover {
         .actions {
             opacity: 1.0;
         }

@@ -23,10 +23,10 @@ class DocClass:
         self.data['type'] = 'class'
 
         split = cursor.location.file.name.split('/')
-        self.filename = split[-1]
-        self.folder = split[-2]
-        self.data['folder'] = self.folder
+        self.data['filename'] = self.filename = split[-1]
+        self.data['folder']   = self.folder = split[-2]
         self.data['line'] = cursor.location.line
+
         # Parse extends
         self.data['extends'] = []
 
