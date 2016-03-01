@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
     <!-- Site Properities -->
-    <title>{% block pagetitle %}ofDoc{% endblock %}</title>
+    <title>{% block pagetitle %}openFrameworks{% endblock %}</title>
 
     <!--<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
@@ -23,38 +23,34 @@
         <div class="container">
             <div class="row">
                 <div class="col m8">
-                    <a href="/latest/">
+                    <a href="http://openframeworks.cc">
                         <img class="oFlogo" src="http://openframeworks.cc/assets/images/of-logo.svg"/>
+                    </a>
+                    <a href="/latest/">
                         <div class="header">language reference</div>
                     </a>
                 </div>
                 <div class="col m4" style="50px">
                     <div class="input-field">
-
                         <input id="search" placeholder="search" type="search"></input>
                         <label for="search"><i class="zmdi zmdi-search "></i></label>
                         <div id="search-result"></div>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>
+
     <div class="container main">
         {% block content %}{% endblock %}
     </div>
+
     <div class="container" id="footer">
-        <p id="credits">
-            Last updated {{ date }}
-
-            <br>
-            <a href="http://www.rackspace.com" target="_blank" class="rackspace">
-                Hosting for openFrameworks is generously provided by Rackspace
-                <br><img src="http://c1776742.cdn.cloudfiles.rackspacecloud.com/images/information/mediacenter/links/130x33_grey.png" /></div>
-            </a>
-
-        </p>
+        <p>Last updated {{ date }}</p>
+        <a href="http://www.rackspace.com" target="_blank" class="rackspace">
+            Hosting for openFrameworks is generously provided by Rackspace
+            <br><img src="http://c1776742.cdn.cloudfiles.rackspacecloud.com/images/information/mediacenter/links/130x33_grey.png" /></div>
+        </a>
     </div>
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>

@@ -65,7 +65,7 @@ nav {
     //border-bottom: 1px solid #E6E6E6;
     //padding: 15px 0px;
     .container {
-        padding:15px;
+        padding:15px 40px;
         background: white;
         height:100%;
         border-bottom: 1px solid #E6E6E6;
@@ -144,6 +144,8 @@ nav {
 
 // Front page
 #toc {
+    padding-bottom:150px;
+
     .folder-name, .file-name {
         display: block;
     }

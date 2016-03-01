@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block pagetitle %}ofDoc - {{ pageTitle }}{% endblock %}
+{% block pagetitle %}openFrameworks - {{ pageTitle }}{% endblock %}
 
 {% block content %}
 <div id="documentation">
@@ -47,14 +47,15 @@
 
 
         <div class="col m9 offset-m3" id="documentation-content">
-            <!--{% if showPageTitle %}
-            <h4>{{file}}</h4>
-            {% endif %}-->
             {% for item in content %}
             <div class="item">
                 <div class="actions">
-                    <a href="{{item.markdownUrl}}" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="View documentation on github"><i class="zmdi zmdi-edit"></i></a>
-                    <a href="{{item.sourceUrl}}" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="View source on github"><i class="zmdi zmdi-code"></i></a>
+                    {% if item.markdownUrl %}
+                    <a href="{{ item.markdownUrl }}" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="View documentation on github"><i class="zmdi zmdi-edit"></i></a>
+                    {% endif %}
+                    {% if item.sourceUrl %}
+                    <a href="{{ item.sourceUrl }}" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="View source on github"><i class="zmdi zmdi-code"></i></a>
+                    {% endif %}
                 </div>
 
                 <h4>
