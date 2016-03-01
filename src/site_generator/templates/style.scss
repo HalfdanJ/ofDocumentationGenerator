@@ -218,7 +218,10 @@ nav {
         .collapsible-header {
             border-bottom:1px solid white;
             min-height: 10px;
+            max-height: 50px;
             line-height: 22px;
+            overflow: hidden;
+            transition-duration: 0.3s;
         }
         .collapsible-body {
             border:0;
@@ -236,6 +239,10 @@ nav {
             transition-duration: 0.3s;
             margin-bottom:15px;
 
+            .deprecated-notice {
+                opacity: 1.0;
+            }
+
             .collapsible-header {
                 transition-duration: 0.3s;
                 border-bottom:1px solid $documentationGridColor;
@@ -244,6 +251,8 @@ nav {
                 line-height:3rem;
 
                 color: $brandColor;
+
+                max-height: 25px;
             }
         }
 
@@ -294,13 +303,32 @@ nav {
         color: #AFAFAF
     }
 
+    .deprecated {
+        .method-name {
+            text-decoration: line-through;
+            color: #BFBFBF;
+        }
+    }
     .kind {
         color:#D2D2D2;
         letter-spacing: 1px;
         font-family: $sourceCodeFont;
     }
+    .brief {
+        color: #ccc;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-left: 8px;
+        display: block;
+    }
+    .deprecated-notice {
+        opacity: 0;
+        color: $brandColor;
+        transition-duration: 0.3s;
+    }
 
-    .name {
+    .variant-name {
         font-weight: bold;
     }
 

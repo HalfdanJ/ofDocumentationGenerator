@@ -4,6 +4,8 @@
 {% block content %}
 <div id="documentation">
     <div class="row">
+
+        <!-- SIDE MENU -->
         <div class="col m3" id="sidemenu">
 
             <div class="navigator">
@@ -43,9 +45,9 @@
                 </div>
             </div>
         </div>
+        <!-- END SIDE -->
 
-
-
+        <!-- MAIN CONTENT -->
         <div class="col m9 offset-m3" id="documentation-content">
             {% for item in content %}
             <div class="item">
@@ -62,6 +64,7 @@
                     {{item.name}}
                     <span class="header-label">{{item.type}}</span>
                 </h4>
+
                 <div class="inherits-header">
                     <!--{{item.type}} <i class="zmdi zmdi-github-alt"></i>-->
                     {% if item.extends %}
@@ -75,20 +78,17 @@
                     {% endif %}
                 </div>
 
-
                 <div class="inline-doc framed">
-                    <div class="doc-content">{{ item.documentation.text}}</div>
+                    {{ item.documentation.text}}
                 </div>
-                {% if item.documentation.markdown %}
                 <div class="markdown-doc">
-                    <div class="doc-content">{{ item.documentation.markdown}}</div>
+                    {{ item.documentation.markdown}}
                 </div>
-                {% endif %}
 
 
                 <!-- Methods -->
                 {% for method in item.methods %}
-                <div>
+                <div class="method {{ 'deprecated' if method.deprecated else '' }}">
                     {% if method.section and (loop.first or  item.methods[loop.index-2].section != method.section) %}
                     <h5 class="section-header" id="{{method.section_anchor}}">{{ method.section }}</h5>
                     {% endif %}
@@ -98,6 +98,11 @@
                             <div class="collapsible-header">
                                 <span class="method-name">{{ method.name }}</span>
                                 <span class="kind"> ()</span>
+                                {% if method.deprecated %}
+                                <span class="deprecated-notice">deprecated</span>
+                                {% endif %}
+                                <span class="brief"> {{ method.variants[0].documentation.brief }}</span>
+
                             </div>
                             <div class="collapsible-body">
 
@@ -107,9 +112,9 @@
                                     {% for variant in method.variants %}
                                     <li class="collection-item">
                                         <div class="memberVariant">
-                                            <span class="type">{{variant.returns}} </span>
-                                            <span class="name">{{method.name}}</span>
-                                            <span class="args">({{variant.parameters}})</span>
+                                            <span class="variant-type">{{variant.returns}} </span>
+                                            <span class="variant-name">{{method.name}}</span>
+                                            <span class="variant-args">({{variant.parameters}})</span>
                                             {% if variant.inherited %}
                                             <span class="inherited">Inherited from <a href="{{ variant.inherited }}.html">{{ variant.inherited }}</a></span>
                                             {% endif %}
@@ -200,6 +205,7 @@
                         <div class="collapsible-header">
                             <span class="method-name">{{ variable.name }}</span>
                             <span class="kind"> {{ variable.type }}</span>
+                            <span class="brief"> {{ variable.documentation.brief }}</span>
                         </div>
                         <div class="collapsible-body">
                             <ul class="collection">

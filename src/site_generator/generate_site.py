@@ -34,21 +34,29 @@ class SiteGenerator:
     def currentTime(self):
         return time.strftime("%d %b %Y %H:%M UTC")
 
+    def parseBrief(self, doc):
+        brief = doc["text"].split('\n', 1)[0]
+        return brief
+
     def parseDocumentation(self, doc, contextClass):
-        doc["returns"] = self.markdownParser.parseMarkdown(doc["returns"], contextClass)
-        doc["warning"] = self.markdownParser.parseMarkdown(doc["warning"], contextClass)
-        doc["text"] = self.markdownParser.parseMarkdown(doc["text"], contextClass)
+        ret = {}
+        ret["returns"] = self.markdownParser.parseMarkdown(doc["returns"], contextClass)
+        ret["warning"] = self.markdownParser.parseMarkdown(doc["warning"], contextClass)
+        ret["text"] = self.markdownParser.parseMarkdown(doc["text"], contextClass)
+        ret["brief"] = self.parseBrief(doc)
 
         if "markdown" in doc:
-            doc["markdown"] = self.markdownParser.parseMarkdown(doc["markdown"], contextClass)
+            ret["markdown"] = self.markdownParser.parseMarkdown(doc["markdown"], contextClass)
 
+        ret["parameters"] = {}
         for key in doc["parameters"].iterkeys():
-            doc["parameters"][key] = self.markdownParser.parseMarkdown(doc["parameters"][key], contextClass)
+            ret["parameters"][key] = self.markdownParser.parseMarkdown(doc["parameters"][key], contextClass)
 
+        ret["sa"] = []
         for i in range(0, len(doc["sa"])):
-            doc["sa"][i] = self.markdownParser.parseMarkdown(doc["sa"][i], contextClass)
+            ret["sa"].append( self.markdownParser.parseMarkdown(doc["sa"][i], contextClass))
 
-        return doc
+        return ret
 
 
     def isFileInternal(self, file):
@@ -150,75 +158,76 @@ class SiteGenerator:
     """
     Parse item for all its functions, and return data ready to render by jinja
     """
-    def parseItemFunctions(self, methods, sections, item, inherited):
+    def parseItemFunctions(self, ret_methods, ret_sections, item, inherited):
         if 'methods' in item:
-            functions = item['methods']
+            methods = item['methods']
         else:
-            functions = item['functions']
+            methods = item['functions']
 
-        for method in functions:
+        for method in methods:
             if method['access'] != 'public' and method['access'] != 'invalid':
                 continue
             if method['name'].startswith('~'):
                 continue
-            if method['deprecated'] is True:
-                continue
-
+            #if method['deprecated'] is True:
+            #    continue
 
             # Set section name if its not set already on the first element
             section = method["documentation"]["section"]
 
             # Set section name if its not set already on the first element
-            if section is None and len(methods) == 0 and item['type'] == 'class':
+            if section is None and len(ret_methods) == 0 and item['type'] == 'class':
                 section = method["documentation"]["section"] = 'Functions'
 
-            if section and len(section) > 0 and (len(sections) == 0 or sections[-1] != section):
-                sections.append({
+            if section and len(section) > 0 and (len(ret_sections) == 0 or ret_sections[-1] != section):
+                ret_sections.append({
                     "title": section,
                     "anchor": self.sectionAnchor(section, item)
                 })
 
-            m = {
+            new_variant = {
                 "returns": method["returns"],
                 "parameters": ', '.join(method["parameters"]),
                 "parameter_types": ', '.join(method["parameter_types"]),
-                "documentation": self.parseDocumentation(method["documentation"], item)
+                "documentation": self.parseDocumentation(method["documentation"], item),
             }
 
             if inherited is not False:
-                m['inherited'] = inherited
+                new_variant['inherited'] = inherited
 
             # Check if method is already added
             found = False
-            for mm in methods:
+            for mm in ret_methods:
                 if mm['name'] == method["name"]:
 
                     variant_found = False
                     for v in mm['variants']:
-                        if v['parameter_types'] == m['parameter_types']:
+                        if v['parameter_types'] == new_variant['parameter_types']:
                             variant_found = True
                             # If the current added variant doesnt have a description, then take the description from
                             # the inherited member
                             if len(v["documentation"]['text']) == 0:
-                                v["documentation"]['text'] = m["documentation"]['text']
+                                v["documentation"] = new_variant["documentation"]
 
                     if not variant_found:
-                        mm['variants'].append(m)
+                        mm['variants'].append(new_variant)
 
                     found = True
                     break
 
+            # Method not alreay added, so add it
             if not found:
-                methods.append({
+                ret_methods.append({
                     "name": method["name"],
+                    "deprecated": method['deprecated'],
+                    #"brief": self.parseBrief(method['documentation']),
                     "anchor": self.itemAnchor(method, item),
                     "section": section,
                     "section_anchor": self.sectionAnchor(section, item),
-                    "variants": [m]
+                    "variants": [new_variant]
                 })
 
-                # except:
-                #    pass
+        # Add parent classes methods
         if 'extends' in item:
             for otherClassName in item['extends']:
                 if len(otherClassName.strip()) > 0:
@@ -231,7 +240,7 @@ class SiteGenerator:
                         if data is not None:
                             for otherClass in data['classes']:
                                 if otherClass['name'] == filename:
-                                    self.parseItemFunctions(methods, sections, otherClass, filename)
+                                    self.parseItemFunctions(ret_methods, ret_sections, otherClass, filename)
 
     """
     Parse item for all its variables
@@ -369,11 +378,12 @@ class SiteGenerator:
                 "markdownUrl": markdownUrl
             })
 
+        """
         if len(render_data['content']) == 1 and render_data['content'][0]['name'] == render_data['file']:
             render_data['showPageTitle'] = False;
         else:
             render_data['showPageTitle'] = True;
-
+        """
 
         # save the results
         output = template.render(render_data).encode('utf8')
