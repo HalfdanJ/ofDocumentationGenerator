@@ -211,8 +211,9 @@
                 <ul class="collapsible" data-collapsible="accordion" id="{{ variable.anchor }}">
                     <li>
                         <div class="collapsible-header">
-                            <span class="method-name">{{ variable.name }}</span>
-                            <span class="kind"> {{ variable.type }}</span>
+                            <span class="variable-type">{{variable.kind}} </span>
+                            <span class="variable-name">{{ variable.name }}</span>
+                            <span class="kind variable-kind"> {{ variable.type }}</span>
 
                             {% if variable.documentation.brief %}
                             <span class="brief"> {{ variable.documentation.brief }}</span>

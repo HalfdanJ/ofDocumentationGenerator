@@ -254,6 +254,11 @@ nav {
                 opacity: 1.0;
             }
 
+            .variable-type {
+                max-width: 100px;
+                margin-right:8px;
+            }
+
             .collapsible-header {
                 transition-duration: 0.3s;
                 border-bottom:1px solid $documentationGridColor;
@@ -329,6 +334,24 @@ nav {
         color:#D2D2D2;
         letter-spacing: 1px;
         font-family: $sourceCodeFont;
+
+        &.variable-kind {
+            margin-left: 8px;
+        }
+    }
+    .variable-name {
+        font-family: $sourceCodeFont;
+    }
+    .variable-type {
+        display:inline-block;
+        max-width: 0px;
+        transition-duration: 0.3s;
+        overflow:hidden;
+        white-space: nowrap;
+        font-family: $sourceCodeFont;
+        color: $brandColor;
+        height:17px;
+        margin-right:0px;
     }
     .brief {
         color: #ccc;
