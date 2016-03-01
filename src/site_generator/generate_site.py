@@ -343,13 +343,16 @@ class SiteGenerator:
 
             # Extends
             extends =  map(lambda name:
-                self.markdownParser.linkToReferenceItem(self.markdownParser.searchForGlobalReference(name,''),name),
+		self.markdownParser.linkToReferenceItem(self.markdownParser.searchForGlobalReference(name,''),name), subitem['extends'])
 
-                subitem['extends'])
+	    doc = self.parseDocumentation(subitem["documentation"], subitem)
 
+	    markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/new/master/{}/?filename={}.md'.format(filedata['folder'], subitem['name'])
+	    if 'markdown' in doc and len(doc['markdown']) > 0:
+		markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/blob/master/{}/{}.md'.format(filedata['folder'], subitem['name'])
             # Class item
             render_data['content'].append({
-                "documentation": self.parseDocumentation(subitem["documentation"], subitem),
+		"documentation": doc,
                 "name": subitem['name'],
                 "methods": methods,
                 "member_variables": member_variables,
@@ -357,7 +360,7 @@ class SiteGenerator:
                 "extends": extends,
                 "type": 'class',
                 "sourceUrl" : 'https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/{}/{}.h#L{}'.format(filedata["folder"], filedata["name"], subitem["line"]),
-                "markdownUrl": 'https://github.com/workergnome/ofdocs_markdown/blob/master/{}/{}.md'.format(filedata['folder'], subitem['name'])
+		"markdownUrl": markdownUrl
             })
 
         if len(render_data['content']) == 1 and render_data['content'][0]['name'] == render_data['file']:
