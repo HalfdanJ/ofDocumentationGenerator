@@ -343,16 +343,16 @@ class SiteGenerator:
 
             # Extends
             extends =  map(lambda name:
-		self.markdownParser.linkToReferenceItem(self.markdownParser.searchForGlobalReference(name,''),name), subitem['extends'])
+                self.markdownParser.linkToReferenceItem(self.markdownParser.searchForGlobalReference(name,''),name), subitem['extends'])
 
-	    doc = self.parseDocumentation(subitem["documentation"], subitem)
+            doc = self.parseDocumentation(subitem["documentation"], subitem)
 
-	    markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/new/master/{}/?filename={}.md'.format(filedata['folder'], subitem['name'])
-	    if 'markdown' in doc and len(doc['markdown']) > 0:
-		markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/blob/master/{}/{}.md'.format(filedata['folder'], subitem['name'])
+            markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/new/master/{}/?filename={}.md'.format(filedata['folder'], subitem['name'])
+            if 'markdown' in doc and len(doc['markdown']) > 0:
+                markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/blob/master/{}/{}.md'.format(filedata['folder'], subitem['name'])
             # Class item
             render_data['content'].append({
-		"documentation": doc,
+                "documentation": doc,
                 "name": subitem['name'],
                 "methods": methods,
                 "member_variables": member_variables,
@@ -360,7 +360,7 @@ class SiteGenerator:
                 "extends": extends,
                 "type": 'class',
                 "sourceUrl" : 'https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/{}/{}.h#L{}'.format(filedata["folder"], filedata["name"], subitem["line"]),
-		"markdownUrl": markdownUrl
+                "markdownUrl": markdownUrl
             })
 
         if len(render_data['content']) == 1 and render_data['content'][0]['name'] == render_data['file']:
@@ -432,8 +432,8 @@ class SiteGenerator:
                 if name[0] != '.' and name != 'reference.json':
                     print "Site Generator - Parse "+name
                     data = self.loadData(name)
-                    #if name == 'ofTypes.json':
-                    self.renderFile(data)
+		    #if name == 'ofTypes.json':
+		    self.renderFile(data)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"
@@ -444,5 +444,4 @@ class SiteGenerator:
         self.generateSearchReference()
 
         self.compileScss()
-        shutil.copyfile(os.path.join(template_dir,'script.js'), os.path.join(outdir,'script.js'))
         #shutil.copyfile(os.path.join(jsondir,'reference.json'), os.path.join(outdir,'reference.json'))
