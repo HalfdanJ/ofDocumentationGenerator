@@ -52,6 +52,8 @@ nav {
     padding-left: 40px;
     padding-right: 40px;
     padding-top: 80px;
+    box-shadow: 5px 5px 5px #aaa, -5px 0 5px #aaa;
+    padding-bottom:122px;
 }
 
 #top-bar {
@@ -392,6 +394,16 @@ nav {
 
 #footer {
     background-color: black;
+    margin-top: -122px;
     margin-bottom: -20px;
-    margin-top: -20px;
+
+    color: #aaa;
+
+    padding: 10px 40px;
+    text-align: center;
+    font-size: 13px;
+
+    a {
+        color: white;
+    }
 }

@@ -10,6 +10,7 @@ from sets import Set
 from scss import parser
 from jinja2 import Environment, FileSystemLoader
 import json
+import time
 
 from generate_site_parse_markdown import SiteParseMarkdown
 
@@ -29,6 +30,9 @@ class SiteGenerator:
     internal_files_rules = []
 
     markdownParser = SiteParseMarkdown()
+
+    def currentTime(self):
+        return time.strftime("%d %b %Y %H:%M UTC")
 
     def parseDocumentation(self, doc, contextClass):
         doc["returns"] = self.markdownParser.parseMarkdown(doc["returns"], contextClass)
@@ -72,7 +76,8 @@ class SiteGenerator:
             cols[index].append({ 'name': key, 'files': toc[key] })
 
         output = toc_template.render({
-            "content": cols
+            "content": cols,
+            "date": self.currentTime()
         }).encode('utf8')
 
         # to save the results
@@ -296,7 +301,8 @@ class SiteGenerator:
             "file": filedata["name"],
             "folder": filedata['folder'],
             "content": [],
-            "otherFilesInFolder" : []
+            "otherFilesInFolder" : [],
+            "date": self.currentTime()
         }
 
         # Find other files in same folder
