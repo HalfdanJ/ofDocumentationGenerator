@@ -223,6 +223,7 @@ nav {
         border: 0;
 
         .collection-item {
+            position: relative;
             background: transparent;
             padding-left:15px;
             border-top: 1px solid $documentationGridColor;
