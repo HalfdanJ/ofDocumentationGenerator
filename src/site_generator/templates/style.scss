@@ -339,8 +339,9 @@ nav {
             margin-left: 8px;
         }
     }
-    .variable-name {
+    .variable-name, .method-name {
         font-family: $sourceCodeFont;
+        font-weight: 400;
     }
     .variable-type {
         display:inline-block;
