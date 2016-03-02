@@ -173,13 +173,14 @@ class SiteParseMarkdown:
             if 'class' in item and item['class'] and item['class'] not in self.classes_reference:
                 self.classes_reference[item['class']] = {}
 
-            if item['type'] == 'class':
-                self.global_reference[item['name']] = item
             if item['type'] == 'function' or item['type'] == 'variable':
                 if item['class'] is None:
                     self.global_reference[item['name']] = item
                 else:
                     self.classes_reference[item['class']][item['name']] = item
+            else:
+                self.global_reference[item['name']] = item
+
 
         #import pprint
         #pp = pprint.PrettyPrinter(depth=6)
