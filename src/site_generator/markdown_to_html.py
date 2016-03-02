@@ -116,6 +116,15 @@ class SiteParseMarkdown:
 
         return html
 
+    def createExternalLinks(self, html):
+        html = re.sub(r'(?<!href=")(?<!">)(http[s]?://((?:[a-zA-Z]|[0-9]|[\/\-_@.&]|[!*\(\),])+))',
+            lambda m1:
+                '<a target="_blank" href="{}">{}</a>'.format(m1.group(1), m1.group(2))
+            , html)
+
+        return html
+
+
     def parseMarkdownCodeBlock(self, mk):
         ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
         ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
@@ -154,6 +163,8 @@ class SiteParseMarkdown:
         # Create internal links
         ret = self.createInternalLinks(ret, contextClass)
 
+        # Create external links
+        ret = self.createExternalLinks(ret)
 
         return ret
 
