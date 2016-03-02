@@ -12,7 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 import json
 import time
 
-from generate_site_parse_markdown import SiteParseMarkdown
+from markdown_to_html import SiteParseMarkdown
 
 dir = os.path.dirname(__file__)
 
@@ -474,8 +474,8 @@ class SiteGenerator:
                 if name[0] != '.' and name != 'reference.json':
                     print "Site Generator - Parse "+name
                     data = self.loadData(name)
-		    #if name == 'ofTypes.json':
-		    self.renderFile(data)
+                    if name == 'ofRectangle.json':
+                        self.renderFile(data)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"
