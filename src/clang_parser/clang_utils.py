@@ -135,6 +135,9 @@ def is_function(member):
 def is_enum(member):
     return member.kind == CursorKind.ENUM_DECL
 
+def is_typedef(member):
+    return member.kind == CursorKind.TYPEDEF_DECL
+
 def filenameFromClangChild(child):
     return os.path.basename(child.location.file.name).split('.')[0]
 

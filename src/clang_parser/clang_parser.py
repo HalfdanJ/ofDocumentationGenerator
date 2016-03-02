@@ -11,6 +11,7 @@ import shutil
 from clang.cindex import CursorKind
 
 from utils import json_file
+#from ..utils import json_file
 
 import clang_utils
 
@@ -18,12 +19,15 @@ import clang_reference
 from clang_class import DocClass
 from clang_function import DocFunction
 from clang_enum import DocEnum
+from clang_typedef import DocTypedef
 
 dir_count = 0
 file_count = 0
 visited_classes = []
 visited_enums = []
 visited_function = []
+visited_typedefs = []
+
 missing_functions = []
 missing_methods = []
 missing_vars = []
@@ -68,7 +72,8 @@ def add_file(offilename, folder):
         "folder":folder,
         "classes": [],
         "functions": [],
-        "enums":[]
+        "enums":[],
+        "typedefs":[]
     }
 
 def add_class(data, offilename, folder):
@@ -89,10 +94,16 @@ def add_enum(data, offilename, folder):
         add_file(offilename, folder)
     json_data[offilename]['enums'].append(data)
 
+def add_typedef(data, offilename):
+    """ Add typedef to json data output """
+    if offilename not in json_data:
+        add_file(offilename, data['folder'])
+    json_data[offilename]['typedefs'].append(data)
 
 def parse_file_child(child):
-    if child.spelling.find('of') == 0:
+    if child.spelling.startswith('of'):
         offilename = clang_utils.filenameFromClangChild(child)
+
         if clang_utils.is_class(child):
             i = 0
             for c in child.get_children():
@@ -116,6 +127,11 @@ def parse_file_child(child):
                 new_enum = DocEnum(child)
                 add_enum(new_enum.serialize(), offilename, new_enum.folder)
                 visited_enums.append(child.spelling)
+
+        elif clang_utils.is_typedef(child):
+            if child.spelling not in visited_typedefs:
+                add_typedef(DocTypedef(child).serialize(), offilename)
+                visited_typedefs.append(child.spelling)
         #else:
         #   print "-- ",child.spelling, child.kind
 

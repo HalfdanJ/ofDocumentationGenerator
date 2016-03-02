@@ -2,33 +2,19 @@ import re
 
 from clang.cindex import CursorKind
 import clang_reference
-import clang_documentation_parser
 import clang_utils
+from clang_base_type import DocBase
 
-class DocFunction():
+
+class DocFunction(DocBase):
     def __init__(self, cursor, parentclass):
-        #print "Parse function " + cursor.spelling
-        self.cursor = cursor
+        DocBase.__init__(self, cursor)
+
         self.parentclass = parentclass
 
-        self.data = {}
-
-        split = cursor.location.file.name.split('/')
-        self.data['filename'] = self.filename = split[-1]
-        self.data['folder']   = self.folder = split[-2]
-        self.data['line'] = cursor.location.line
-
-        self.data['name'] = cursor.spelling
         self.data['name'] = re.sub("<.*>", "", self.data['name'])
+
         self.data['type'] = 'function'
-
-        # Parse documentation
-        self.data['documentation'] = clang_documentation_parser.parse_docs(cursor)
-
-        # Parse visible
-        self.data['visible'] = True
-        if self.data['documentation']['internal']:
-            self.data['visible'] = False
 
         # Access
         self.data['access'] = cursor.access_specifier.name.lower()

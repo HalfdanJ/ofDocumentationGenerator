@@ -69,15 +69,15 @@ def parse_docs(element):
                 elif param == 'section':
                     ret['section'] = text
 
-                else:
-                    print "MISSINGPARAM"
-                    print param + " | "+ text
+                # else:
+                #     print "MISSINGPARAM"
+                #     print param + " | "+ text
             else:
                 ret[mode] += text+"\n"
 
 
-        else:
-            print "NO MATCH "+line
+        #else:
+        #    print "NO MATCH "+line
 
     return ret
     #for line in iter(doc.splitlines()):

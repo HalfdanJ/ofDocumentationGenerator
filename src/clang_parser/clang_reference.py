@@ -48,6 +48,14 @@ def add_enum(c):
             "enum": c.data['name']
         })
 
+def add_typedef(c):
+    json_ref_data.append({
+        "file": clang_utils.filenameFromClangChild(c.cursor),
+        "type": "typedef",
+        "folder": c.data['folder'],
+        "name": c.data['name'],
+    })
+
 
 
 def save(outdir):
