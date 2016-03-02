@@ -5,8 +5,8 @@ import clang_documentation_parser
 from clang_base_type import DocBase
 
 class DocEnum(DocBase):
-    def __init__(self, cursor):
-        DocBase.__init__(self, cursor)
+    def __init__(self, cursor, of_root):
+        DocBase.__init__(self, cursor, of_root)
 
         self.data['type'] = 'enum'
 

@@ -6,8 +6,8 @@ from clang_base_type import DocBase
 
 
 class DocVariable(DocBase):
-    def __init__(self, cursor, parentclass):
-        DocBase.__init__(self, cursor)
+    def __init__(self, cursor, parentclass, of_root):
+        DocBase.__init__(self, cursor, of_root)
 
         self.parentclass = parentclass
 

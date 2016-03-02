@@ -34,8 +34,8 @@ class SiteGenerator(object):
 
     def getSourceUrl(self, filedata, item=None):
         ofUrl = 'https://github.com/openframeworks/openFrameworks'
-        url = ofUrl+'/blob/master/libs/openFrameworks/{}/{}'
-        url = url.format(filedata["folder"], filedata["filename"])
+        url = ofUrl+'/blob/master{}'
+        url = url.format( filedata["file"])
 
         if item and 'line' in item and item['line']:
             url = url +'#L{}'.format(item['line'])
@@ -329,19 +329,35 @@ class SiteGenerator(object):
             toc[key] = filter(lambda file: not self.isFileInternal(file), toc[key])
             toc[key].sort()
 
-        count = 0
-        totalcount = 1
+        totalcount_core = 1
+        totalcount_addons = 1
         for key in sorted(toc.keys()):
-            totalcount += len(toc[key]) + extra
+            if key.startswith('ofx'):
+                totalcount_addons += len(toc[key]) + extra
+            else:
+                totalcount_core += len(toc[key]) + extra
 
         cols = [[],[],[]]
+        colsAddons = [[],[],[]]
+
+        count = 0
+        countAddons = 0
+
         for key in sorted(toc.keys()):
-            count += len(toc[key]) + extra
-            index = int(math.floor(3.0*count / totalcount))
-            cols[index].append({ 'name': key, 'files': toc[key] })
+            if len(toc[key]) > 0:
+                if key.startswith('ofx'):
+                    countAddons += len(toc[key]) + extra
+                    index = int(math.floor(3.0*countAddons / totalcount_addons))
+                    colsAddons[index].append({ 'name': key, 'files': toc[key] })
+                else:
+                    count += len(toc[key]) + extra
+                    index = int(math.floor(3.0*count / totalcount_core))
+                    cols[index].append({ 'name': key.upper(), 'files': toc[key] })
+
 
         output = toc_template.render({
-            "content": cols,
+            "core": cols,
+            "addons": colsAddons,
             "date": self.currentTime()
         }).encode('utf8')
 

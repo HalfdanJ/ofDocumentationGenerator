@@ -1,16 +1,23 @@
 import clang_documentation_parser
 
 class DocBase():
-    def __init__(self, cursor):
+    def __init__(self, cursor, of_root):
         self.data = {}
         self.cursor = cursor
 
-        split = cursor.location.file.name.split('/')
-        self.data['filename'] = self.filename = split[-1]
-        self.data['folder']   = self.folder = split[-2]
-        self.data['line'] = cursor.location.line
+        self.data['file'] = cursor.location.file.name.replace(of_root, '', 1)
 
-        self.data['name'] = self.name = cursor.spelling
+        split = cursor.location.file.name.split('/')
+        self.data['filename'] = self.filename   = split[-1]
+        self.data['folder']   = self.folder     = split[-2]
+
+        # Addons should take parents parents folder name
+        if self.folder == 'src' and self.filename.startswith('ofx'):
+            self.data['folder']   = self.folder     = split[-3]
+
+        self.data['line']                       = cursor.location.line
+
+        self.data['name']     = self.name       = cursor.spelling
 
         # Parse documentation
         self.data['documentation'] = clang_documentation_parser.parse_docs(cursor)

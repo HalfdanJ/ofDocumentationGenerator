@@ -9,8 +9,8 @@ from clang_base_type import DocBase
 
 
 class DocClass(DocBase):
-    def __init__(self, cursor):
-        DocBase.__init__(self, cursor)
+    def __init__(self, cursor, of_root):
+        DocBase.__init__(self, cursor, of_root)
 
         self.data['type'] = 'class'
 
@@ -66,12 +66,12 @@ class DocClass(DocBase):
 
             elif clang_utils.is_variable(member):
                 if member.access_specifier.name.lower() == 'public':
-                    var = DocVariable(member, self)
+                    var = DocVariable(member, self, of_root)
                     self.member_variables.append(var)
 
                 #f.write( str(member.type.text) + " " + str(member.name.text) + "\n" )
             elif clang_utils.is_method(member):
-                func = DocFunction(member, self)
+                func = DocFunction(member, self, of_root)
                 self.member_functions.append(func)
                 """
                 method = parse_function(documentation_class, clazz, member, current_methods_list)

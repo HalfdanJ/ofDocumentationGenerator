@@ -2,8 +2,9 @@
 {% block content %}
 
 <div id="toc">
+    <h3>Core</h3>
     <div class="row">
-        {% for col in content %}
+        {% for col in core %}
         <div class="col s4">
             {% for folder in col %}
                 <span class="folder-name"> {{folder.name}} </span>
@@ -15,5 +16,21 @@
         {% endfor %}
 
     </div>
+
+    <h3>Core Addons</h3>
+    <div class="row">
+        {% for col in addons %}
+        <div class="col s4">
+            {% for folder in col %}
+                <span class="folder-name"> {{folder.name}} </span>
+                {% for file in folder.files %}
+                    <a href="{{ file }}.html" class="file-name">{{ file }}</a>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+    </div>
+
 </div>
 {% endblock %}

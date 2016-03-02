@@ -64,12 +64,13 @@ alternatives = {
 }
 """
 
-def add_file(offilename, folder):
+def add_file(offilename, data):
     json_data[offilename] = {
         "name": offilename,
         "filename": offilename+'.h',
+        "file": data['file'],
         "type": 'file',
-        "folder":folder,
+        "folder": data['folder'],
         "classes": [],
         "functions": [],
         "enums":[],
@@ -79,28 +80,28 @@ def add_file(offilename, folder):
 def add_class(data, offilename, folder):
     """ Add class to json data output """
     if offilename not in json_data:
-        add_file(offilename, folder)
+        add_file(offilename, data)
     json_data[offilename]['classes'].append(data)
 
 def add_function(data, offilename, folder):
     """ Add function to json data output """
     if offilename not in json_data:
-        add_file(offilename, folder)
+        add_file(offilename, data)
     json_data[offilename]['functions'].append(data)
 
 def add_enum(data, offilename, folder):
     """ Add enum to json data output """
     if offilename not in json_data:
-        add_file(offilename, folder)
+        add_file(offilename, data)
     json_data[offilename]['enums'].append(data)
 
 def add_typedef(data, offilename):
     """ Add typedef to json data output """
     if offilename not in json_data:
-        add_file(offilename, data['folder'])
+        add_file(offilename, data)
     json_data[offilename]['typedefs'].append(data)
 
-def parse_file_child(child):
+def parse_file_child(child, of_root):
     if child.spelling.startswith('of'):
         offilename = clang_utils.filenameFromClangChild(child)
 
@@ -110,7 +111,7 @@ def parse_file_child(child):
                 if clang_utils.is_variable(c) or clang_utils.is_method(c) or c.kind == CursorKind.CXX_BASE_SPECIFIER:
                     i += 1
             if i > 0 and child.spelling not in visited_classes:
-                new_class = DocClass(child)
+                new_class = DocClass(child, of_root)
                 add_class(new_class.serialize(), offilename, new_class.folder)
                 visited_classes.append(child.spelling)
                 #clang_reference.add_class(new_class)
@@ -118,19 +119,19 @@ def parse_file_child(child):
         elif clang_utils.is_function(child):
             if child.spelling not in visited_function and offilename != "ofMain":
                 visited_function.append(child.spelling)
-                new_func = DocFunction(child, None)
+                new_func = DocFunction(child, None, of_root)
                 add_function(new_func.serialize(), offilename, new_func.folder)
                 #clang_reference.add_function(new_func)
 
         elif clang_utils.is_enum(child):
             if child.spelling not in visited_enums:
-                new_enum = DocEnum(child)
+                new_enum = DocEnum(child, of_root)
                 add_enum(new_enum.serialize(), offilename, new_enum.folder)
                 visited_enums.append(child.spelling)
 
         elif clang_utils.is_typedef(child):
             if child.spelling not in visited_typedefs:
-                add_typedef(DocTypedef(child).serialize(), offilename)
+                add_typedef(DocTypedef(child, of_root).serialize(), offilename)
                 visited_typedefs.append(child.spelling)
         #else:
         #   print "-- ",child.spelling, child.kind
@@ -139,17 +140,17 @@ def parse_file_child(child):
 def parse_folder(of_root, folder, files, is_addon=False):
     for name in files:
         filepath = os.path.join(folder, name)
-
-        if name.split('.')[0] not in json_data.keys() and name.find('of') == 0 and os.path.splitext(name)[1] == '.h':
+        if name.split('.')[0] not in json_data.keys() and name.startswith('of') and os.path.splitext(name)[1] == '.h':
             tu = clang_utils.get_tu_from_file(filepath, of_root)
             for child in tu.cursor.get_children():
-                parse_file_child(child)
+                parse_file_child(child, of_root)
 
 
 
 
 def run(of_root, outdir):
     of_source = os.path.join(of_root, "libs/openFrameworks")
+    of_addons = os.path.join(of_root, "addons")
 
     # Prepare the outdir
     if os.path.exists(outdir):
@@ -160,6 +161,31 @@ def run(of_root, outdir):
     for root, dirs, files in os.walk(of_source):
         parse_folder(of_root, root, files, False)
 
+
+    official_addons = [
+        "ofxAccelerometer",
+        "ofxAndroid",
+        "ofxAssimpModelLoader",
+        "ofxEmscripten",
+        "ofxGui",
+        "ofxNetwork",
+        "ofxOpenCv",
+        "ofxOsc",
+        "ofxSvg",
+        "ofxThreadedImageLoader",
+        "ofxXmlSettings",
+    ]
+
+    #for root, dirs, files in os.walk(of_addons):
+    for dir in os.listdir(of_addons):
+        if dir.startswith('ofx') and os.path.isdir(os.path.join(of_addons,dir)):
+            if dir in official_addons:
+                #for file in os.listdir(os.path.join(of_addons, dir, 'src')):
+                #    print file
+                path = os.path.join(of_addons, dir, 'src')
+                parse_folder(of_root, path, os.listdir(path), True)
+
+    #    parse_folder(of_root, root, files, False)
 
     """
     for addon in official_addons:
