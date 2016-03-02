@@ -215,7 +215,7 @@
 
                 <!-- Variables  -->
                 {% for variable in item.member_variables %}
-                {% if variable.section and (loop.first or variable[loop.index-2].section != variable.section) %}
+                {% if variable.section and (loop.first or item.member_variables[loop.index-2].section != variable.section) %}
                 <h5 class="section-header" id="{{variable.section_anchor}}">{{ variable.section }}</h5>
                 {% endif %}
 
