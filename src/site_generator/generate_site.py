@@ -28,7 +28,7 @@ class SiteGenerator(object):
     jsondir = ''
     outdir = ''
     internal_files_rules = []
-    file_filter = None
+    file_filter = []
 
     markdownParser = SiteParseMarkdown()
 
@@ -482,7 +482,7 @@ class SiteGenerator(object):
                 if name[0] != '.' and name != 'reference.json':
                     data = self.loadData(name)
                     #if name == 'ofRectangle.json':
-                    if self.file_filter is None or name.replace('.json', '') in self.file_filter:
+                    if len(self.file_filter) == 0 or name.replace('.json', '') in self.file_filter:
                         print "Site Generator - Parse "+name
                         self.renderFile(data)
                     self.updateToc(data)
@@ -492,4 +492,3 @@ class SiteGenerator(object):
         self.generateSearchReference()
 
         self.compileScss()
-        

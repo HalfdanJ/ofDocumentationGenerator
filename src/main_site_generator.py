@@ -9,6 +9,6 @@ site_output = os.path.abspath(os.getenv('OF_DOCUMENTATION_SITE_OUTPUT', './_site
 generator = SiteGenerator()
 
 if len(sys.argv) > 0:
-    generator.file_filter = sys.argv
+    generator.file_filter = sys.argv[1:]
 
 generator.run(markdown_root, json_data_root, os.path.join(site_output,'latest'))
