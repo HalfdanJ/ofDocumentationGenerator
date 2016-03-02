@@ -241,6 +241,11 @@ nav {
             transition-duration: 0.3s;
             font-weight: 300;
             position: relative;
+
+            span {
+                overflow: hidden;
+                display: inline-block;
+            }
         }
         .collapsible-body {
             border:0;
@@ -263,7 +268,7 @@ nav {
             }
 
             .variable-type {
-                max-width: 600px;
+                max-width: 40%;
                 margin-right:8px;
             }
 
@@ -347,19 +352,19 @@ nav {
             margin-left: 8px;
         }
     }
+
     .variable-name, .method-name {
         font-family: $sourceCodeFont;
         font-weight: 400;
     }
+
     .variable-type {
         display:inline-block;
-        max-width: 0px;
-        transition-duration: 0.3s;
-        overflow:hidden;
+        max-width:0px;
+        transition-duration: 0.2s;
         white-space: nowrap;
         font-family: $sourceCodeFont;
         color: $brandColor;
-        height:17px;
         margin-right:0px;
     }
     .brief {
@@ -368,8 +373,9 @@ nav {
         overflow: hidden;
         text-overflow: ellipsis;
         margin-left: 15px;
-        margin-bottom: 5px;
-        display: block;
+        margin-top: -8px;
+        margin-bottom: 5px;        
+        display: block !important;
     }
     .deprecated-notice {
         opacity: 0;
