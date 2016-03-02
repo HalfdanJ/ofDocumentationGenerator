@@ -14,7 +14,8 @@ class SiteParseMarkdown:
 
 
     """
-    Search for a word in global reference
+    Search for a word in global reference.
+    That is global functions, classes, global enums
     """
     def searchForGlobalReference(self, word, nextchar):
         #print classWord+" "+funcWord
@@ -22,8 +23,16 @@ class SiteParseMarkdown:
         if nextchar == '(':
             isFunction = True
 
+        if word[-1] == 's':
+            print word[:-1]
+
+        item = None
         if word in self.global_reference:
             item = self.global_reference[word]
+        elif word[-1] == 's' and word[:-1] in self.global_reference:
+            item = self.global_reference[word[:-1]]
+
+        if item:
             if isFunction and item['type'] == 'function':
                 return item
             if not isFunction and item['type'] != 'function':
