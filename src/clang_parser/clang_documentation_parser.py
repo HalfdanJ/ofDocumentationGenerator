@@ -36,8 +36,8 @@ def parse_docs(element):
     mode = 'text'
     for line in iter(doc.splitlines()):
         line = line.strip()
-        parammatch = re.search("///\s*(\\\\(\w+))", line, re.I | re.S)
-        linematch = re.search("///\s*(\\\\(\w+)\s)?(.*)$", line, re.I | re.S)
+        parammatch = re.search(r"///<?\s*(\\(\w+))", line, re.I | re.S)
+        linematch = re.search(r"///<?\s*(\\(\w+)\s)?(.*)$", line, re.I | re.S)
 
         if linematch:
             text = linematch.group(3)
