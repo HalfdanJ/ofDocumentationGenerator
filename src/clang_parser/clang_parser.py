@@ -6,7 +6,6 @@ These JSON files can then be used by the site generator to create the site
 """
 
 import os
-import sys
 import shutil
 
 from clang.cindex import CursorKind
@@ -61,47 +60,33 @@ alternatives = {
 }
 """
 
-""" Add class to json data output """
+def add_file(offilename, folder):
+    json_data[offilename] = {
+        "name": offilename,
+        "filename": offilename+'.h',
+        "type": 'file',
+        "folder":folder,
+        "classes": [],
+        "functions": [],
+        "enums":[]
+    }
+
 def add_class(data, offilename, folder):
-    #print "Add class ",offilename
+    """ Add class to json data output """
     if offilename not in json_data:
-        json_data[offilename] = {
-            "name": offilename,
-            "filename": offilename+'.h',
-            "type": 'file',
-            "folder":folder,
-            "classes": [],
-            "functions": [],
-            "enums":[]
-        }
+        add_file(offilename, folder)
     json_data[offilename]['classes'].append(data)
 
-
-""" Add global function to json data output """
 def add_function(data, offilename, folder):
+    """ Add function to json data output """
     if offilename not in json_data:
-        json_data[offilename] = {
-            "name": offilename,
-            "filename": offilename+'.h',
-            "type": 'file',
-            "folder":folder,
-            "classes": [],
-            "functions": [],
-            "enums":[]
-        }
+        add_file(offilename, folder)
     json_data[offilename]['functions'].append(data)
 
 def add_enum(data, offilename, folder):
+    """ Add enum to json data output """
     if offilename not in json_data:
-        json_data[offilename] = {
-            "name": offilename,
-            "filename": offilename+'.h',
-            "type": 'file',
-            "folder":folder,
-            "classes": [],
-            "functions": [],
-            "enums":[]
-        }
+        add_file(offilename, folder)
     json_data[offilename]['enums'].append(data)
 
 
@@ -157,11 +142,7 @@ def run(of_root, outdir):
 
     # Run the clang parser
     for root, dirs, files in os.walk(of_source):
-        #dir_count += 1
-        #print root, files
         parse_folder(of_root, root, files, False)
-
-    #parse_folder(of_root, of_source+"/video", ['ofVideoPlayer.h'], False)
 
 
     """
@@ -177,41 +158,3 @@ def run(of_root, outdir):
 
     # Save the reference file
     clang_reference.save(outdir)
-    """
-    if len(new_functions) > 0:
-        print "added " + str(len(new_functions)) + " new functions:"
-        for f in new_functions:
-            print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  to " + f.functionsfile
-
-    if len(missing_functions) > 0:
-        print "removed " + str(len(missing_functions)) + " functions"
-        for f in missing_functions:
-            print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  from " + f.functionsfile
-
-    if len(new_methods) > 0:
-        print "added " + str(len(new_methods)) + " new methods:"
-        for f in new_methods:
-            print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  to " + f.clazz
-
-    if len(missing_methods) > 0:
-        print "removed " + str(len(missing_methods)) + " methods"
-        for f in missing_methods:
-            print "\t- " + f.returns + " " + f.name + "(" + f.parameters + ")  from " + f.clazz
-
-    if len(new_vars) > 0:
-        print "added " + str(len(new_vars)) + " new vars:"
-        for v in new_vars:
-            print "\t- " + v.name + "  to " + v.clazz
-
-    if len(missing_vars) > 0:
-        print "removed " + str(len(missing_vars))
-        for v in missing_vars:
-            print "\t- " + v.name + "  from " + v.clazz
-    """
-"""
-if __name__ == '__main__':
-    of_root = os.path.abspath(os.getenv('OF_ROOT', ''))
-    json_data_root = os.path.abspath(os.getenv('OF_DOCUMENTATION_JSON_DIR', './_json_data'))
-
-    run(of_root, json_data_root)
-"""
