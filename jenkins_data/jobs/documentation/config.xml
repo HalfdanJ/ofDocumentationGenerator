@@ -10,7 +10,7 @@
         <configVersion>2</configVersion>
         <userRemoteConfigs>
           <hudson.plugins.git.UserRemoteConfig>
-            <url>https://github.com/openframeworks/ofsite</url>
+            <url>https://github.com/workergnome/ofdocs_markdown</url>
           </hudson.plugins.git.UserRemoteConfig>
         </userRemoteConfigs>
         <branches>
@@ -22,7 +22,7 @@
         <submoduleCfg class="list"/>
         <extensions>
           <hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
-            <relativeTargetDir>ofsite</relativeTargetDir>
+            <relativeTargetDir>markdown</relativeTargetDir>
           </hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
         </extensions>
       </hudson.plugins.git.GitSCM>
@@ -45,6 +45,7 @@
             <shallow>true</shallow>
             <noTags>false</noTags>
             <reference></reference>
+            <timeout>120</timeout>
           </hudson.plugins.git.extensions.impl.CloneOption>
           <hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
             <relativeTargetDir>openframeworks</relativeTargetDir>
@@ -57,13 +58,17 @@
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers/>
+  <triggers>
+    <hudson.triggers.TimerTrigger>
+      <spec> @hourly</spec>
+    </hudson.triggers.TimerTrigger>
+  </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.4">
       <siteName>root@ofdocbuild:22</siteName>
       <command>export OF_ROOT=/jenkins_workspace/$JOB_NAME/openframeworks;
-export OF_DOCUMENTATION_ROOT=/jenkins_workspace/$JOB_NAME/ofsite/documentation;
+export OF_DOCUMENTATION_ROOT=/jenkins_workspace/$JOB_NAME/markdown;
 export OF_DOCUMENTATION_SITE_OUTPUT=/site
 export OF_DOCUMENTATION_JSON_DIR=/tmp/json
 
