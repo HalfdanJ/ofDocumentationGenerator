@@ -2,4 +2,7 @@
 .idea
 
 jenkins_data/
-_output
+
+!_output
+_output/*
+!_output/static
