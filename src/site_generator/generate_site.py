@@ -122,6 +122,10 @@ class SiteGenerator(object):
                 if item['type'] == 'enum' or item['type'] == 'enum_option':
                     data['enums'].append(d)
 
+                if item['type'] == 'typedef':
+                    data['classes'].append(d)
+
+
 
         with open(os.path.join(self.outdir, "search.json"), 'w') as outfile:
             json.dump(data, outfile)
@@ -280,7 +284,6 @@ class SiteGenerator(object):
     """
     def parseItemEnums(self, ret_enums, ret_sections, item):
         for enum in item["enums"]:
-
             section = enum["documentation"]["section"]
             # Set section name if its not set already on the first element
             if section is None and ( len(ret_enums) == 0 or ret_enums[-1]['type'] != enum['type']):
@@ -292,9 +295,6 @@ class SiteGenerator(object):
                     "anchor": self.sectionAnchor(section, item)
                 })
 
-            #print enum['options']
-            #options = "<code class='prettyprint'>{}</code>".format('<br/>'.join(['{} = {}'.format(o['name'], o['value']) for o in enum['options']]))
-
             ret_enums.append({
                 "type": enum['type'],
                 "name": enum["name"],
@@ -303,6 +303,29 @@ class SiteGenerator(object):
                 "section": section,
                 "section_anchor": self.sectionAnchor(section, item),
                 "documentation": self.parseDocumentation(enum["documentation"], item)
+            })
+
+    def parseItemTypedefs(self, ret_typedefs, ret_sections, item):
+        for typedef in item['typedefs']:
+            section = typedef["documentation"]["section"]
+            # Set section name if its not set already on the first element
+            if section is None and ( len(ret_typedefs) == 0 or ret_typedefs[-1]['type'] != typedef['type']):
+                section = typedef["documentation"]["section"] = 'Typedefs'
+
+            if section is not None and (len(ret_sections) == 0 or ret_sections[-1] != section):
+                ret_sections.append({
+                    "title": section,
+                    "anchor": self.sectionAnchor(section, item)
+                })
+
+            ret_typedefs.append({
+                "type": typedef['type'],
+                "name": typedef["name"],
+                "typedef_type": typedef['typedef_type'],
+                "anchor": self.itemAnchor(typedef, item),
+                "section": section,
+                "section_anchor": self.sectionAnchor(section, item),
+                "documentation": self.parseDocumentation(typedef["documentation"], item)
             })
 
     """
@@ -362,6 +385,8 @@ class SiteGenerator(object):
         self.parseItemFunctions(global_methods, global_sections, filedata, False)
         # Global enums
         self.parseItemEnums(global_attributes, global_sections, filedata)
+        # Global typedefs
+        self.parseItemTypedefs(global_attributes, global_sections, filedata)
 
         # If there is anything global
         if len(global_methods) > 0 or len(global_attributes) > 0:
