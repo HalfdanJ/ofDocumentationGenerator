@@ -15,6 +15,7 @@ web:
     image: nginx
     volumes:
         - ./_output:/usr/share/nginx/html:ro
+        - ./docker_nginx/conf.d:/etc/nginx/conf.d:ro
     ports:
         - "80:80"
     restart: always
