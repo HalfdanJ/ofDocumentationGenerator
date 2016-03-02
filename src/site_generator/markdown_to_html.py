@@ -2,7 +2,6 @@ import markdown as markdown
 import os
 import shutil
 import re
-from sets import Set
 
 class SiteParseMarkdown:
     outdir = ''
@@ -22,9 +21,6 @@ class SiteParseMarkdown:
         isFunction = False
         if nextchar == '(':
             isFunction = True
-
-        if word[-1] == 's':
-            print word[:-1]
 
         item = None
         if word in self.global_reference:

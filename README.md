@@ -41,7 +41,13 @@ Alternatively you can run parts of the process
 ```
 docker exec ofdocbuilder python /src/main_clang.py
 docker exec ofdocbuilder python /src/main_markdown.py
-docker exec ofdocbuilder python /src/main_site_generation.py
+docker exec ofdocbuilder python /src/main_site_generator.py
+```
+
+It's also possible to generate only one (or multiple) page by passing the filename to the site generator.
+This is useful when working with styling since its much faster
+```
+docker exec ofdocbuilder python /src/main_site_generator.py ofRectange
 ```
 
 After this, the site is visible on [192.168.99.100:8080/latest](http://192.168.99.100:8080/latest). Docker ip may vary,

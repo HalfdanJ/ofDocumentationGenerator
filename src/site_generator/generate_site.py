@@ -480,18 +480,16 @@ class SiteGenerator(object):
         for root, dirs, files in os.walk(jsondir):
             for name in files:
                 if name[0] != '.' and name != 'reference.json':
-                    print "Site Generator - Parse "+name
                     data = self.loadData(name)
                     #if name == 'ofRectangle.json':
-                    self.renderFile(data)
+                    if self.file_filter is None or name.replace('.json', '') in self.file_filter:
+                        print "Site Generator - Parse "+name
+                        self.renderFile(data)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"
-
-
-
         self.renderToc(self.toc)
         self.generateSearchReference()
 
         self.compileScss()
-        #shutil.copyfile(os.path.join(jsondir,'reference.json'), os.path.join(outdir,'reference.json'))
+        
