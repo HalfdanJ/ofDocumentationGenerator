@@ -1,10 +1,11 @@
+"""
+This takes care of all the site generation using Jinja2
+"""
 import os
 
 import shutil
-import sys
 import math
 import re
-import copy
 from sets import Set
 
 from scss import parser
@@ -14,37 +15,44 @@ import time
 
 from markdown_to_html import SiteParseMarkdown
 
-dir = os.path.dirname(__file__)
-
-template_dir = os.path.join(dir,'templates')
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 loader = FileSystemLoader(template_dir)
 env = Environment(loader=loader)
 
 template = env.get_template('documentation_template.html')
 toc_template = env.get_template('toc_template.html')
 
-class SiteGenerator:
+class SiteGenerator(object):
+    """ Site generator """
     toc = {}
     jsondir = ''
     outdir = ''
     internal_files_rules = []
+    file_filter = None
 
     markdownParser = SiteParseMarkdown()
 
     def getSourceUrl(self, filedata, item=None):
-        url = 'https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/{}/{}'.format(filedata["folder"], filedata["filename"])
+        ofUrl = 'https://github.com/openframeworks/openFrameworks'
+        url = ofUrl+'/blob/master/libs/openFrameworks/{}/{}'
+        url = url.format(filedata["folder"], filedata["filename"])
+
         if item and 'line' in item and item['line']:
-             url = url +'#L{}'.format(item['line'])
+            url = url +'#L{}'.format(item['line'])
         return url
 
     def getMarkdownUrl(self, filedata, doc, item=None):
         name = item['name']
         if filedata['type'] == 'class':
-            name = '{}.{}'.format(filedata['name'],item['name'])
+            name = '{}.{}'.format(filedata['name'], item['name'])
 
-        markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/new/master/{}/?filename={}.md'.format(filedata['folder'], name)
+        markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/new/master/{}/?filename={}.md'
+        markdownUrl = markdownUrl.format(filedata['folder'], name)
+
         if 'markdown' in doc and len(doc['markdown']) > 0:
-            markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/blob/master/{}/{}.md'.format(filedata['folder'], name)
+            markdownUrl = 'https://github.com/workergnome/ofdocs_markdown/blob/master/{}/{}.md'
+            markdownUrl = markdownUrl.format(filedata['folder'], name)
+
         return markdownUrl
 
     def currentTime(self):
@@ -74,39 +82,9 @@ class SiteGenerator:
 
         return ret
 
-
     def isFileInternal(self, file):
         import fnmatch
         return any(fnmatch.fnmatch(file, rule) for rule in self.internal_files_rules)
-
-    def renderToc(self, toc):
-        extra = 1
-
-        # remove internal files from toc
-        for key in toc.keys():
-            toc[key] = filter(lambda file: not self.isFileInternal(file), toc[key])
-            toc[key].sort()
-
-
-        count = 0
-        totalcount = 1
-        for key in sorted(toc.keys()):
-            totalcount += len(toc[key]) + extra
-
-        cols = [[],[],[]]
-        for key in sorted(toc.keys()):
-            count += len(toc[key]) + extra
-            index = int(math.floor(3.0*count / totalcount))
-            cols[index].append({ 'name': key, 'files': toc[key] })
-
-        output = toc_template.render({
-            "content": cols,
-            "date": self.currentTime()
-        }).encode('utf8')
-
-        # to save the results
-        with open(os.path.join(self.outdir, "index.html"), "wb") as fh:
-            fh.write(output)
 
     """
     Creates a json file optimized for searching
@@ -327,6 +305,36 @@ class SiteGenerator:
                 "documentation": self.parseDocumentation(enum["documentation"], item)
             })
 
+    """
+    Render TOC (frontpage)
+    """
+    def renderToc(self, toc):
+        extra = 1
+
+        # remove internal files from toc
+        for key in toc.keys():
+            toc[key] = filter(lambda file: not self.isFileInternal(file), toc[key])
+            toc[key].sort()
+
+        count = 0
+        totalcount = 1
+        for key in sorted(toc.keys()):
+            totalcount += len(toc[key]) + extra
+
+        cols = [[],[],[]]
+        for key in sorted(toc.keys()):
+            count += len(toc[key]) + extra
+            index = int(math.floor(3.0*count / totalcount))
+            cols[index].append({ 'name': key, 'files': toc[key] })
+
+        output = toc_template.render({
+            "content": cols,
+            "date": self.currentTime()
+        }).encode('utf8')
+
+        # to save the results
+        with open(os.path.join(self.outdir, "index.html"), "wb") as fh:
+            fh.write(output)
 
     """
     Render documentation item
@@ -407,9 +415,9 @@ class SiteGenerator:
 
 
         if len(render_data['content']) == 1 and render_data['content'][0]['name'] == render_data['file']:
-            render_data['showPageTitle'] = False;
+            render_data['showPageTitle'] = False
         else:
-            render_data['showPageTitle'] = True;
+            render_data['showPageTitle'] = True
 
         # save the results
         output = template.render(render_data).encode('utf8')
@@ -474,8 +482,8 @@ class SiteGenerator:
                 if name[0] != '.' and name != 'reference.json':
                     print "Site Generator - Parse "+name
                     data = self.loadData(name)
-                    if name == 'ofRectangle.json':
-                        self.renderFile(data)
+                    #if name == 'ofRectangle.json':
+                    self.renderFile(data)
                     self.updateToc(data)
 
         print "Site Generator - Generate index"
