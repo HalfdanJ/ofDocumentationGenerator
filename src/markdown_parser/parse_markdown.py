@@ -106,19 +106,16 @@ def enrichFile(data, markdowndir):
 
     # Global functions
     for function in data['functions']:
-        #print "- ",function['name']
-        filename = data['folder']+'/'+data['name']+'.'+function['name']+'.md'
-        #print "-- ",filename
+        #filename = data['folder']+'/'+data['name']+'.'+function['name']+'.md'
+        filename = data['folder']+'/'+function['name']+'.md'
 
         markdown = loadMarkdownFile(filename, markdowndir)
         if markdown:
             function['documentation']['markdown'] = cleanMarkup(markdown, folder)
 
-    # Global functions
+    # Global enums
     for enum in data['enums']:
-        #print "- ",function['name']
         filename = data['folder']+'/'+data['name']+'.'+enum['name']+'.md'
-        #print "-- ",filename
 
         markdown = loadMarkdownFile(filename, markdowndir)
         if markdown:
