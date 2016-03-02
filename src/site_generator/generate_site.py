@@ -58,16 +58,12 @@ class SiteGenerator(object):
     def currentTime(self):
         return time.strftime("%d %b %Y %H:%M UTC")
 
-    def parseBrief(self, doc):
-        brief = doc["text"].split('\n', 1)[0]
-        return brief
-
     def parseDocumentation(self, doc, contextClass):
         ret = {}
         ret["returns"] = self.markdownParser.parseMarkdown(doc["returns"], contextClass)
         ret["warning"] = self.markdownParser.parseMarkdown(doc["warning"], contextClass)
         ret["text"] = self.markdownParser.parseMarkdown(doc["text"], contextClass)
-        ret["brief"] = self.parseBrief(doc)
+        ret["brief"] = doc['brief']
 
         if "markdown" in doc:
             ret["markdown"] = self.markdownParser.parseMarkdown(doc["markdown"], contextClass)
@@ -219,12 +215,6 @@ class SiteGenerator(object):
 
             # Method not alreay added, so add it
             if not found:
-                if method['name'] == 'draw':
-                    print method['documentation']['text']
-                    print ', '.join(method["parameters"])
-                    print self.parseBrief(method['documentation'])
-
-
                 ret_methods.append({
                     "name": method["name"],
                     "deprecated": method['deprecated'],

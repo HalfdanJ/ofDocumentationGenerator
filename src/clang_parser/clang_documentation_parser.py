@@ -26,8 +26,11 @@ def parse_docs(element):
         "sa": [],
         "internal": False,
         "warning": None,
-        "deprecated": None
+        "deprecated": None,
+        "brief": None
     }
+
+    ret['brief'] = element.brief_comment
 
     doc = str("" if element.raw_comment is None else element.raw_comment).strip()
     mode = 'text'
