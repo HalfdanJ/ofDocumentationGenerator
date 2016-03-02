@@ -108,7 +108,7 @@ nav {
         max-width: 500px;
         max-height: 600px;
         min-width: 100%;
-        overflow:scroll;
+        overflow:auto;
         position: absolute;
         top: 46px;
         right: -2px;
@@ -263,7 +263,7 @@ nav {
             }
 
             .variable-type {
-                max-width: 100px;
+                max-width: 600px;
                 margin-right:8px;
             }
 
