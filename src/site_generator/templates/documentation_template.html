@@ -149,14 +149,18 @@
 
                                             <table>
                                                 <tbody>
-                                                    {% for key,val in variant.documentation.parameters.iteritems() %}
+                                                    {% for param in variant.documentation.parameters %}
                                                     <tr>
-                                                        <td class='arg-name'>
-                                                            {{ key }}
+                                                        <td class="parameter-name">
+                                                            {{ param.type }}
+                                                            <span class="arg-name">{{ param.name }}</span>
                                                         </td>
+
+                                                        {% if param.documentation %}
                                                         <td>
-                                                            {{ val }}
+                                                            {{ param.documentation }}
                                                         </td>
+                                                        {% endif %}
                                                     </tr>
                                                     {% endfor %}
                                                 </tbody>

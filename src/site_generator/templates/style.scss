@@ -386,6 +386,10 @@ nav {
         margin-top: -8px;
         margin-bottom: 5px;
         display: block !important;
+
+        p {
+            display: inline;
+        }
     }
     .deprecated-notice {
         opacity: 0;
@@ -451,9 +455,19 @@ nav {
     }
 
     .parameters {
-        .arg-name {
+        .parameter-name{
             font-family: $sourceCodeFont;
-            font-weight: 600;
+            text-align: right;
+            white-space: nowrap;
+            font-style: italic;
+
+            p {
+                display:inline;
+            }
+
+            .arg-name {
+                font-weight: 600;
+            }
         }
     }
 

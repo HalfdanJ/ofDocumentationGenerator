@@ -127,7 +127,7 @@ class SiteParseMarkdown:
         return html
 
 
-    def parseMarkdownCodeBlock(self, mk):
+    def transformMarkdownToHtml(self, mk):
         ret = markdown.markdown(mk, extensions=['codehilite', 'fenced_code'])
         ret = ret.replace("<code", "<code class='prettyprint lang-cpp'")
         return ret
@@ -160,15 +160,14 @@ class SiteParseMarkdown:
             #    raise Exception('Image '+imgpath+" doesnt exist!")
 
         # Run markdown parser
-        ret = self.parseMarkdownCodeBlock(mk)
+        html = self.transformMarkdownToHtml(mk)
 
         # Create internal links
-        ret = self.createInternalLinks(ret, contextClass)
+        html = self.createInternalLinks(html, contextClass)
 
         # Create external links
-        ret = self.createExternalLinks(ret)
-
-        return ret
+        html = self.createExternalLinks(html)
+        return html
 
     def populateLookupTable(self):
         for item in self.reference:

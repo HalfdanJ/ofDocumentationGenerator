@@ -58,19 +58,40 @@ class SiteGenerator(object):
     def currentTime(self):
         return time.strftime("%d %b %Y %H:%M UTC")
 
-    def parseDocumentation(self, doc, contextClass):
+    """
+    Parse an item (method, class variable etc), and return
+    html version of the documenation ready to be rendered
+    """
+    def parseDocumentation(self, item, contextClass):
+        doc = item['documentation']
+
         ret = {}
         ret["returns"] = self.markdownParser.parseMarkdown(doc["returns"], contextClass)
         ret["warning"] = self.markdownParser.parseMarkdown(doc["warning"], contextClass)
+        ret["brief"] = self.markdownParser.parseMarkdown(doc['brief'], contextClass)
+
+        if doc['brief']:
+            doc["text"] = doc["text"].replace(doc['brief'], '')
         ret["text"] = self.markdownParser.parseMarkdown(doc["text"], contextClass)
-        ret["brief"] = doc['brief']
 
         if "markdown" in doc:
             ret["markdown"] = self.markdownParser.parseMarkdown(doc["markdown"], contextClass)
 
-        ret["parameters"] = {}
-        for key in doc["parameters"].iterkeys():
-            ret["parameters"][key] = self.markdownParser.parseMarkdown(doc["parameters"][key], contextClass)
+        ret["parameters"] = []
+        for i in range(0, len(item['parameter_names'])):
+            param_name = item['parameter_names'][i]
+
+            param_doc = None
+            if param_name in doc['parameters']:
+                param_doc = doc['parameters'][param_name]
+
+            ret["parameters"].append({
+                'name': param_name,
+                'type': self.markdownParser.parseMarkdown(item['parameter_types'][i], contextClass),
+                'documentation': param_doc
+            })
+        #for key in doc["parameters"].iterkeys():
+        #    ret["parameters"][key] = self.markdownParser.parseMarkdown(doc["parameters"][key], contextClass)
 
         ret["sa"] = []
         for i in range(0, len(doc["sa"])):
@@ -78,6 +99,9 @@ class SiteGenerator(object):
 
         return ret
 
+    """
+    Matches the internal_files file in markdown dir
+    """
     def isFileInternal(self, file):
         import fnmatch
         return any(fnmatch.fnmatch(file, rule) for rule in self.internal_files_rules)
@@ -189,7 +213,7 @@ class SiteGenerator(object):
                     "anchor": self.sectionAnchor(section, item)
                 })
 
-            doc = self.parseDocumentation(method["documentation"], item)
+            doc = self.parseDocumentation(method, item)
 
             new_variant = {
                 "returns": method["returns"],
@@ -276,7 +300,7 @@ class SiteGenerator(object):
                 "anchor": self.itemAnchor(variable, item),
                 "section": section,
                 "section_anchor": self.sectionAnchor(section, item),
-                "documentation": self.parseDocumentation(variable["documentation"], item)
+                "documentation": self.parseDocumentation(variable, item)
             })
 
     """
@@ -302,7 +326,7 @@ class SiteGenerator(object):
                 "anchor": self.itemAnchor(enum, item),
                 "section": section,
                 "section_anchor": self.sectionAnchor(section, item),
-                "documentation": self.parseDocumentation(enum["documentation"], item)
+                "documentation": self.parseDocumentation(enum, item)
             })
 
     def parseItemTypedefs(self, ret_typedefs, ret_sections, item):
@@ -325,7 +349,7 @@ class SiteGenerator(object):
                 "anchor": self.itemAnchor(typedef, item),
                 "section": section,
                 "section_anchor": self.sectionAnchor(section, item),
-                "documentation": self.parseDocumentation(typedef["documentation"], item)
+                "documentation": self.parseDocumentation(typedef, item)
             })
 
     """
@@ -424,7 +448,7 @@ class SiteGenerator(object):
             extends =  map(lambda name:
                 self.markdownParser.linkToReferenceItem(self.markdownParser.searchForGlobalReference(name,''),name), subitem['extends'])
 
-            doc = self.parseDocumentation(subitem["documentation"], subitem)
+            doc = self.parseDocumentation(subitem, subitem)
 
 
             # Class item
