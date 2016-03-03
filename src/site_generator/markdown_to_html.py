@@ -51,6 +51,8 @@ class SiteParseMarkdown:
                 if not isFunction and item['type'] != 'function':
                     return item
 
+    def urlToFile(self, file):
+        return '{}.html'.format(file)
 
     def urlToReferenceItem(self, item):
         if item is None:

@@ -88,17 +88,27 @@ class SiteGenerator(object):
     different weight in search results
     """
     def generateSearchReference(self):
-        data = {'classes':[], 'functions':[], 'variables':[], 'enums':[]}
+        data = {'files':[], 'classes':[], 'functions':[], 'variables':[], 'enums':[]}
         funcSet = Set()
+        fileSet = Set()
 
         for item in self.reference:
             url = self.markdownParser.urlToReferenceItem(item),
 
             if not self.isFileInternal(item['file']):
+                if item['file'] not in fileSet:
+                    d = {
+                        'name':item['file'],
+                        'url':self.markdownParser.urlToFile(item['file'])
+                    }
+                    fileSet.add(item['file'])
+                    data['files'].append(d)
+
                 d = {
                     'name':item['name'],
                     'url':url
                 }
+
                 if item['type'] == 'class':
                     data['classes'].append(d)
 

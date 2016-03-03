@@ -86,23 +86,28 @@ $( document ).ready(function() {
         keys: ['name'],
         threshold: 0.15
     }
-    var searchClasses, searchFunctions, searchVariables, searchEnums;
+    var searchFiles, searchClasses, searchFunctions, searchVariables, searchEnums;
 
     $.getJSON('search.json', function(json){
+        searchFiles = new Fuse(json['files'], options);
         searchClasses = new Fuse(json['classes'], options);
         searchFunctions = new Fuse(json['functions'], options);
         searchVariables = new Fuse(json['variables'], options);
         searchEnums = new Fuse(json['enums'], options);
-
-        console.log("Done");
     })
 
     $('#search-result').hide();
     var search = function(term){
         var max = 30;
 
-        searchResult = searchClasses.search(term)
-        for(var i=0;i<searchResult.length;i++){ searchResult[i].type = 'class' }
+        searchResult = searchFiles.search(term)
+        for(var i=0;i<searchResult.length;i++){ searchResult[i].type = 'file' }
+
+        if(searchResult.length < max){
+            var classes = searchClasses.search(term)
+            for(var i=0;i<classes.length;i++){ classes[i].type = 'class' }
+            searchResult.push.apply(searchResult, funcs)
+        }
 
         if(searchResult.length < max){
             var funcs = searchFunctions.search(term);
