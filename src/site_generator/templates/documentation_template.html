@@ -129,7 +129,11 @@
 
                                     {% for variant in method.variants %}
                                     <li class="collection-item action-block">
-                                        <div class="memberVariant">
+                                        {{variant.documentation.brief}}
+
+                                        <h6>Declaration</h6>
+                                        {{variant.documentation.declaration}}
+                                        <!--<div class="memberVariant">
                                             {{ actions(variant) }}
                                             <span class="variant-type">{{variant.returns}} </span>
                                             <span class="variant-name">{{method.name}}</span>
@@ -137,10 +141,8 @@
                                             {% if variant.inherited %}
                                             <span class="inherited">Inherited from <a href="{{ variant.inherited }}.html">{{ variant.inherited }}</a></span>
                                             {% endif %}
-                                        </div>
+                                        </div>-->
 
-                                        <!-- inline documentation -->
-                                        {{variant.documentation.text}}
 
                                         <!-- parameters -->
                                         {% if variant.documentation.parameters %}
@@ -172,9 +174,15 @@
 
                                         {% if variant.documentation.returns %}
                                         <div class="returns">
-                                            <h6>Returns</h6>
+                                            <h6>Return Value</h6>
                                             {{ variant.documentation.returns }}
                                         </div>
+                                        {% endif %}
+
+                                        <!-- inline documentation -->
+                                        {% if variant.documentation.text %}
+                                        <h6>Discussion</h6>
+                                        {{variant.documentation.text}}
                                         {% endif %}
 
                                         {% if variant.documentation.warning %}

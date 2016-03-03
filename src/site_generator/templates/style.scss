@@ -391,6 +391,19 @@ nav {
             display: inline;
         }
     }
+
+    .collection {
+        color: rgb(65,65,65);
+
+        h6 {
+            margin-top: 20px;
+            margin-bottom: 3px;
+            font-size: 15px;
+            color:black;
+        }
+
+
+    }
     .deprecated-notice {
         opacity: 0;
         color: $brandColor;
@@ -457,9 +470,11 @@ nav {
     .parameters {
         .parameter-name{
             font-family: $sourceCodeFont;
+            font-size:12px;
             text-align: right;
             white-space: nowrap;
             font-style: italic;
+
 
             p {
                 display:inline;
@@ -482,13 +497,17 @@ nav {
             }
         }
         td {
-            padding: 2px 9px;
+            padding: 4px 12px;
 
             border-right: 1px solid $documentationGridColor;
             border-bottom: 1px solid $documentationGridColor;
 
             &:last-child {
                 border-right: 0;
+            }
+
+            &:first-child {
+                padding-left: 0px;
             }
         }
 

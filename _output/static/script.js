@@ -100,12 +100,12 @@ $( document ).ready(function() {
     var search = function(term){
         var max = 30;
 
-        searchResult = searchFiles.search(term)
-        for(var i=0;i<searchResult.length;i++){ searchResult[i].type = 'file' }
+        searchResult = searchClasses.search(term)
+        for(var i=0;i<searchResult.length;i++){ searchResult[i].type = 'class' }
 
         if(searchResult.length < max){
-            var classes = searchClasses.search(term)
-            for(var i=0;i<classes.length;i++){ classes[i].type = 'class' }
+            var classes = searchFiles.search(term)
+            for(var i=0;i<classes.length;i++){ classes[i].type = 'file' }
             searchResult.push.apply(searchResult, funcs)
         }
 

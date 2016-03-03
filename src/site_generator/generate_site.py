@@ -77,22 +77,30 @@ class SiteGenerator(object):
         if "markdown" in doc:
             ret["markdown"] = self.markdownParser.parseMarkdown(doc["markdown"], contextClass)
 
+        if 'parameters' in item:
+            ret["declaration"] = '{ret} {name}({parameters});'.format(ret=item['returns'], name=item['name'], parameters=', '.join(item['parameters']))
+        else:
+            ret["declaration"] = '{type} {name};'.format(type=item['type'], name=item['name'])
+
+        ret["declaration"] = self.markdownParser.parseMarkdown("```\n"+ret["declaration"]+"\n```", contextClass)
+
         ret["parameters"] = []
-        for i in range(0, len(item['parameter_names'])):
-            param_name = item['parameter_names'][i]
 
-            param_doc = None
-            if param_name in doc['parameters']:
-                param_doc = doc['parameters'][param_name]
+        if 'parameter_names' in item:
+            for i in range(0, len(item['parameter_names'])):
+                param_name = item['parameter_names'][i]
 
-            ret["parameters"].append({
-                'name': param_name,
-                'type': self.markdownParser.parseMarkdown(item['parameter_types'][i], contextClass),
-                'documentation': param_doc
-            })
-        #for key in doc["parameters"].iterkeys():
-        #    ret["parameters"][key] = self.markdownParser.parseMarkdown(doc["parameters"][key], contextClass)
+                param_doc = None
+                if param_name in doc['parameters']:
+                    param_doc = doc['parameters'][param_name]
 
+                ret["parameters"].append({
+                    'name': param_name,
+                    'type': self.markdownParser.parseMarkdown(item['parameter_types'][param_name], contextClass),
+                    'documentation': param_doc
+                })
+
+        # See also
         ret["sa"] = []
         for i in range(0, len(doc["sa"])):
             ret["sa"].append( self.markdownParser.parseMarkdown(doc["sa"][i], contextClass))
@@ -197,8 +205,6 @@ class SiteGenerator(object):
                 continue
             if method['name'].startswith('~'):
                 continue
-            #if method['deprecated'] is True:
-            #    continue
 
             # Set section name if its not set already on the first element
             section = method["documentation"]["section"]
