@@ -12,7 +12,7 @@ class DocBase():
         self.data['folder']   = self.folder     = split[-2]
 
         # Addons should take parents parents folder name
-        if self.folder == 'src' and self.filename.startswith('ofx'):
+        if self.folder == 'src' and self.data['file'].startswith('/addons'):
             self.data['folder']   = self.folder     = split[-3]
 
         self.data['line']                       = cursor.location.line

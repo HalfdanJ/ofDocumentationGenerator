@@ -326,38 +326,24 @@ class SiteGenerator(object):
 
         # remove internal files from toc
         for key in toc.keys():
-            toc[key] = filter(lambda file: not self.isFileInternal(file), toc[key])
+            #toc[key] = filter(lambda file: not self.isFileInternal(file), toc[key])
+            for file in toc[key]:
+                file['internal'] = self.isFileInternal(file['file'])
             toc[key].sort()
 
-        totalcount_core = 1
-        totalcount_addons = 1
-        for key in sorted(toc.keys()):
-            if key.startswith('ofx'):
-                totalcount_addons += len(toc[key]) + extra
-            else:
-                totalcount_core += len(toc[key]) + extra
-
-        cols = [[],[],[]]
-        colsAddons = [[],[],[]]
-
-        count = 0
-        countAddons = 0
-
+        core = []
+        addons = []
         for key in sorted(toc.keys()):
             if len(toc[key]) > 0:
                 if key.startswith('ofx'):
-                    countAddons += len(toc[key]) + extra
-                    index = int(math.floor(3.0*countAddons / totalcount_addons))
-                    colsAddons[index].append({ 'name': key, 'files': toc[key] })
+                    addons.append({ 'name': key, 'files': toc[key] })
                 else:
-                    count += len(toc[key]) + extra
-                    index = int(math.floor(3.0*count / totalcount_core))
-                    cols[index].append({ 'name': key.upper(), 'files': toc[key] })
+                    core.append({ 'name': key.upper(), 'files': toc[key] })
 
 
         output = toc_template.render({
-            "core": cols,
-            "addons": colsAddons,
+            "core": core,
+            "addons": addons,
             "date": self.currentTime()
         }).encode('utf8')
 
@@ -476,7 +462,7 @@ class SiteGenerator(object):
         if filedata['folder'] not in self.toc:
             self.toc[filedata['folder']] = []
 
-        self.toc[filedata['folder']].append(filedata['name'])
+        self.toc[filedata['folder']].append({'file':filedata['name']})
 
 
     def compileScss(self):

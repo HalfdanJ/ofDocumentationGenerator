@@ -160,6 +160,9 @@ nav {
         color:gray;
         font-weight: 300;
 
+        &.internal {
+            display:none;
+        }
         &:hover {
             color:black;
         }

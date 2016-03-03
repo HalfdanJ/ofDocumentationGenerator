@@ -3,7 +3,7 @@
 
 <div id="toc">
     <h3>Core</h3>
-    <div class="row">
+    <!--<div class="row">
         {% for col in core %}
         <div class="col s4">
             {% for folder in col %}
@@ -16,9 +16,35 @@
         {% endfor %}
 
     </div>
+-->
+    <div class="row" id="core">
+        <div class="col">
+            {% for folder in core %}
+            <div class="dontsplit">
+                <span class="folder-name"> {{folder.name}} </span>
+                {% for file in folder.files %}
+                    <a href="{{ file.file }}.html" class="file-name {{ 'internal' if  file.internal else '' }}">{{ file.file }}</a>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
     <h3>Core Addons</h3>
-    <div class="row">
+    <div class="row" id="addons">
+        <div class="col">
+            {% for folder in addons %}
+            <div class="dontsplit">
+                <span class="folder-name"> {{folder.name}} </span>
+                {% for file in folder.files %}
+                    <a href="{{ file.file }}.html" class="file-name">{{ file.file }}</a>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+<!--<div class="row">
         {% for col in addons %}
         <div class="col s4">
             {% for folder in col %}
@@ -30,7 +56,12 @@
         </div>
         {% endfor %}
 
-    </div>
+    </div>-->
 
 </div>
+<script src="https://cdn.jsdelivr.net/jquery.columnizer/1.6.0/jquery.columnizer.js" charset="utf-8"></script>
+<script>
+    $('#core').columnize({width:'300px'});
+    $('#addons').columnize({width:'300px'});
+</script>
 {% endblock %}
