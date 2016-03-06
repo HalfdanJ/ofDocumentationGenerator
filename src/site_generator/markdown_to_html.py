@@ -86,16 +86,26 @@ class SiteParseMarkdown:
         if nextchar is None:
             nextchar = ''
 
-        # Search in global scope for matches
-        ref = self.searchForGlobalReference(word, nextchar)
-        if ref and ref['name'] != scope:
-            return self.linkToReferenceItem(ref, word)+nextchar
+        link_scope = scope
+
+        scopeDecleration = re.search("(\\w+)::(\\w+)", word, re.S | re.M)
+        if scopeDecleration:
+            link_scope = scopeDecleration.group(1)
+            word =  scopeDecleration.group(2)
 
         # Search in class scope for matches
-        if scope is not None and ref is None:
-            ref = self.searchForClassReference(word, nextchar, scope)
-            if ref is not None and ref['name'] != scope:
+        if link_scope is not None:
+            ref = self.searchForClassReference(word, nextchar, link_scope)
+            if ref is not None and ref['name'] != link_scope:
+                if link_scope != scope:
+                    word = link_scope+"::"+word
                 return self.linkToReferenceItem(ref, word)+nextchar
+
+        # Search in global scope for matches
+        global_ref = self.searchForGlobalReference(word, nextchar)
+        if global_ref and global_ref['name'] != scope:
+            return self.linkToReferenceItem(global_ref, word)+nextchar
+
 
         # No match
         return word+nextchar
@@ -111,7 +121,7 @@ class SiteParseMarkdown:
             scope = contextClass['name']
 
         # Search for all words not encapsulated in <a href...
-        html = re.sub(r'(?P<word>(?<!<a href=")(?<!#)\w+(?!</a>)(?!">))(?P<nextchar>\()?',
+        html = re.sub(r'(?P<word>(?<!<a href=")(?<!#)(?:\w+::)?\w+(?!</a>)(?!">))(?P<nextchar>\()?',
             lambda m1:
                 self.replaceWithLink(m1.group('word'), m1.group('nextchar'), scope)
             , html)
