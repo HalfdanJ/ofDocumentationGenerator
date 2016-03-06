@@ -245,14 +245,19 @@ nav {
 
         .collapsible-header {
             border-bottom:1px solid white;
-            min-height: 10px;
-            height: 25px;
             line-height: 22px;
-            overflow: visible;
             transition-duration: 0.3s;
             font-weight: 300;
             position: relative;
-            margin-bottom: 22px;
+
+            min-height: 10px;
+            padding:0;
+
+            .collapsible-header-bg {
+                height: 25px;
+                width:100%;
+                padding: 1px 12px;
+            }
 
             span {
                 overflow: hidden;
@@ -286,12 +291,15 @@ nav {
 
             .collapsible-header {
                 transition-duration: 0.3s;
+
+                .collapsible-header-bg{
+                    transition-duration: 0.3s;
+                    background-color: $brandColor;
+                }
+
                 border-bottom:1px solid $documentationGridColor;
 
-                //min-height: 3rem;
                 line-height:3rem;
-                background-color: $brandColor;
-                margin-bottom: 0px;
 
                 .variable-name, .method-name {
                     color:white;
@@ -397,10 +405,12 @@ nav {
         overflow: hidden;
         text-overflow: ellipsis;
         margin-left: 15px;
-        margin-top: -8px;
+        margin-top: -4px;
         margin-bottom: 5px;
         display: block !important;
-
+        a {
+            color: #ccc;
+        }
         p {
             display: inline;
         }

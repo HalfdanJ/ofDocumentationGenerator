@@ -110,13 +110,15 @@
                     <ul class="collapsible" data-collapsible="accordion" id="{{ method.anchor }}">
                         <li>
                             <div class="collapsible-header">
-                                <span class="method-name">{{ method.name }}</span>
-                                <span class="kind"> ()</span>
+                                <div class="collapsible-header-bg">
 
-                                {% if method.deprecated %}
-                                <span class="deprecated-notice">deprecated</span>
-                                {% endif %}
+                                    <span class="method-name">{{ method.name }}</span>
+                                    <span class="kind"> ()</span>
 
+                                    {% if method.deprecated %}
+                                    <span class="deprecated-notice">deprecated</span>
+                                    {% endif %}
+                                </div>
                                 {% if method.variants[0].documentation.brief %}
                                 <span class="brief"> {{ method.variants[0].documentation.brief }}</span>
                                 {% endif %}
@@ -136,6 +138,10 @@
                                         {{variant.documentation.declaration}}
                                         </div>
                                         {{ actions(variant) }}
+
+                                        {% if variant.inherited %}
+                                        <span class="inherited">Inherited from <a href="{{ variant.inherited }}.html">{{ variant.inherited }}</a></span>
+                                        {% endif %}
 
                                         <!--<div class="memberVariant">
                                             <span class="variant-type">{{variant.returns}} </span>
@@ -238,9 +244,11 @@
                 <ul class="collapsible" data-collapsible="accordion" id="{{ variable.anchor }}">
                     <li>
                         <div class="collapsible-header">
-                            <span class="variable-type">{{variable.kind}} </span>
-                            <span class="variable-name">{{ variable.name }}</span>
-                            <span class="kind variable-kind"> {{ variable.type }}</span>
+                            <div class="collapsible-header-bg">
+                                <span class="variable-type">{{variable.kind}} </span>
+                                <span class="variable-name">{{ variable.name }}</span>
+                                <span class="kind variable-kind"> {{ variable.type }}</span>
+                            </div>
 
                             {% if variable.documentation.brief %}
                             <span class="brief"> {{ variable.documentation.brief }}</span>
