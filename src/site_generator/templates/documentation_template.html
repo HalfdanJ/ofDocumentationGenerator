@@ -129,12 +129,15 @@
 
                                     {% for variant in method.variants %}
                                     <li class="collection-item action-block">
-                                        {{variant.documentation.brief}}
+                                        <!--{{variant.documentation.brief}}-->
 
-                                        <h6>Declaration</h6>
+                                        <!--<h6>Declaration</h6>-->
+                                        <div class="declaration">
                                         {{variant.documentation.declaration}}
+                                        </div>
+                                        {{ actions(variant) }}
+
                                         <!--<div class="memberVariant">
-                                            {{ actions(variant) }}
                                             <span class="variant-type">{{variant.returns}} </span>
                                             <span class="variant-name">{{method.name}}</span>
                                             <span class="variant-args">({{variant.parameters}})</span>
@@ -144,7 +147,7 @@
                                         </div>-->
 
 
-                                        <!-- parameters -->
+                                        <!-- parameters
                                         {% if variant.documentation.parameters %}
                                         <div class="parameters">
                                             <h6>Parameters</h6>
@@ -172,6 +175,12 @@
                                         <!-- end parameters -->
 
 
+                                        <!-- inline documentation -->
+                                        {% if variant.documentation.text %}
+                                        <!--<h6>Discussion</h6>-->
+                                        {{variant.documentation.text}}
+                                        {% endif %}
+
                                         {% if variant.documentation.returns %}
                                         <div class="returns">
                                             <h6>Return Value</h6>
@@ -179,11 +188,6 @@
                                         </div>
                                         {% endif %}
 
-                                        <!-- inline documentation -->
-                                        {% if variant.documentation.text %}
-                                        <h6>Discussion</h6>
-                                        {{variant.documentation.text}}
-                                        {% endif %}
 
                                         {% if variant.documentation.warning %}
                                         <div class="warning">
@@ -209,7 +213,7 @@
                                     <!-- Markdown documentation  -->
                                     {% if method.variants[0].documentation.markdown %}
                                     <li class="collection-item">
-                                        <h6>Description</h6>
+                                        <!--<h6>Description</h6>-->
                                         <div class="markdown-doc">{{ method.variants[0].documentation.markdown}}</div>
                                     </li>
                                     {% endif %}

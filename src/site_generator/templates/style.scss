@@ -1,6 +1,6 @@
 $sourceCodeFont : 'Source Code Pro', monospace;
 $brandColor : #ee3987;
-$documentationGridColor : #E8E8E8;
+$documentationGridColor : $brandColor;//#E8E8E8;
 
 
 body {
@@ -288,8 +288,12 @@ nav {
 
                 min-height: 3rem;
                 line-height:3rem;
+                background-color: $brandColor;
 
-                color: $brandColor;
+
+                .variable-name, .method-name {
+                    color:white;
+                }
 
                 max-height: 25px;
             }
@@ -347,6 +351,12 @@ nav {
         color: #AFAFAF
     }
 
+/*    .declaration {
+        pre {
+            background-color:$brandColor;
+        }
+    }
+*/
     .deprecated {
         .method-name {
             text-decoration: line-through;
@@ -364,8 +374,10 @@ nav {
     }
 
     .variable-name, .method-name {
+        transition-duration: 0.3s;
         font-family: $sourceCodeFont;
         font-weight: 400;
+        color: #6F6F6F;
     }
 
     .variable-type {
@@ -468,23 +480,33 @@ nav {
     }
 
     .parameters {
-        .parameter-name{
-            font-family: $sourceCodeFont;
-            font-size:12px;
-            text-align: right;
-            white-space: nowrap;
-            font-style: italic;
-
+        //.parameter-name{
 
             p {
                 display:inline;
             }
 
             .arg-name {
+                font-family: $sourceCodeFont;
+                font-size:12px;
+                text-align: right;
+                white-space: nowrap;
+                font-style: italic;
+
+
                 font-weight: 600;
             }
+        //}
+    }
+
+    //.sa {
+    .collection-item {
+        li {
+            list-style-type: square;
+            margin-left: 18px;
         }
     }
+    //}
 
     table {
         width:inherit;

@@ -70,15 +70,55 @@ class SiteGenerator(object):
         ret["warning"] = self.markdownParser.parseMarkdown(doc["warning"], contextClass)
         ret["brief"] = self.markdownParser.parseMarkdown(doc['brief'], contextClass)
 
-        if doc['brief']:
-            doc["text"] = doc["text"].replace(doc['brief'], '')
+
+        if item['name'] == 'map':
+            print 'MAP'
+            print doc['brief']
+            print doc["text"]
+
+        #if doc['brief']:
+        #    doc["text"] = doc["text"].replace(doc['brief'], '')
         ret["text"] = self.markdownParser.parseMarkdown(doc["text"], contextClass)
 
         if "markdown" in doc:
             ret["markdown"] = self.markdownParser.parseMarkdown(doc["markdown"], contextClass)
 
         if 'parameters' in item:
-            ret["declaration"] = '{ret} {name}({parameters});'.format(ret=item['returns'], name=item['name'], parameters=', '.join(item['parameters']))
+            ret["declaration"] = item['returns']+" "+item['name']+"("
+            indent = ' '*len(ret['declaration'])
+            #indent = ',\n'+indent
+
+            params = []
+            maxWidth = 0
+            for p in item['parameter_names']:
+                default = ' = '+item['parameter_defaults'][p] if p in item['parameter_defaults'] else ''
+                txt = '{} {}{}'.format(item['parameter_types'][p], p, default)
+                if maxWidth < len(txt):
+                    maxWidth = len(txt)
+                params.append(txt)
+
+            i = 0
+            for p in item['parameter_names']:
+                if i != len(params)-1:
+                    params[i] += ','
+                else:
+                    params[i] += ')'
+
+                if p in doc['parameters']:
+                    _indent = (1+maxWidth - len(params[i])) * ' '
+                    params[i] += _indent+' // ' + doc['parameters'][p]
+
+                params[i] += '\n'
+                i+=1
+
+            if len(params) == 0:
+                ret["declaration"] += ')'
+            else:
+                 ret["declaration"] += indent.join(params)
+
+
+
+
         else:
             ret["declaration"] = '{type} {name};'.format(type=item['type'], name=item['name'])
 
