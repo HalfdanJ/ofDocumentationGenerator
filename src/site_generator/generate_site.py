@@ -67,14 +67,10 @@ class SiteGenerator(object):
 
         ret = {}
         ret["returns"] = self.markdownParser.parseMarkdown(doc["returns"], contextClass)
+
         ret["warning"] = self.markdownParser.parseMarkdown(doc["warning"], contextClass)
+
         ret["brief"] = self.markdownParser.parseMarkdown(doc['brief'], contextClass)
-
-
-        if item['name'] == 'map':
-            print 'MAP'
-            print doc['brief']
-            print doc["text"]
 
         #if doc['brief']:
         #    doc["text"] = doc["text"].replace(doc['brief'], '')
@@ -86,7 +82,6 @@ class SiteGenerator(object):
         if 'parameters' in item:
             ret["declaration"] = item['returns']+" "+item['name']+"("
             indent = ' '*len(ret['declaration'])
-            #indent = ',\n'+indent
 
             params = []
             maxWidth = 0
@@ -115,9 +110,6 @@ class SiteGenerator(object):
                 ret["declaration"] += ')'
             else:
                  ret["declaration"] += indent.join(params)
-
-
-
 
         else:
             ret["declaration"] = '{type} {name};'.format(type=item['type'], name=item['name'])

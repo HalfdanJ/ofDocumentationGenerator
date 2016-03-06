@@ -233,6 +233,7 @@ nav {
         border: 0;
 
         .collection-item {
+            background-color: white;
             position: relative;
             background: transparent;
             padding-left:15px;
@@ -245,12 +246,13 @@ nav {
         .collapsible-header {
             border-bottom:1px solid white;
             min-height: 10px;
-            max-height: 50px;
+            height: 25px;
             line-height: 22px;
-            overflow: hidden;
+            overflow: visible;
             transition-duration: 0.3s;
             font-weight: 300;
             position: relative;
+            margin-bottom: 22px;
 
             span {
                 overflow: hidden;
@@ -271,7 +273,7 @@ nav {
         li.active {
             border: 1px solid $documentationGridColor;
             transition-duration: 0.3s;
-            margin-bottom:15px;
+            margin-bottom:18px;
 
             .deprecated-notice {
                 opacity: 1.0;
@@ -286,10 +288,10 @@ nav {
                 transition-duration: 0.3s;
                 border-bottom:1px solid $documentationGridColor;
 
-                min-height: 3rem;
+                //min-height: 3rem;
                 line-height:3rem;
                 background-color: $brandColor;
-
+                margin-bottom: 0px;
 
                 .variable-name, .method-name {
                     color:white;
